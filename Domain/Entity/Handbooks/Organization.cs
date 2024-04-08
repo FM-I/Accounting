@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entity.Handbooks
 {
-    internal class Organization : Handbook
+    public class Organization : Handbook
     {
     }
 }

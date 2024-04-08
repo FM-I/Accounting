@@ -4,7 +4,7 @@ namespace Domain.Entity.Documents
 {
     public abstract class Document
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; }
         public DateTime Date { get; set; }
         public bool Conducted { get; set; }
         public string Number { get; set; }

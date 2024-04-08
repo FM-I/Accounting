@@ -3,7 +3,6 @@
     public class Nomenclature : Handbook
     {
         public string Arcticle { get; set; }
-        public string IdBaseUnit { get; set; }
-        public string IdCategory { get; set; }
+        public UnitClasificator BaseUnit { get; set; }
     }
 }
