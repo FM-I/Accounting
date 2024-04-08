@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entity.Documents
 {
-    public class ClientOrders : Document
+    public class InBankAccontOrder : Document
     {
     }
 }

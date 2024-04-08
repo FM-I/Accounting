@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entity.Documents
 {
-    public class InCashOrders : Document
+    public class OutCashOrder : Document
     {
     }
 }

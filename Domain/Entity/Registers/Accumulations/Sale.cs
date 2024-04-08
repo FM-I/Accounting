@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entity.Registers.Accumulations
 {
-    public class Sales
+    public class Sale
     {
     }
 }

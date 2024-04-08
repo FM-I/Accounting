@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entity.Handbooks
 {
-    public class Units : Handbook
+    public class Client : Handbook
     {
     }
 }

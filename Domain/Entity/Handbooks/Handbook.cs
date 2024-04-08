@@ -6,7 +6,7 @@
         public string Name { get; set; }
         public string Code { get; set; }
         public bool IsGroup { get; set; }
-        public string IdParent { get; set; }
+        public Handbook Parent { get; set; }
 
     }
 }

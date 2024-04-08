@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entity.Registers.Informations
 {
-    public class ExchangesRates
+    public class ExchangesRate
     {
     }
 }
