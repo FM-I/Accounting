@@ -1,6 +1,12 @@
-﻿namespace Domain.Entity.Handbooks
+﻿
+namespace Domain.Entity.Handbooks
 {
-    public class Client : Handbook
+    public class Client : IHandbook
     {
+        public Guid Id { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string Code { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public bool IsGroup { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Client Parent { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
 }
