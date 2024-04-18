@@ -7,5 +7,11 @@
         public string Code { get; set; }
         public bool IsGroup { get; set; }
 
+        public bool ChekOccupancy()
+        {
+            return !string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(Code);
+        }
+        public IHandbook DeepCopy();
+
     }
 }

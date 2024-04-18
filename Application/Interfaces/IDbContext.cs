@@ -2,6 +2,8 @@
 using Domain.Entity.DocumentTables;
 using Domain.Entity.Handbooks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Application.Interfaces
 {
@@ -34,5 +36,6 @@ namespace Application.Interfaces
         DbSet<PurchaceInvoice> PurchaceInvoices { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+        EntityEntry Update(object entity);
     }
 }

@@ -3,10 +3,11 @@ using Domain.Entity.Documents;
 using Domain.Entity.DocumentTables;
 using Domain.Entity.Handbooks;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Infrastructure
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : DbContext, IDbContext
     {
         public DbSet<Bank> Banks { get; set; }
         public DbSet<BankAccount> BankAccounts { get; set; }
@@ -36,13 +37,12 @@ namespace Infrastructure
 
         public AppDbContext()
         {
-            Database.EnsureDeleted();
+            //Database.EnsureDeleted();
             Database.EnsureCreated();
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite("Filename=Mobile.db");
         }
-
     }
 }

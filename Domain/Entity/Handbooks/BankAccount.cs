@@ -6,5 +6,12 @@
         public string Name { get; set; }
         public string Code { get; set; }
         public bool IsGroup { get; set; }
+        public virtual Bank Bank { get; set; }
+
+        public IHandbook DeepCopy()
+        {
+            return (BankAccount)MemberwiseClone();
+        }
+
     }
 }

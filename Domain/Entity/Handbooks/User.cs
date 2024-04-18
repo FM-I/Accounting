@@ -5,9 +5,22 @@ namespace Domain.Entity.Handbooks
     {
         public string Login { get; set; }
         public string Password { get; set; }
-        public Guid Id { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string Code { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public bool IsGroup { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string Code { get; set; }
+        public bool IsGroup { get; set; }
+
+        public bool ChekOccupancy()
+        {
+            return !string.IsNullOrWhiteSpace(Name) 
+                && !string.IsNullOrWhiteSpace(Code)
+                && !string.IsNullOrWhiteSpace(Login)
+                && !string.IsNullOrWhiteSpace(Password);
+        }
+
+        public IHandbook DeepCopy()
+        {
+            return (User)MemberwiseClone();
+        }
     }
 }
