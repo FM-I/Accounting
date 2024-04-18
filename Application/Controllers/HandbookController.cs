@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Application.Controllers
 {
-    public class HandbookController
+    public class HandbookController : IHandbookController
     {
         private readonly IDbContext _context;
 
