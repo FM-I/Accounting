@@ -10,7 +10,9 @@ namespace Domain.Entity.Handbooks
 
         public IHandbook DeepCopy()
         {
-            return (Warehouse)MemberwiseClone();
+            IHandbook handbook = (Warehouse)MemberwiseClone();
+            handbook.Id = Guid.Empty;
+            return handbook;
         }
     }
 }

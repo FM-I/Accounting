@@ -19,6 +19,7 @@ namespace Domain.Entity.Handbooks
         public IHandbook DeepCopy()
         {
             Nomenclature nomenclature = (Nomenclature)MemberwiseClone();
+            nomenclature.Id = Guid.Empty;
             return nomenclature;
         }
     }

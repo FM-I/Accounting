@@ -10,7 +10,9 @@
 
         public IHandbook DeepCopy()
         {
-            return (BankAccount)MemberwiseClone();
+            IHandbook handbook = (BankAccount)MemberwiseClone();
+            handbook.Id = Guid.Empty;
+            return handbook;
         }
 
     }
