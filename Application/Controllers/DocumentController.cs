@@ -1,20 +1,21 @@
 ﻿using Application.Interfaces;
+using Domain.Entity.Documents;
 using Domain.Entity.Handbooks;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace Application.Controllers
 {
-    public class HandbookController : IHandbookController
+    public class DocumentController
     {
         private readonly IDbContext _context;
 
-        public HandbookController(IDbContext context)
+        public DocumentController(IDbContext context)
         {
             _context = context;
         }
 
-        private DbSet<T> GetPropertyData<T>() where T : class, IHandbook
+        private DbSet<T> GetPropertyData<T>() where T : Document
         {
             PropertyInfo? property = _context.GetType().GetProperties().FirstOrDefault(x => x.PropertyType == typeof(DbSet<T>));
 
@@ -27,13 +28,13 @@ namespace Application.Controllers
                 throw new Exception("Property value is null");
 
             DbSet<T> data = (DbSet<T>)propValue;
-            
+
             return data;
         }
 
-        private string GetNextCode<T>(DbSet<T> data) where T : class, IHandbook
+        private string GetNextCode<T>(DbSet<T> data) where T : Document
         {
-            var sortData = data.OrderByDescending(x => x.Code);
+            var sortData = data.OrderByDescending(x => x.Number);
             var element = sortData.FirstOrDefault();
 
             if (element == null)
@@ -41,7 +42,7 @@ namespace Application.Controllers
 
             int number;
 
-            if(int.TryParse(element.Code, out number))
+            if (int.TryParse(element.Number, out number))
             {
                 string result = "";
 
@@ -56,49 +57,49 @@ namespace Application.Controllers
             return string.Empty;
         }
 
-        public List<T> GetHandbooks<T>(int skip = 0, int take = 0) where T : class, IHandbook
+        public List<T> GetDocuments<T>(int skip = 0, int take = 0) where T : Document
         {
-            if(skip < 0)
+            if (skip < 0)
                 throw new Exception("Invalid parameter value 'skip'");
 
             if (take < 0)
                 throw new Exception("Invalid parameter value 'take'");
 
             var data = GetPropertyData<T>();
-            
-            if(skip == 0 && take == 0)
+
+            if (skip == 0 && take == 0)
                 return data.ToList();
 
             return data.AsNoTracking().Skip(skip).Take(take).ToList();
         }
 
-        public T? GetHandbook<T>(Guid id) where T : class, IHandbook
+        public T? GetDocument<T>(Guid id) where T : Document
         {
             var data = GetPropertyData<T>();
 
             return data.AsNoTracking().FirstOrDefault(x => x.Id == id);
         }
 
-        public async Task<Guid> AddOrUpdateHandbookAsync<T>(IHandbook handbook, bool saveChanges = true) where T : class, IHandbook
+        public async Task<Guid> AddOrUpdateDocumentAsync<T>(Document handbook, bool saveChanges = true) where T : Document
         {
-            if (string.IsNullOrWhiteSpace(handbook.Code))
+            if (string.IsNullOrWhiteSpace(handbook.Number))
             {
                 var data = GetPropertyData<T>();
-                handbook.Code = GetNextCode(data);
+                handbook.Number = GetNextCode(data);
             }
 
-            if (!handbook.ChekOccupancy())
-                return Guid.Empty;
+            //if (!handbook.ChekOccupancy())
+            //    return Guid.Empty;
 
             _context.Update(handbook);
 
-            if(saveChanges)
+            if (saveChanges)
                 await _context.SaveChangesAsync(new CancellationToken());
 
             return handbook.Id;
         }
 
-        public async Task DeleteHandbook<T>(Guid id, bool saveChanges = true)  where T : class, IHandbook 
+        public async Task DeleteDocument<T>(Guid id, bool saveChanges = true) where T : Document
         {
             var data = GetPropertyData<T>();
 
@@ -113,4 +114,3 @@ namespace Application.Controllers
 
     }
 }
-

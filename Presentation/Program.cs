@@ -1,4 +1,6 @@
 ﻿using Application.Controllers;
+using Domain.Entity.Documents;
+using Domain.Entity.DocumentTables;
 using Domain.Entity.Handbooks;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -6,19 +8,52 @@ using Microsoft.EntityFrameworkCore;
 using (var db = new AppDbContext())
 {
     db.Database.Migrate();
-    
-    var controller = new HandbookController(db);
 
-    Nomenclature handbook = new Nomenclature() { Name = "test", Code = "41" };
-    handbook.BaseUnit = new UnitClasificator() { Code= "test" , Name = "mdfs"};
+    var controllerDoc = new DocumentController(db);
+    var controllerHd = new HandbookController(db);
 
-    var cop = (Nomenclature)handbook.DeepCopy();
+    var baseUnit = new UnitClasificator() { Name = "KG." };
+    await controllerHd.AddOrUpdateHandbookAsync<UnitClasificator>(baseUnit, false);
 
-    Console.WriteLine(handbook.BaseUnit.GetHashCode());
-    Console.WriteLine(cop.BaseUnit.GetHashCode());
+    var nm = new Nomenclature() { Name = "Apple", Arcticle = "AP",  BaseUnit = baseUnit };
+    await controllerHd.AddOrUpdateHandbookAsync<Nomenclature>(nm);
 
-    Console.WriteLine(handbook.Code);
-    Console.WriteLine(cop.Code);
+    var products = controllerHd.GetHandbooks<Nomenclature>();
+
+    var order = new ClientOrder() { Date = DateTime.Now };
+
+    var unit = new Unit() { Name = "шт.", Coefficient = 1 };
+    var org = new Organization() { Name = "osn" };
+    var cur = new Currency() { Name = "osn" };
+    var client = new Client() { Name = "lva" };
+    var typePrice = new TypePrice() { Name = "vvv" };
+
+    await controllerHd.AddOrUpdateHandbookAsync<Unit>(unit, false);
+    await controllerHd.AddOrUpdateHandbookAsync<Client>(client, false);
+    await controllerHd.AddOrUpdateHandbookAsync<Organization>(org, false);
+    await controllerHd.AddOrUpdateHandbookAsync<TypePrice>(typePrice, false);
+    await controllerHd.AddOrUpdateHandbookAsync<Currency>(cur);
+
+    order.Organization = org;
+    order.Currency = cur;
+    order.Client = client;
+    order.Products = new List<ClientOrderProduct>();
+    order.TypePrice = typePrice;
+
+    foreach (var product in products)
+    {
+        order.Products.Add(new ClientOrderProduct()
+        {
+            Nomenclature = product,
+            Price = 10,
+            Quantity = 3,
+            Summa = 30,
+            Unit = unit
+        });
+
+    }
+
+    await controllerDoc.AddOrUpdateDocumentAsync<ClientOrder>(order);
 
     //var h1 = controller.GetHandbooks<Bank>(0, 0);
     //Guid h = await controller.AddOrUpdateHandbookAsync(handbook);

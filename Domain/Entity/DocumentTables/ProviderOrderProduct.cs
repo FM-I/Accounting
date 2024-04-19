@@ -12,8 +12,6 @@ namespace Domain.Entity.DocumentTables
         public decimal Price { get; set; }
         public decimal Summa { get; set; }
         public double Quantity { get; set; }
-        [ForeignKey(nameof(ProviderOrder))]
-        public Guid IdProviderOrder { get; set; }
-        public virtual ProviderOrder Document { get; set; }
+        public ProviderOrder Document { get; set; }
     }
 }
