@@ -12,9 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\Application.csproj", "{366D49D1-4F8D-47BA-83FA-5D5B1F708BA9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Presentation", "Presentation\Presentation.csproj", "{AD25F62A-E8D3-4F65-BC4E-56E0C782E63A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresentationCLI", "Presentation\PresentationCLI.csproj", "{AD25F62A-E8D3-4F65-BC4E-56E0C782E63A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{0DC84F3B-0FDA-4486-8525-F70BFF6E6FC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{0DC84F3B-0FDA-4486-8525-F70BFF6E6FC8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

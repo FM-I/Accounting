@@ -1,12 +1,11 @@
 ﻿using Application.Interfaces;
 using Domain.Entity.Documents;
-using Domain.Entity.Handbooks;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace Application.Controllers
 {
-    public class DocumentController
+    public class DocumentController : IDocumentController
     {
         private readonly IDbContext _context;
 
@@ -32,7 +31,7 @@ namespace Application.Controllers
             return data;
         }
 
-        private string GetNextCode<T>(DbSet<T> data) where T : Document
+        private string GetNextNumber<T>(DbSet<T> data) where T : Document
         {
             var sortData = data.OrderByDescending(x => x.Number);
             var element = sortData.FirstOrDefault();
@@ -57,7 +56,7 @@ namespace Application.Controllers
             return string.Empty;
         }
 
-        public List<T> GetDocuments<T>(int skip = 0, int take = 0) where T : Document
+        public List<T> GetDocuments<T>(int skip = 0, int take = 0, bool includeVirtualProperty = false) where T : Document
         {
             if (skip < 0)
                 throw new Exception("Invalid parameter value 'skip'");
@@ -65,7 +64,17 @@ namespace Application.Controllers
             if (take < 0)
                 throw new Exception("Invalid parameter value 'take'");
 
-            var data = GetPropertyData<T>();
+            IQueryable<T> data = GetPropertyData<T>();
+
+            if (includeVirtualProperty)
+            {
+                var virtualProperty = typeof(T).GetProperties().Where(p => p.GetGetMethod().IsVirtual);
+
+                foreach (var item in virtualProperty)
+                {
+                    data = data.Include(item.Name);
+                }
+            }
 
             if (skip == 0 && take == 0)
                 return data.ToList();
@@ -85,7 +94,7 @@ namespace Application.Controllers
             if (string.IsNullOrWhiteSpace(handbook.Number))
             {
                 var data = GetPropertyData<T>();
-                handbook.Number = GetNextCode(data);
+                handbook.Number = GetNextNumber(data);
             }
 
             //if (!handbook.ChekOccupancy())
