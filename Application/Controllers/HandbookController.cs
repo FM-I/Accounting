@@ -1,7 +1,6 @@
 ﻿using Application.Interfaces;
 using Domain.Entity.Handbooks;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
 
 namespace Application.Controllers
 {
@@ -12,23 +11,6 @@ namespace Application.Controllers
         public HandbookController(IDbContext context)
         {
             _context = context;
-        }
-
-        private DbSet<T> GetPropertyData<T>() where T : class, IHandbook
-        {
-            PropertyInfo? property = _context.GetType().GetProperties().FirstOrDefault(x => x.PropertyType == typeof(DbSet<T>));
-
-            if (property == null)
-                throw new Exception("Property not finded");
-
-            object? propValue = property.GetValue(_context);
-
-            if (propValue == null)
-                throw new Exception("Property value is null");
-
-            DbSet<T> data = (DbSet<T>)propValue;
-            
-            return data;
         }
 
         private string GetNextCode<T>(DbSet<T> data) where T : class, IHandbook
@@ -64,7 +46,7 @@ namespace Application.Controllers
             if (take < 0)
                 throw new Exception("Invalid parameter value 'take'");
 
-            var data = GetPropertyData<T>();
+            var data = _context.GetPropertyData<T>();
             
             if(skip == 0 && take == 0)
                 return data.ToList();
@@ -74,21 +56,25 @@ namespace Application.Controllers
 
         public T? GetHandbook<T>(Guid id) where T : class, IHandbook
         {
-            var data = GetPropertyData<T>();
+            var data = _context.GetPropertyData<T>();
 
             return data.AsNoTracking().FirstOrDefault(x => x.Id == id);
         }
 
-        public async Task<Guid> AddOrUpdateHandbookAsync<T>(IHandbook handbook, bool saveChanges = true) where T : class, IHandbook
+        public T? GetHandbook<T>(Func<T,bool> func) where T : class, IHandbook
+        {
+            var data = _context.GetPropertyData<T>();
+
+            return data.AsNoTracking().FirstOrDefault(func);
+        }
+
+        public async Task<Guid> AddOrUpdateAsync<T>(IHandbook handbook, bool saveChanges = true) where T : class, IHandbook
         {
             if (string.IsNullOrWhiteSpace(handbook.Code))
             {
-                var data = GetPropertyData<T>();
+                var data = _context.GetPropertyData<T>();
                 handbook.Code = GetNextCode(data);
             }
-
-            if (!handbook.ChekOccupancy())
-                return Guid.Empty;
 
             _context.Update(handbook);
 
@@ -98,9 +84,9 @@ namespace Application.Controllers
             return handbook.Id;
         }
 
-        public async Task DeleteHandbook<T>(Guid id, bool saveChanges = true)  where T : class, IHandbook 
+        public async Task DeleteAsync<T>(Guid id, bool saveChanges = true)  where T : class, IHandbook 
         {
-            var data = GetPropertyData<T>();
+            var data = _context.GetPropertyData<T>();
 
             var handbook = await data.FirstOrDefaultAsync(x => x.Id == id);
 

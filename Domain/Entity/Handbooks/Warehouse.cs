@@ -15,6 +15,7 @@ namespace Domain.Entity.Handbooks
         {
             IHandbook handbook = (Warehouse)MemberwiseClone();
             handbook.Id = Guid.Empty;
+            handbook.Code = String.Empty;
             return handbook;
         }
     }

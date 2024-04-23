@@ -2,8 +2,9 @@
 using Domain.Entity.Documents;
 using Domain.Entity.DocumentTables;
 using Domain.Entity.Handbooks;
+using Domain.Entity.Registers.Informations;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
 namespace Infrastructure
 {
@@ -18,7 +19,6 @@ namespace Infrastructure
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<TypePrice> TypePrices { get; set; }
         public DbSet<Unit> Units { get; set; }
-        public DbSet<UnitClasificator> UnitsClasificators { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Warehouse> Warehouses { get; set; }
         public DbSet<Currency> Currencies { get; set; }
@@ -34,6 +34,10 @@ namespace Infrastructure
         public DbSet<OutCashOrder> OutCashOrders { get; set; }
         public DbSet<OutBankAccontOrder> OutBankAccontOrders { get; set; }
         public DbSet<PurchaceInvoice> PurchaceInvoices { get; set; }
+        public DbSet<Barcode> Barcodes { get; set; }
+        public DbSet<ClientContact> ClientsContacts { get; set; }
+        public DbSet<Price> Prices { get; set; }
+        public DbSet<ExchangesRate> ExchangesRates { get; set; }
 
         public AppDbContext()
         {
@@ -43,6 +47,31 @@ namespace Infrastructure
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite("Filename=Mobile.db");
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Barcode>().HasKey(x => new { x.NomenclatureId, x.UnitId });
+            modelBuilder.Entity<ClientContact>().HasKey(x => new { x.ClientId, x.ContactId });
+            modelBuilder.Entity<Price>().HasKey(x => new { x.Date, x.NomenclatureId, x.TypePriceId });
+            modelBuilder.Entity<ExchangesRate>().HasKey(x => new { x.Date, x.CurrencyId });
+        }
+
+        public DbSet<T> GetPropertyData<T>() where T : class
+        {
+            PropertyInfo? property = GetType().GetProperties().FirstOrDefault(x => x.PropertyType == typeof(DbSet<T>));
+
+            if (property == null)
+                throw new Exception("Property not finded");
+
+            object? propValue = property.GetValue(this);
+
+            if (propValue == null)
+                throw new Exception("Property value is null");
+
+            DbSet<T> data = (DbSet<T>)propValue;
+
+            return data;
         }
     }
 }

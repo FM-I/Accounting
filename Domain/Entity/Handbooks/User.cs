@@ -1,4 +1,5 @@
 ﻿
+using Domain.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entity.Handbooks
@@ -13,18 +14,30 @@ namespace Domain.Entity.Handbooks
         public string Code { get; set; }
         public bool IsGroup { get; set; }
 
-        public bool ChekOccupancy()
+        public DataComplectionResult CheckDataComplection()
         {
-            return !string.IsNullOrWhiteSpace(Name) 
-                && !string.IsNullOrWhiteSpace(Code)
-                && !string.IsNullOrWhiteSpace(Login)
-                && !string.IsNullOrWhiteSpace(Password);
+            var result = new DataComplectionResult();
+
+            if (string.IsNullOrWhiteSpace(Name))
+                result.Properties.Add(nameof(Name));
+
+            if (string.IsNullOrWhiteSpace(Code))
+                result.Properties.Add(nameof(Code));
+
+            if (string.IsNullOrWhiteSpace(Login))
+                result.Properties.Add(nameof(Login));
+
+            if (string.IsNullOrWhiteSpace(Password))
+                result.Properties.Add(nameof(Password));
+
+            return result;
         }
 
         public IHandbook DeepCopy()
         {
             IHandbook handbook = (User)MemberwiseClone();
             handbook.Id = Guid.Empty;
+            handbook.Code = String.Empty;
             return handbook;
         }
     }

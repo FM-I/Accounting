@@ -1,7 +1,6 @@
 ﻿using Application.Interfaces;
 using Domain.Entity.Documents;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
 
 namespace Application.Controllers
 {
@@ -12,23 +11,6 @@ namespace Application.Controllers
         public DocumentController(IDbContext context)
         {
             _context = context;
-        }
-
-        private DbSet<T> GetPropertyData<T>() where T : Document
-        {
-            PropertyInfo? property = _context.GetType().GetProperties().FirstOrDefault(x => x.PropertyType == typeof(DbSet<T>));
-
-            if (property == null)
-                throw new Exception("Property not finded");
-
-            object? propValue = property.GetValue(_context);
-
-            if (propValue == null)
-                throw new Exception("Property value is null");
-
-            DbSet<T> data = (DbSet<T>)propValue;
-
-            return data;
         }
 
         private string GetNextNumber<T>(DbSet<T> data) where T : Document
@@ -64,7 +46,7 @@ namespace Application.Controllers
             if (take < 0)
                 throw new Exception("Invalid parameter value 'take'");
 
-            IQueryable<T> data = GetPropertyData<T>();
+            IQueryable<T> data = _context.GetPropertyData<T>();
 
             if (includeVirtualProperty)
             {
@@ -84,21 +66,18 @@ namespace Application.Controllers
 
         public T? GetDocument<T>(Guid id) where T : Document
         {
-            var data = GetPropertyData<T>();
+            var data = _context.GetPropertyData<T>();
 
             return data.AsNoTracking().FirstOrDefault(x => x.Id == id);
         }
 
-        public async Task<Guid> AddOrUpdateDocumentAsync<T>(Document handbook, bool saveChanges = true) where T : Document
+        public async Task<Guid> AddOrUpdateAsync<T>(Document handbook, bool saveChanges = true) where T : Document
         {
             if (string.IsNullOrWhiteSpace(handbook.Number))
             {
-                var data = GetPropertyData<T>();
+                var data = _context.GetPropertyData<T>();
                 handbook.Number = GetNextNumber(data);
             }
-
-            //if (!handbook.ChekOccupancy())
-            //    return Guid.Empty;
 
             _context.Update(handbook);
 
@@ -108,9 +87,9 @@ namespace Application.Controllers
             return handbook.Id;
         }
 
-        public async Task DeleteDocument<T>(Guid id, bool saveChanges = true) where T : Document
+        public async Task DeleteAsync<T>(Guid id, bool saveChanges = true) where T : Document
         {
-            var data = GetPropertyData<T>();
+            var data = _context.GetPropertyData<T>();
 
             var handbook = await data.FirstOrDefaultAsync(x => x.Id == id);
 

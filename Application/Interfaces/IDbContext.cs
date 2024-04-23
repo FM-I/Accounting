@@ -1,6 +1,7 @@
 ﻿using Domain.Entity.Documents;
 using Domain.Entity.DocumentTables;
 using Domain.Entity.Handbooks;
+using Domain.Entity.Registers.Informations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Diagnostics.CodeAnalysis;
@@ -18,7 +19,6 @@ namespace Application.Interfaces
         DbSet<Organization> Organizations { get; set; }
         DbSet<TypePrice> TypePrices { get; set; }
         DbSet<Unit> Units { get; set; }
-        DbSet<UnitClasificator> UnitsClasificators { get; set; }
         DbSet<User> Users { get; set; }
         DbSet<Warehouse> Warehouses { get; set; }
         DbSet<Currency> Currencies { get; set; }
@@ -34,8 +34,14 @@ namespace Application.Interfaces
         DbSet<OutCashOrder> OutCashOrders { get; set; }
         DbSet<OutBankAccontOrder> OutBankAccontOrders { get; set; }
         DbSet<PurchaceInvoice> PurchaceInvoices { get; set; }
+        DbSet<Barcode> Barcodes { get; set; }
+        public DbSet<ClientContact> ClientsContacts { get; set; }
+        public DbSet<Price> Prices { get; set; }
+        public DbSet<ExchangesRate> ExchangesRates { get; set; }
+
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
         EntityEntry Update(object entity);
+        public DbSet<T> GetPropertyData<T>() where T : class;
     }
 }

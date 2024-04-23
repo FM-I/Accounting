@@ -1,4 +1,6 @@
-﻿namespace Domain.Entity.Handbooks
+﻿using Domain.Models;
+
+namespace Domain.Entity.Handbooks
 {
     public interface IHandbook
     {
@@ -7,9 +9,17 @@
         public string Code { get; set; }
         public bool IsGroup { get; set; }
 
-        public bool ChekOccupancy()
+        public DataComplectionResult CheckDataComplection()
         {
-            return !string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(Code);
+            var result = new DataComplectionResult();
+
+            if (!string.IsNullOrWhiteSpace(Name))
+                result.Properties.Add(nameof(Name));
+
+            if (!string.IsNullOrWhiteSpace(Code))
+                result.Properties.Add(nameof(Code));
+
+            return result;
         }
         public IHandbook DeepCopy();
 

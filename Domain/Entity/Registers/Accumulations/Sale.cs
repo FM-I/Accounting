@@ -1,6 +1,8 @@
-﻿namespace Domain.Entity.Registers.Accumulations
+﻿using Domain.Interfaces;
+
+namespace Domain.Entity.Registers.Accumulations
 {
-    public class Sale
+    public class Sale : IMoveRegister
     {
     }
 }
