@@ -68,7 +68,7 @@ namespace Application.Controllers
             return data.AsNoTracking().FirstOrDefault(func);
         }
 
-        public async Task<Guid> AddOrUpdateAsync<T>(IHandbook handbook, bool saveChanges = true) where T : class, IHandbook
+        public async Task<Guid> AddOrUpdateAsync<T>(T handbook, bool saveChanges = true) where T : class, IHandbook
         {
             if (string.IsNullOrWhiteSpace(handbook.Code))
             {
@@ -122,7 +122,7 @@ namespace Application.Controllers
             await _context.SaveChangesAsync(new CancellationToken());
         }
 
-        public async Task DeleteAsync<T>(Guid id, bool saveChanges = true)  where T : class, IHandbook 
+        public async Task RemoveAsync<T>(Guid id, bool saveChanges = true)  where T : class, IHandbook 
         {
             var data = _context.GetPropertyData<T>();
 

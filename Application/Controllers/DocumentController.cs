@@ -71,7 +71,7 @@ namespace Application.Controllers
             return data.AsNoTracking().FirstOrDefault(x => x.Id == id);
         }
 
-        public async Task<Guid> AddOrUpdateAsync<T>(Document document, bool saveChanges = true) where T : Document
+        public async Task<Guid> AddOrUpdateAsync<T>(T document, bool saveChanges = true) where T : Document
         {
             if (string.IsNullOrWhiteSpace(document.Number))
             {
@@ -87,7 +87,7 @@ namespace Application.Controllers
             return document.Id;
         }
 
-        public async Task DeleteAsync<T>(Guid id, bool saveChanges = true) where T : Document
+        public async Task RemoveAsync<T>(Guid id, bool saveChanges = true) where T : Document
         {
             var data = _context.GetPropertyData<T>();
 

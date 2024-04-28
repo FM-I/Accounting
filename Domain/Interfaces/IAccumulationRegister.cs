@@ -1,4 +1,5 @@
 ﻿using Domain.Entity.Documents;
+using Domain.Enum;
 
 namespace Domain.Interfaces
 {
@@ -6,6 +7,5 @@ namespace Domain.Interfaces
     {
         public DateTime Date { get; set; }
         public Guid DocumentId { get; set; }
-        public Document Document { get; set; }
     }
 }

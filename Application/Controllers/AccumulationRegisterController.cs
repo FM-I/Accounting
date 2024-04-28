@@ -14,7 +14,7 @@ namespace Application.Controllers
             _context = context;
         }
 
-        public List<V> GetLeftoverList<T, G, V>(List<T> leftovers, Func<T, G> groupBy, Func<IGrouping<G, T>, V> select, Func<T, bool>? selectionFunc = default) 
+        public List<V> GetLeftoverList<T, G, V>(List<T> leftovers, Func<T, G> groupBy, Func<IGrouping<G, T>, V> select) where T : class, ILeftoverRegister
         {
             //IQueryable<T> data = _context.GetPropertyData<T>();
 
@@ -34,10 +34,7 @@ namespace Application.Controllers
         {
             IQueryable<T> data = _context.GetPropertyData<T>();
 
-            var virtualProperty = typeof(T).GetProperties().Where(p => p.GetGetMethod().IsVirtual && p.PropertyType != typeof(DateTime));
-
-            foreach (var item in virtualProperty)
-                data = data.Include(item.Name);
+            _context.IncludeVirtualProperty(data);
 
             IEnumerable<T> result = data.AsNoTracking();
             if(selectionFunc != default) 
@@ -46,7 +43,7 @@ namespace Application.Controllers
             return result.ToList();
         }
 
-        public async Task AddOrUpdateAsync(Leftover data, bool saveChanges = true)
+        public async Task AddOrUpdateAsync(IAccumulationRegister data, bool saveChanges = true)
         {
             _context.Update(data);
                            

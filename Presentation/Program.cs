@@ -25,51 +25,49 @@ var controllerHd = services.GetRequiredService<IHandbookController>();
 var baseUnit = new Unit() { Name = "KG." };
 await controllerHd.AddOrUpdateAsync<Unit>(baseUnit, false);
 
-List <IHandbook> handbooks = new List<IHandbook>();
-handbooks.Add(new Nomenclature() { Name = "Apple", Arcticle = "AP", BaseUnit = baseUnit });
-handbooks.Add(new Nomenclature() { Name = "Table", Arcticle = "TB", BaseUnit = baseUnit });
-handbooks.Add(new Nomenclature() { Name = "Door", Arcticle = "DR", BaseUnit = baseUnit });
-await controllerHd.AddOrUpdateRangeAsync<Nomenclature>(handbooks);
+List<Nomenclature> products = new List<Nomenclature>();
+products.Add(new Nomenclature() { Name = "Apple", Arcticle = "AP", BaseUnit = baseUnit });
+products.Add(new Nomenclature() { Name = "Table", Arcticle = "TB", BaseUnit = baseUnit });
+products.Add(new Nomenclature() { Name = "Door", Arcticle = "DR", BaseUnit = baseUnit });
+await controllerHd.AddOrUpdateRangeAsync<Nomenclature>(products);
 
 var warehouse = new Warehouse() {  Name = "warehouse 1" };
-await controllerHd.AddOrUpdateAsync<Warehouse>(warehouse);
-var warehouseId = warehouse.Id;
-
-List<IAccumulationRegister> leftovers = new List<IAccumulationRegister>();
-foreach (Nomenclature item in handbooks)
-{
-    for(var i = 0; i < 3; ++i)
-    {
-        leftovers.Add(new Leftover() { Date = DateTime.Now.AddSeconds(i), Nomenclature = item, Warehouse = warehouse, Value = i + 3});
-    }
-}
-
-
-
+await controllerHd.AddOrUpdateAsync(warehouse);
 
 var typePrice = new TypePrice() { Name = "vvv" };
-await controllerHd.AddOrUpdateAsync<TypePrice>(typePrice);
+await controllerHd.AddOrUpdateAsync(typePrice);
 
-var ctr = new AccumulationRegisterController(db);
-await ctr.AddOrUpdateRangeAsync(leftovers);
+var organization = new Organization() { Name = "Organization 1" };
+await controllerHd.AddOrUpdateAsync(organization);
 
-foreach(Leftover leftover in leftovers)
+var client = new Client() { Name = "Client 1", TypeClient = Domain.Enum.TypesClient.Client };
+await controllerHd.AddOrUpdateAsync(client);
+
+
+List<PurchaceInvoiceProduct> docProduct = new List<PurchaceInvoiceProduct>();
+
+foreach (var item in products)
 {
-    leftover.Value -= 3;
+    docProduct.Add(new PurchaceInvoiceProduct() { Nomenclature = item, Price = 10, Quantity = 10, Summa = 20 , Unit = baseUnit });
 }
 
-await ctr.AddOrUpdateRangeAsync(leftovers);
-
-var cr = new InformationRegisterController(db);
-
-var prices = new List<Price>()
+var doc = new PurchaceInvoice()
 {
-    new Price() { Nomenclature = (Nomenclature)handbooks.First(), TypePrice = typePrice, Value = 100, Date = DateTime.Now },
-    new Price() { Nomenclature = (Nomenclature)handbooks.First(), TypePrice = typePrice, Value = 150, Date = DateTime.Now.AddSeconds(5) },
-    new Price() { Nomenclature = (Nomenclature)handbooks.First(), TypePrice = typePrice, Value = 160, Date = DateTime.Now.AddSeconds(15) },
+    Client = client,
+    Organization = organization,
+    Date = DateTime.Now,
+    Warehouse = warehouse,
+    Products = docProduct
 };
 
-await cr.AddOrUpdateRangeAsync(prices);
+var ctr = new AccumulationRegisterController(db);
+
+await ctr.AddOrUpdateAsync(new Leftover() { Date = DateTime.Now, Nomenclature = products.First(), Warehouse = warehouse, Value = 10, TypeMove = Domain.Enum.TypeAccumulationRegisterMove.INCOMING, DocumentId = doc.Id});
+
+var data = ctr.GetListData<Leftover>(s => products.Contains(s.Nomenclature) && s.Warehouse == warehouse);
+var leftovers = ctr.GetLeftoverList(data, g => new { g.Nomenclature, g.Warehouse }, s => new { Nomenclature = s.Key.Nomenclature, Value = s.Sum(selector => selector.Value) });
+
+await controllerDoc.AddOrUpdateAsync(doc);
 
 return 0;
 

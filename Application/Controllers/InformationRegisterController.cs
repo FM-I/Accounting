@@ -20,6 +20,8 @@ namespace Application.Controllers
             if (date == default)
                 date = DateTime.Now;
 
+            _context.IncludeVirtualProperty(data);
+            
             IEnumerable<T> result = data.AsNoTracking();
 
             if (selectionFunc != null)
@@ -42,14 +44,11 @@ namespace Application.Controllers
             return listData;
         }
 
-        public IEnumerable<T> GetListData<T>(int skip = 0, int take = 0, Func<T, bool>? selectionFunc = default) where T : class, IInformationRegister
+        public List<T> GetListData<T>(int skip = 0, int take = 0, Func<T, bool>? selectionFunc = default) where T : class, IInformationRegister
         {
             IQueryable<T> data = _context.GetPropertyData<T>();
 
-            var virtualProperty = typeof(T).GetProperties().Where(p => p.GetGetMethod().IsVirtual && p.PropertyType != typeof(DateTime));
-
-            foreach (var item in virtualProperty)
-                data = data.Include(item.Name);
+            _context.IncludeVirtualProperty(data);
 
             IEnumerable<T> result = data.AsNoTracking();
 
@@ -62,10 +61,10 @@ namespace Application.Controllers
             if (take > 0)
                 result = result.Take(take);
                 
-            return result;
+            return result.ToList();
         }
 
-        public async Task AddOrUpdateAsync<T>(IInformationRegister data, bool saveChanges = true) where T : class, IInformationRegister
+        public async Task AddOrUpdateAsync<T>(T data, bool saveChanges = true) where T : class, IInformationRegister
         {
             _context.Update(data);
 

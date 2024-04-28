@@ -40,6 +40,8 @@ namespace Infrastructure
         public DbSet<Price> Prices { get; set; }
         public DbSet<ExchangesRate> ExchangesRates { get; set; }
         public DbSet<Leftover> Leftovers { get; set; }
+        public DbSet<Debt> Debts { get; set; }
+        public DbSet<Sale> Sales { get; set; }
 
         public AppDbContext()
         {
@@ -58,6 +60,8 @@ namespace Infrastructure
             modelBuilder.Entity<Price>().HasKey(x => new { x.Date, x.NomenclatureId, x.TypePriceId });
             modelBuilder.Entity<ExchangesRate>().HasKey(x => new { x.Date, x.CurrencyId });
             modelBuilder.Entity<Leftover>().HasKey(x => new { x.Date, x.NomenclatureId, x.WarehouseId, x.DocumentId });
+            modelBuilder.Entity<Debt>().HasKey(x => new { x.Date, x.ClientId, x.OrganizationId, x.DocumentId });
+            modelBuilder.Entity<Sale>().HasKey(x => new { x.Date, x.NomenclatureId, x.ClientId, x.OrganizationId, x.DocumentId });
         }
 
         public DbSet<T> GetPropertyData<T>() where T : class
@@ -75,6 +79,14 @@ namespace Infrastructure
             DbSet<T> data = (DbSet<T>)propValue;
 
             return data;
+        }
+
+        public void IncludeVirtualProperty<T>(IQueryable<T> data) where T : class
+        {
+            var virtualProperty = typeof(T).GetProperties().Where(p => p.PropertyType.IsClass && p.GetGetMethod().IsVirtual);
+
+            foreach (var item in virtualProperty)
+                data = data.Include(item.Name);
         }
     }
 }

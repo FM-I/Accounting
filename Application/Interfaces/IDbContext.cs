@@ -39,6 +39,8 @@ namespace Application.Interfaces
         DbSet<Price> Prices { get; set; }
         DbSet<ExchangesRate> ExchangesRates { get; set; }
         DbSet<Leftover> Leftovers { get; set; }
+        DbSet<Debt> Debts { get; set; }
+        DbSet<Sale> Sales { get; set; }
 
 
         public Task<int> SaveChangesAsync(CancellationToken cancellationToken);
@@ -47,5 +49,6 @@ namespace Application.Interfaces
         public void UpdateRange(IEnumerable<object> entities);
         public void RemoveRange(IEnumerable<object> entities);
         public DbSet<T> GetPropertyData<T>() where T : class;
+        public void IncludeVirtualProperty<T>(IQueryable<T> data) where T : class;
     }
 }
