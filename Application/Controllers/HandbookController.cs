@@ -84,6 +84,44 @@ namespace Application.Controllers
             return handbook.Id;
         }
 
+        public async Task AddOrUpdateRangeAsync<T>(IEnumerable<IHandbook> handbooks) where T : class, IHandbook
+        {
+            DbSet<T> data = null;
+            string code = "";
+            foreach (var handbook in handbooks)
+            {
+                if (string.IsNullOrWhiteSpace(handbook.Code))
+                {
+                    if(data == null)
+                        data = _context.GetPropertyData<T>();
+
+                    if (code == "")
+                    {
+                        code = GetNextCode(data);
+                    }
+                    else
+                    {
+                        int number;
+
+                        if (int.TryParse(code, out number))
+                        {
+                            code = "";
+
+                            for (short i = 0; i < 9 - number.ToString().ToList().Count; ++i)
+                                code += "0";
+
+                            code += number + 1;
+                        }
+                    }
+
+                    handbook.Code = code;
+                }
+            }
+
+            _context.UpdateRange(handbooks);
+            await _context.SaveChangesAsync(new CancellationToken());
+        }
+
         public async Task DeleteAsync<T>(Guid id, bool saveChanges = true)  where T : class, IHandbook 
         {
             var data = _context.GetPropertyData<T>();

@@ -1,10 +1,12 @@
 ﻿
 using Domain.Enum;
+using Domain.Interfaces;
+using Domain.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entity.Handbooks
 {
-    public class Client : IHandbook
+    public class Client : IHandbook, ICheckDataComplection
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
@@ -13,6 +15,20 @@ namespace Domain.Entity.Handbooks
         public bool IsGroup { get; set; }
         public Client? Parent { get; set; }
         public TypesClient TypeClient { get; set; }
+
+        public DataComplectionResult CheckDataComplection()
+        {
+            var result = new DataComplectionResult();
+
+            if (!string.IsNullOrWhiteSpace(Name))
+                result.Properties.Add(nameof(Name));
+
+            if (!string.IsNullOrWhiteSpace(Code))
+                result.Properties.Add(nameof(Code));
+
+            return result;
+        }
+
         public IHandbook DeepCopy()
         {
             IHandbook handbook = (Client)MemberwiseClone();

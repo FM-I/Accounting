@@ -74,6 +74,12 @@ namespace Application.Controllers
 
         }
 
+        public async Task AddOrUpdateRangeAsync(IEnumerable<IInformationRegister> data)
+        {
+            _context.UpdateRange(data);
+            await _context.SaveChangesAsync(new CancellationToken());
+        }
+
         public async Task DeleteAsync<T>(Func<T, bool> func) where T : class, IInformationRegister
         {
             var dataProp = _context.GetPropertyData<T>();

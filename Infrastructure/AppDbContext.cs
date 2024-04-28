@@ -2,6 +2,7 @@
 using Domain.Entity.Documents;
 using Domain.Entity.DocumentTables;
 using Domain.Entity.Handbooks;
+using Domain.Entity.Registers.Accumulations;
 using Domain.Entity.Registers.Informations;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -38,10 +39,11 @@ namespace Infrastructure
         public DbSet<ClientContact> ClientsContacts { get; set; }
         public DbSet<Price> Prices { get; set; }
         public DbSet<ExchangesRate> ExchangesRates { get; set; }
+        public DbSet<Leftover> Leftovers { get; set; }
 
         public AppDbContext()
         {
-            //Database.EnsureDeleted();
+            Database.EnsureDeleted();
             Database.EnsureCreated();
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -55,6 +57,7 @@ namespace Infrastructure
             modelBuilder.Entity<ClientContact>().HasKey(x => new { x.ClientId, x.ContactId });
             modelBuilder.Entity<Price>().HasKey(x => new { x.Date, x.NomenclatureId, x.TypePriceId });
             modelBuilder.Entity<ExchangesRate>().HasKey(x => new { x.Date, x.CurrencyId });
+            modelBuilder.Entity<Leftover>().HasKey(x => new { x.Date, x.NomenclatureId, x.WarehouseId, x.DocumentId });
         }
 
         public DbSet<T> GetPropertyData<T>() where T : class
@@ -68,7 +71,7 @@ namespace Infrastructure
 
             if (propValue == null)
                 throw new Exception("Property value is null");
-
+            
             DbSet<T> data = (DbSet<T>)propValue;
 
             return data;

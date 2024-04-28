@@ -1,10 +1,10 @@
 ﻿using Domain.Entity.Documents;
 using Domain.Entity.DocumentTables;
 using Domain.Entity.Handbooks;
+using Domain.Entity.Registers.Accumulations;
 using Domain.Entity.Registers.Informations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Application.Interfaces
 {
@@ -35,13 +35,17 @@ namespace Application.Interfaces
         DbSet<OutBankAccontOrder> OutBankAccontOrders { get; set; }
         DbSet<PurchaceInvoice> PurchaceInvoices { get; set; }
         DbSet<Barcode> Barcodes { get; set; }
-        public DbSet<ClientContact> ClientsContacts { get; set; }
-        public DbSet<Price> Prices { get; set; }
-        public DbSet<ExchangesRate> ExchangesRates { get; set; }
+        DbSet<ClientContact> ClientsContacts { get; set; }
+        DbSet<Price> Prices { get; set; }
+        DbSet<ExchangesRate> ExchangesRates { get; set; }
+        DbSet<Leftover> Leftovers { get; set; }
 
 
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
-        EntityEntry Update(object entity);
+        public Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+        public EntityEntry Update(object entity);
+        public EntityEntry Remove(object entity);
+        public void UpdateRange(IEnumerable<object> entities);
+        public void RemoveRange(IEnumerable<object> entities);
         public DbSet<T> GetPropertyData<T>() where T : class;
     }
 }

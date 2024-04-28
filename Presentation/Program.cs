@@ -3,10 +3,14 @@ using Application.Interfaces;
 using Domain.Entity.Documents;
 using Domain.Entity.DocumentTables;
 using Domain.Entity.Handbooks;
+using Domain.Entity.Registers.Accumulations;
 using Domain.Entity.Registers.Informations;
+using Domain.Interfaces;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Linq;
 
 var services = new ServiceCollection()
     .AddSingleton<IDbContext, AppDbContext>()
@@ -15,93 +19,57 @@ var services = new ServiceCollection()
     .BuildServiceProvider();
 
 var db = services.GetRequiredService<IDbContext>();
-
-
 var controllerDoc = services.GetRequiredService<IDocumentController>();
 var controllerHd = services.GetRequiredService<IHandbookController>();
 
-var docs = controllerDoc.GetDocuments<ClientOrder>();
 var baseUnit = new Unit() { Name = "KG." };
 await controllerHd.AddOrUpdateAsync<Unit>(baseUnit, false);
 
-var nm = new Nomenclature() { Name = "Apple", Arcticle = "AP",  BaseUnit = baseUnit };
-await controllerHd.AddOrUpdateAsync<Nomenclature>(nm);
+List <IHandbook> handbooks = new List<IHandbook>();
+handbooks.Add(new Nomenclature() { Name = "Apple", Arcticle = "AP", BaseUnit = baseUnit });
+handbooks.Add(new Nomenclature() { Name = "Table", Arcticle = "TB", BaseUnit = baseUnit });
+handbooks.Add(new Nomenclature() { Name = "Door", Arcticle = "DR", BaseUnit = baseUnit });
+await controllerHd.AddOrUpdateRangeAsync<Nomenclature>(handbooks);
+
+var warehouse = new Warehouse() {  Name = "warehouse 1" };
+await controllerHd.AddOrUpdateAsync<Warehouse>(warehouse);
+var warehouseId = warehouse.Id;
+
+List<IAccumulationRegister> leftovers = new List<IAccumulationRegister>();
+foreach (Nomenclature item in handbooks)
+{
+    for(var i = 0; i < 3; ++i)
+    {
+        leftovers.Add(new Leftover() { Date = DateTime.Now.AddSeconds(i), Nomenclature = item, Warehouse = warehouse, Value = i + 3});
+    }
+}
+
+
+
+
 var typePrice = new TypePrice() { Name = "vvv" };
 await controllerHd.AddOrUpdateAsync<TypePrice>(typePrice);
 
+var ctr = new AccumulationRegisterController(db);
+await ctr.AddOrUpdateRangeAsync(leftovers);
 
-var cr = new InformationRegisterController(db);
-await cr.AddOrUpdateAsync<Price>(new Price() { Nomenclature = nm, TypePrice = typePrice, Value = 100, Date = DateTime.Now });
-
-var res = cr.GetLastDateData<Price>(DateTime.Now, p => p.NomenclatureId == nm.Id);
-
-await cr.AddOrUpdateAsync<Price>(new Price() { Nomenclature = nm, TypePrice = typePrice, Value = 120, Date = DateTime.Now });
-
-res = cr.GetLastDateData<Price>(DateTime.Now);
-
-var list = cr.GetListData<Price>();
-
-await cr.DeleteAsync<Price>(p => p.NomenclatureId == list.First().NomenclatureId);
-
-return 0;
-
-var products = controllerHd.GetHandbooks<Nomenclature>();
-
-var order = new ClientOrder() { Date = DateTime.Now };
-
-var unit = new Unit() { Name = "шт.", Coefficient = 1 };
-var org = new Organization() { Name = "osn" };
-var cur = new Currency() { Name = "osn" };
-var client = new Client() { Name = "lva" };
-
-await controllerHd.AddOrUpdateAsync<Unit>(unit, false);
-await controllerHd.AddOrUpdateAsync<Client>(client, false);
-await controllerHd.AddOrUpdateAsync<Organization>(org, false);
-await controllerHd.AddOrUpdateAsync<Currency>(cur);
-
-order.Organization = org;
-order.Currency = cur;
-order.Client = client;
-order.Products = new List<ClientOrderProduct>();
-order.TypePrice = typePrice;
-
-foreach (var product in products)
+foreach(Leftover leftover in leftovers)
 {
-    order.Products.Add(new ClientOrderProduct()
-    {
-        Nomenclature = product,
-        Price = 10,
-        Quantity = 3,
-        Summa = 30,
-        Unit = unit
-    });
-
+    leftover.Value -= 3;
 }
 
-await controllerDoc.AddOrUpdateAsync<ClientOrder>(order);
+await ctr.AddOrUpdateRangeAsync(leftovers);
 
-//var h1 = controller.GetHandbooks<Bank>(0, 0);
-//Guid h = await controller.AddOrUpdateHandbookAsync(handbook);
-//var h2 = controller.GetHandbook<Bank>(h);
-//
-//handbook.Name = "кваа";
-//handbook.Code = "кваа";
-//handbook.Id = new Guid("B6982772-31E6-4B42-AA14-B9EC0917A770");
-//var а = db.Update(handbook);
-//db.SaveChanges();
-//var res = db.Banks.First();
+var cr = new InformationRegisterController(db);
 
-//handbook.Code = null;
-//db.Update(handbook);
-//db.SaveChanges();
-//object[] arr = { new Guid("B6982772-31E6-4B42-AA14-B9EC0917A770")}; 
-//var res2 = db.FindAsync(handbook.GetType(), arr);
-//var b = db.GetType().GetProperty("Banks");
+var prices = new List<Price>()
+{
+    new Price() { Nomenclature = (Nomenclature)handbooks.First(), TypePrice = typePrice, Value = 100, Date = DateTime.Now },
+    new Price() { Nomenclature = (Nomenclature)handbooks.First(), TypePrice = typePrice, Value = 150, Date = DateTime.Now.AddSeconds(5) },
+    new Price() { Nomenclature = (Nomenclature)handbooks.First(), TypePrice = typePrice, Value = 160, Date = DateTime.Now.AddSeconds(15) },
+};
 
+await cr.AddOrUpdateRangeAsync(prices);
 
-
-//object j = b.GetValue(db);
-//var t = j.GetType();
-//var res1 = j.GetType().GetMethod("Find");
-//var kva = res1.Invoke(j, [new object[] { new Guid("B6982772-31E6-4B42-AA14-B9EC0917A770") }]);
+return 0;
 
