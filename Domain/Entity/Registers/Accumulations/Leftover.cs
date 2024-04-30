@@ -1,5 +1,4 @@
-﻿using Domain.Entity.Documents;
-using Domain.Entity.Handbooks;
+﻿using Domain.Entity.Handbooks;
 using Domain.Enum;
 using Domain.Interfaces;
 using System.ComponentModel.DataAnnotations.Schema;

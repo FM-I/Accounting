@@ -16,6 +16,7 @@ var services = new ServiceCollection()
     .AddSingleton<IDbContext, AppDbContext>()
     .AddSingleton<IHandbookController, HandbookController>()
     .AddSingleton<IDocumentController, DocumentController>()
+    .AddSingleton<IAccumulationRegisterController, AccumulationRegisterController>()
     .BuildServiceProvider();
 
 var db = services.GetRequiredService<IDbContext>();
@@ -45,13 +46,15 @@ await controllerHd.AddOrUpdateAsync(client);
 
 
 List<PurchaceInvoiceProduct> docProduct = new List<PurchaceInvoiceProduct>();
+List<SalesInvoiceProduct> saleProducts = new List<SalesInvoiceProduct>();
 
 foreach (var item in products)
 {
     docProduct.Add(new PurchaceInvoiceProduct() { Nomenclature = item, Price = 10, Quantity = 10, Summa = 20 , Unit = baseUnit });
+    saleProducts.Add(new() { Nomenclature = item, Price = 10, Quantity = 5, Summa = 20 , Unit = baseUnit });
 }
 
-var doc = new PurchaceInvoice()
+var PurchaceInvoice = new PurchaceInvoice()
 {
     Client = client,
     Organization = organization,
@@ -60,14 +63,31 @@ var doc = new PurchaceInvoice()
     Products = docProduct
 };
 
+var res = await controllerDoc.ConductedDoumentAsync(PurchaceInvoice);
+
+var SaleInvoice = new SaleInvoice()
+{
+    Client = client,
+    Organization = organization,
+    Date = DateTime.Now,
+    Warehouse = warehouse,
+    Products = saleProducts
+};
+
+res = await controllerDoc.ConductedDoumentAsync(SaleInvoice);
+res = await controllerDoc.ConductedDoumentAsync(SaleInvoice);
+
 var ctr = new AccumulationRegisterController(db);
-
-await ctr.AddOrUpdateAsync(new Leftover() { Date = DateTime.Now, Nomenclature = products.First(), Warehouse = warehouse, Value = 10, TypeMove = Domain.Enum.TypeAccumulationRegisterMove.INCOMING, DocumentId = doc.Id});
-
 var data = ctr.GetListData<Leftover>(s => products.Contains(s.Nomenclature) && s.Warehouse == warehouse);
-var leftovers = ctr.GetLeftoverList(data, g => new { g.Nomenclature, g.Warehouse }, s => new { Nomenclature = s.Key.Nomenclature, Value = s.Sum(selector => selector.Value) });
+var k = ctr.GetLeftoverList(data, g => g.Nomenclature, s => new { n = s.Key, v = s.Sum(sl => sl.TypeMove == Domain.Enum.TypeAccumulationRegisterMove.INCOMING ? sl.Value : sl.Value * -1) });
+//await ctr.AddOrUpdateAsync(new Leftover() { Date = DateTime.Now, Nomenclature = products.First(), Warehouse = warehouse, Value = 10, TypeMove = Domain.Enum.TypeAccumulationRegisterMove.INCOMING});
+//await ctr.AddOrUpdateAsync(new Leftover() { Date = DateTime.Now, Nomenclature = products.First(), Warehouse = warehouse, Value = 1, TypeMove = Domain.Enum.TypeAccumulationRegisterMove.OUTCOMING});
 
-await controllerDoc.AddOrUpdateAsync(doc);
+
+
+
+//await controllerDoc.AddOrUpdateAsync(doc);
+    
 
 return 0;
 

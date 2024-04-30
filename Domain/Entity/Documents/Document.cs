@@ -1,4 +1,5 @@
 ﻿using Domain.Entity.Handbooks;
+using Domain.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entity.Documents
@@ -14,6 +15,9 @@ namespace Domain.Entity.Documents
         public Organization Organization { get; set; }
 
         public void WriteData() { }
-
+        public virtual Dictionary<Type, List<IAccumulationRegister>> GetAccumulationMove()
+        {
+            return new Dictionary<Type, List<IAccumulationRegister>>();
+        }
     }
 }

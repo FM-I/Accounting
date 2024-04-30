@@ -1,11 +1,10 @@
 ﻿using Application.Interfaces;
-using Domain.Entity.Registers.Accumulations;
 using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Controllers
 {
-    public class AccumulationRegisterController
+    public class AccumulationRegisterController : IAccumulationRegisterController
     {
         private readonly IDbContext _context;
 
@@ -16,17 +15,6 @@ namespace Application.Controllers
 
         public List<V> GetLeftoverList<T, G, V>(List<T> leftovers, Func<T, G> groupBy, Func<IGrouping<G, T>, V> select) where T : class, ILeftoverRegister
         {
-            //IQueryable<T> data = _context.GetPropertyData<T>();
-
-            //var virtualProperty = typeof(T).GetProperties().Where(p => p.GetGetMethod().IsVirtual && p.PropertyType != typeof(DateTime));
-
-            //foreach (var item in virtualProperty)
-            //    data = data.Include(item.Name);
-
-            //IEnumerable<T> result = data.AsNoTracking();
-            //if (selectionFunc != null)
-            //    result = result.Where(selectionFunc);
-
             return leftovers.GroupBy(groupBy).Select(select).ToList();
         }
 

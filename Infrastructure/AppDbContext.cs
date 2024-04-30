@@ -59,7 +59,7 @@ namespace Infrastructure
             modelBuilder.Entity<ClientContact>().HasKey(x => new { x.ClientId, x.ContactId });
             modelBuilder.Entity<Price>().HasKey(x => new { x.Date, x.NomenclatureId, x.TypePriceId });
             modelBuilder.Entity<ExchangesRate>().HasKey(x => new { x.Date, x.CurrencyId });
-            modelBuilder.Entity<Leftover>().HasKey(x => new { x.Date, x.NomenclatureId, x.WarehouseId, x.DocumentId });
+            modelBuilder.Entity<Leftover>().HasKey(x => new { x.Date, x.NomenclatureId, x.WarehouseId, x.DocumentId, x.TypeMove });
             modelBuilder.Entity<Debt>().HasKey(x => new { x.Date, x.ClientId, x.OrganizationId, x.DocumentId });
             modelBuilder.Entity<Sale>().HasKey(x => new { x.Date, x.NomenclatureId, x.ClientId, x.OrganizationId, x.DocumentId });
         }
