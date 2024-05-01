@@ -78,8 +78,9 @@ res = await controllerDoc.ConductedDoumentAsync(SaleInvoice);
 res = await controllerDoc.ConductedDoumentAsync(SaleInvoice);
 
 var ctr = new AccumulationRegisterController(db);
-var data = ctr.GetListData<Leftover>(s => products.Contains(s.Nomenclature) && s.Warehouse == warehouse);
-var k = ctr.GetLeftoverList(data, g => g.Nomenclature, s => new { n = s.Key, v = s.Sum(sl => sl.TypeMove == Domain.Enum.TypeAccumulationRegisterMove.INCOMING ? sl.Value : sl.Value * -1) });
+var leftovers = ctr.GetListData<Leftover>(s => products.Contains(s.Nomenclature) && s.Warehouse == warehouse);
+var debts = ctr.GetListData<ClientsDebt>(s => s.Client == SaleInvoice.Client);
+var sales = ctr.GetListData<Sale>(s => products.Contains(s.Nomenclature) && s.Client == SaleInvoice.Client);
 //await ctr.AddOrUpdateAsync(new Leftover() { Date = DateTime.Now, Nomenclature = products.First(), Warehouse = warehouse, Value = 10, TypeMove = Domain.Enum.TypeAccumulationRegisterMove.INCOMING});
 //await ctr.AddOrUpdateAsync(new Leftover() { Date = DateTime.Now, Nomenclature = products.First(), Warehouse = warehouse, Value = 1, TypeMove = Domain.Enum.TypeAccumulationRegisterMove.OUTCOMING});
 

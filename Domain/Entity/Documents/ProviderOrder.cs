@@ -9,6 +9,6 @@ namespace Domain.Entity.Documents
         public Currency Currency { get; set; }
         public Warehouse Warehouse { get; set; }
         public virtual ICollection<ProviderOrderProduct> Products { get; set; }
-
+        public decimal Summa { get => Products.Sum(s => s.Summa); }
     }
 }

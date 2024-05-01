@@ -39,7 +39,8 @@ namespace Application.Interfaces
         DbSet<Price> Prices { get; set; }
         DbSet<ExchangesRate> ExchangesRates { get; set; }
         DbSet<Leftover> Leftovers { get; set; }
-        DbSet<Debt> Debts { get; set; }
+        DbSet<ClientsDebt> ClientsDebts { get; set; }
+        DbSet<ProvidersDebt> ProvidersDebts { get; set; }
         DbSet<Sale> Sales { get; set; }
 
 

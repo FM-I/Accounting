@@ -40,7 +40,8 @@ namespace Infrastructure
         public DbSet<Price> Prices { get; set; }
         public DbSet<ExchangesRate> ExchangesRates { get; set; }
         public DbSet<Leftover> Leftovers { get; set; }
-        public DbSet<Debt> Debts { get; set; }
+        public DbSet<ClientsDebt> ClientsDebts { get; set; }
+        public DbSet<ProvidersDebt> ProvidersDebts { get; set; }
         public DbSet<Sale> Sales { get; set; }
 
         public AppDbContext()
@@ -60,7 +61,8 @@ namespace Infrastructure
             modelBuilder.Entity<Price>().HasKey(x => new { x.Date, x.NomenclatureId, x.TypePriceId });
             modelBuilder.Entity<ExchangesRate>().HasKey(x => new { x.Date, x.CurrencyId });
             modelBuilder.Entity<Leftover>().HasKey(x => new { x.Date, x.NomenclatureId, x.WarehouseId, x.DocumentId, x.TypeMove });
-            modelBuilder.Entity<Debt>().HasKey(x => new { x.Date, x.ClientId, x.OrganizationId, x.DocumentId });
+            modelBuilder.Entity<ClientsDebt>().HasKey(x => new { x.Date, x.ClientId, x.OrganizationId, x.DocumentId });
+            modelBuilder.Entity<ProvidersDebt>().HasKey(x => new { x.Date, x.ProviderId, x.OrganizationId, x.DocumentId });
             modelBuilder.Entity<Sale>().HasKey(x => new { x.Date, x.NomenclatureId, x.ClientId, x.OrganizationId, x.DocumentId });
         }
 

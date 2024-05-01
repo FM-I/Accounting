@@ -216,6 +216,9 @@ namespace Application.Controllers
                 foreach (var item in oldMoves)
                     await _accumulationController.RemoveRangeAsync(item.Value);
 
+                document.Conducted = true;
+                document.Date = DateTime.Now;
+
                 await AddOrUpdateAsync(document);
 
                 foreach (var move in moves)

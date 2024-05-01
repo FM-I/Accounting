@@ -10,5 +10,6 @@ namespace Domain.Entity.Documents
         public Warehouse Warehouse { get; set; }
         public double CurrencyRate {  get; set; }
         public virtual ICollection<ClientOrderProduct> Products { get; set; }
+        public decimal Summa { get => Products.Sum(s => s.Summa); }
     }
 }

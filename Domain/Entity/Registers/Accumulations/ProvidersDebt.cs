@@ -1,24 +1,19 @@
-﻿using Domain.Entity.Documents;
-using Domain.Entity.Handbooks;
+﻿using Domain.Entity.Handbooks;
 using Domain.Enum;
 using Domain.Interfaces;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entity.Registers.Accumulations
 {
-    public class Debt : IAccumulationRegister, ILeftoverRegister
+    public class ProvidersDebt : IAccumulationRegister, ILeftoverRegister
     {
         public DateTime Date { get; set; }
         public Guid DocumentId { get; set; }
         public TypeAccumulationRegisterMove TypeMove { get; set; }
         
-        [ForeignKey(nameof(Client))]
-        public Guid ClientId { get; set; }
-        public Client Client { get; set; }
-
-        [ForeignKey(nameof(Currency))]
-        public Guid CurrencyId { get; set; }
-        public Currency Currency { get; set; }
+        [ForeignKey(nameof(Provider))]
+        public Guid ProviderId { get; set; }
+        public Client Provider { get; set; }
 
         [ForeignKey(nameof(Organization))]
         public Guid OrganizationId { get; set; }
