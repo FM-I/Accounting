@@ -235,5 +235,30 @@ namespace Application.Controllers
             return result;
         }
 
+        public async Task UnConductedDoumentAsync<T>(T document) where T : Document
+        {
+            var moves = document.GetAccumulationMove();
+
+            Dictionary<Type, IEnumerable<IAccumulationRegister>> oldMoves = new();
+            if (document.Id != Guid.Empty)
+            {
+                Func<IAccumulationRegister, bool> kva = k => k.DocumentId == document.Id;
+                foreach (var move in moves)
+                {
+                    var oldMove = (IEnumerable<IAccumulationRegister>)_accumulationController.GetType().GetMethod("GetListData").MakeGenericMethod(move.Key).Invoke(_accumulationController, [kva]);
+
+                    if (oldMove != null && oldMove.Count() != 0)
+                        oldMoves.Add(move.Key, oldMove);
+                }
+            }
+
+            foreach (var item in oldMoves)
+                await _accumulationController.RemoveRangeAsync(item.Value);
+
+            document.Conducted = false;
+
+            await AddOrUpdateAsync(document);
+        }
+
     }
 }

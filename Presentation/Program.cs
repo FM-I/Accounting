@@ -45,16 +45,16 @@ var client = new Client() { Name = "Client 1", TypeClient = Domain.Enum.TypesCli
 await controllerHd.AddOrUpdateAsync(client);
 
 
-List<ClientOrderProduct> docProduct = new List<ClientOrderProduct>();
+List<PurchaceInvoiceProduct> docProduct = new List<PurchaceInvoiceProduct>();
 List<SalesInvoiceProduct> saleProducts = new List<SalesInvoiceProduct>();
 
 foreach (var item in products)
 {
-    docProduct.Add(new ClientOrderProduct() { Nomenclature = item, Price = 10, Quantity = 10, Summa = 20 , Unit = baseUnit });
+    docProduct.Add(new PurchaceInvoiceProduct() { Nomenclature = item, Price = 10, Quantity = 10, Summa = 20 , Unit = baseUnit });
     saleProducts.Add(new() { Nomenclature = item, Price = 10, Quantity = 5, Summa = 20 , Unit = baseUnit });
 }
 
-var PurchaceInvoice = new ClientOrder()
+var PurchaceInvoice = new PurchaceInvoice()
 {
     Client = client,
     Organization = organization,
@@ -65,20 +65,21 @@ var PurchaceInvoice = new ClientOrder()
 
 var res = await controllerDoc.ConductedDoumentAsync(PurchaceInvoice);
 
-var SaleInvoice = new SaleInvoice();
-SaleInvoice.FillWith(PurchaceInvoice);
-//{
-//    Client = client,
-//    Organization = organization,
-//    Date = DateTime.Now,
-//    Warehouse = warehouse,
-//    Products = saleProducts
-//};
-
-res = await controllerDoc.ConductedDoumentAsync(SaleInvoice);
+var SaleInvoice = new SaleInvoice()
+{
+    Client = client,
+    Organization = organization,
+    Date = DateTime.Now,
+    Warehouse = warehouse,
+    Products = saleProducts
+};
 
 var ctr = new AccumulationRegisterController(db);
+res = await controllerDoc.ConductedDoumentAsync(SaleInvoice);
 var leftovers = ctr.GetListData<Leftover>(s => products.Contains(s.Nomenclature) && s.Warehouse == warehouse);
+await controllerDoc.UnConductedDoumentAsync(SaleInvoice);
+leftovers = ctr.GetListData<Leftover>(s => products.Contains(s.Nomenclature) && s.Warehouse == warehouse);
+
 var debts = ctr.GetListData<ClientsDebt>(s => s.Client == SaleInvoice.Client);
 var sales = ctr.GetListData<Sale>(s => products.Contains(s.Nomenclature) && s.Client == SaleInvoice.Client);
 //await ctr.AddOrUpdateAsync(new Leftover() { Date = DateTime.Now, Nomenclature = products.First(), Warehouse = warehouse, Value = 10, TypeMove = Domain.Enum.TypeAccumulationRegisterMove.INCOMING});
