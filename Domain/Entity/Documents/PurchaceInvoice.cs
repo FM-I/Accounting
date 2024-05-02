@@ -9,9 +9,9 @@ namespace Domain.Entity.Documents
     public class PurchaceInvoice : Document
     {
         public Warehouse Warehouse { get; set; }
-        public virtual ICollection<PurchaceInvoiceProduct> Products { get; set; }
+        public virtual ICollection<PurchaceInvoiceProduct> Products { get; set; } = new List<PurchaceInvoiceProduct>();
         public decimal Summa { get => Products.Sum(s => s.Summa); }
-        public TypePurchaceInvoice TypeDocument { get; set; }
+        public TypePurchaceInvoice TypeOperation { get; set; }
         public virtual ProviderOrder? ProviderOrder { get; set; }
 
         public override Dictionary<Type, List<IAccumulationRegister>> GetAccumulationMove()
@@ -34,7 +34,7 @@ namespace Domain.Entity.Documents
 
             moves.Add(typeof(Leftover), leftovers);
 
-            if(TypeDocument == TypePurchaceInvoice.Buying)
+            if(TypeOperation == TypePurchaceInvoice.Buying)
             {
 
                 var debts = new List<IAccumulationRegister>()
@@ -44,7 +44,7 @@ namespace Domain.Entity.Documents
                         Provider = Client,
                         Organization = Organization,
                         Date = DateTime.Now,
-                        TypeMove = Enum.TypeAccumulationRegisterMove.INCOMING,
+                        TypeMove = TypeAccumulationRegisterMove.INCOMING,
                         Value = Summa
                     }
                 };
@@ -60,7 +60,7 @@ namespace Domain.Entity.Documents
                         Client = Client,
                         Organization = Organization,
                         Date = DateTime.Now,
-                        TypeMove = Enum.TypeAccumulationRegisterMove.INCOMING,
+                        TypeMove = TypeAccumulationRegisterMove.INCOMING,
                         Value = -Summa
                     }
                 };
@@ -68,8 +68,34 @@ namespace Domain.Entity.Documents
                 moves.Add(typeof(ClientsDebt), debts);
             }
             
-
             return moves;
+        }
+
+        public override void FillWith(Document document)
+        {
+            if(document is ProviderOrder)
+            {
+                var data = (ProviderOrder)document;
+
+                ProviderOrder = data;
+                Client = data.Client;
+                Organization = data.Organization;
+                Warehouse = data.Warehouse;
+
+                foreach (var product in data.Products)
+                {
+                    Products.Add(new()
+                    {
+                        Document = this,
+                        Nomenclature = product.Nomenclature,
+                        Price = product.Price,
+                        Unit = product.Unit,
+                        Quantity = product.Quantity,
+                        Summa = product.Summa
+                    });
+                }
+
+            }
         }
     }
 }

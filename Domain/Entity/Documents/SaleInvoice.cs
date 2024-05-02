@@ -9,9 +9,9 @@ namespace Domain.Entity.Documents
     public class SaleInvoice : Document
     {
         public Warehouse Warehouse { get; set; }
-        public virtual ICollection<SalesInvoiceProduct> Products { get; set; }
+        public virtual ICollection<SalesInvoiceProduct> Products { get; set; } = new List<SalesInvoiceProduct>();
         public decimal Summa { get => Products.Sum(s => s.Summa); }
-        public TypeSaleInvoice TypeDocument { get; set; }
+        public TypeSaleInvoice TypeOperation { get; set; }
         public virtual ClientOrder? ClientOrder { get; set; }
 
         public override Dictionary<Type, List<IAccumulationRegister>> GetAccumulationMove()
@@ -45,7 +45,7 @@ namespace Domain.Entity.Documents
 
             moves.Add(typeof(Leftover), leftovers);
 
-            if (TypeDocument == TypeSaleInvoice.Sale)
+            if (TypeOperation == TypeSaleInvoice.Sale)
             {
                 moves.Add(typeof(Sale), Sales);
 
@@ -82,6 +82,32 @@ namespace Domain.Entity.Documents
             }
 
             return moves;
+        }
+
+        public override void FillWith(Document document)
+        {
+            if(document is ClientOrder)
+            {
+                var data = (ClientOrder)document;
+
+                Client = data.Client;
+                Organization = data.Organization;
+                Warehouse = data.Warehouse;
+                ClientOrder = data;
+
+                foreach (var product in data.Products)
+                {
+                    Products.Add(new()
+                    {
+                        Document = this,
+                        Nomenclature = product.Nomenclature,
+                        Unit = product.Unit,
+                        Price = product.Price,
+                        Quantity = product.Quantity,
+                        Summa = product.Summa
+                    });
+                }
+            }
         }
     }
 }

@@ -14,7 +14,8 @@ namespace Domain.Entity.Documents
         public Client Client { get; set; }
         public Organization Organization { get; set; }
 
-        public void WriteData() { }
+        public virtual void FillWith(Document document) {}
+
         public virtual Dictionary<Type, List<IAccumulationRegister>> GetAccumulationMove()
         {
             return new Dictionary<Type, List<IAccumulationRegister>>();

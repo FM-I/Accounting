@@ -45,16 +45,16 @@ var client = new Client() { Name = "Client 1", TypeClient = Domain.Enum.TypesCli
 await controllerHd.AddOrUpdateAsync(client);
 
 
-List<PurchaceInvoiceProduct> docProduct = new List<PurchaceInvoiceProduct>();
+List<ClientOrderProduct> docProduct = new List<ClientOrderProduct>();
 List<SalesInvoiceProduct> saleProducts = new List<SalesInvoiceProduct>();
 
 foreach (var item in products)
 {
-    docProduct.Add(new PurchaceInvoiceProduct() { Nomenclature = item, Price = 10, Quantity = 10, Summa = 20 , Unit = baseUnit });
+    docProduct.Add(new ClientOrderProduct() { Nomenclature = item, Price = 10, Quantity = 10, Summa = 20 , Unit = baseUnit });
     saleProducts.Add(new() { Nomenclature = item, Price = 10, Quantity = 5, Summa = 20 , Unit = baseUnit });
 }
 
-var PurchaceInvoice = new PurchaceInvoice()
+var PurchaceInvoice = new ClientOrder()
 {
     Client = client,
     Organization = organization,
@@ -65,16 +65,16 @@ var PurchaceInvoice = new PurchaceInvoice()
 
 var res = await controllerDoc.ConductedDoumentAsync(PurchaceInvoice);
 
-var SaleInvoice = new SaleInvoice()
-{
-    Client = client,
-    Organization = organization,
-    Date = DateTime.Now,
-    Warehouse = warehouse,
-    Products = saleProducts
-};
+var SaleInvoice = new SaleInvoice();
+SaleInvoice.FillWith(PurchaceInvoice);
+//{
+//    Client = client,
+//    Organization = organization,
+//    Date = DateTime.Now,
+//    Warehouse = warehouse,
+//    Products = saleProducts
+//};
 
-res = await controllerDoc.ConductedDoumentAsync(SaleInvoice);
 res = await controllerDoc.ConductedDoumentAsync(SaleInvoice);
 
 var ctr = new AccumulationRegisterController(db);
