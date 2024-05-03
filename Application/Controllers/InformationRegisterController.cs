@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Controllers
 {
-    public class InformationRegisterController
+    public class InformationRegisterController : IInformationRegisterController
     {
         private readonly IDbContext _context;
 

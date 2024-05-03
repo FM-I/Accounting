@@ -12,13 +12,16 @@ namespace Domain.Entity.Documents
         public virtual ICollection<PurchaceInvoiceProduct> Products { get; set; } = new List<PurchaceInvoiceProduct>();
         public decimal Summa { get => Products.Sum(s => s.Summa); }
         public TypePurchaceInvoice TypeOperation { get; set; }
+        public Currency Currency { get; set; }
+        public double CurrencyRate { get; set; } = 1;
         public virtual ProviderOrder? ProviderOrder { get; set; }
 
         public override Dictionary<Type, List<IAccumulationRegister>> GetAccumulationMove()
         {
             Dictionary<Type, List<IAccumulationRegister>> moves = new();
 
-            List<IAccumulationRegister> leftovers = new List<IAccumulationRegister>();
+            List<IAccumulationRegister> leftovers = new();
+            List<IAccumulationRegister> sales = new();
 
             foreach (var product in Products)
             {
@@ -29,6 +32,16 @@ namespace Domain.Entity.Documents
                     Warehouse = Warehouse,
                     Value = product.Quantity / (product.Nomenclature.BaseUnit.Coefficient == 0 ? 1 : product.Nomenclature.BaseUnit.Coefficient),
                     TypeMove = Enum.TypeAccumulationRegisterMove.INCOMING
+                });
+
+                sales.Add(new Sale()
+                {
+                    Date = DateTime.Now,
+                    Nomenclature = product.Nomenclature,
+                    Client = Client,
+                    Organization = Organization,
+                    Price = product.Price,
+                    Quantity = -product.Quantity
                 });
             }
 
@@ -45,7 +58,7 @@ namespace Domain.Entity.Documents
                         Organization = Organization,
                         Date = DateTime.Now,
                         TypeMove = TypeAccumulationRegisterMove.INCOMING,
-                        Value = Summa
+                        Value = Summa * (decimal)CurrencyRate
                     }
                 };
 
@@ -61,13 +74,14 @@ namespace Domain.Entity.Documents
                         Organization = Organization,
                         Date = DateTime.Now,
                         TypeMove = TypeAccumulationRegisterMove.INCOMING,
-                        Value = -Summa
+                        Value = -Summa * (decimal)CurrencyRate
                     }
                 };
 
                 moves.Add(typeof(ClientsDebt), debts);
+                moves.Add(typeof(Sale), sales);
             }
-            
+
             return moves;
         }
 

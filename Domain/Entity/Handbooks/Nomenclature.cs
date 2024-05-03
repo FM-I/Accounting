@@ -14,6 +14,7 @@ namespace Domain.Entity.Handbooks
         [MaxLength(9)]
         public string Code { get; set; }
         public bool IsGroup { get; set; }
+        public bool IsDefault { get; set; }
         public virtual Nomenclature? Parent { get; set; }
 
         public DataComplectionResult CheckDataComplection()

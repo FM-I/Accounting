@@ -1,12 +1,10 @@
 ﻿using Application.Interfaces;
 using Domain.Entity.Documents;
-using Domain.Entity.Handbooks;
 using Domain.Entity.Registers.Accumulations;
 using Domain.Enum;
 using Domain.Interfaces;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
 
 namespace Application.Controllers
 {

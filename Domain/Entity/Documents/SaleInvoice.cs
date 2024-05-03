@@ -12,6 +12,8 @@ namespace Domain.Entity.Documents
         public virtual ICollection<SalesInvoiceProduct> Products { get; set; } = new List<SalesInvoiceProduct>();
         public decimal Summa { get => Products.Sum(s => s.Summa); }
         public TypeSaleInvoice TypeOperation { get; set; }
+        public Currency Currency { get; set; }
+        public double CurrencyRate { get; set; } = 1;
         public virtual ClientOrder? ClientOrder { get; set; }
 
         public override Dictionary<Type, List<IAccumulationRegister>> GetAccumulationMove()
@@ -19,8 +21,8 @@ namespace Domain.Entity.Documents
             Dictionary<Type, List<IAccumulationRegister>> moves = new();
 
             List<IAccumulationRegister> leftovers = new();
-            List<IAccumulationRegister> Sales = new();
-
+            List<IAccumulationRegister> sales = new();
+            
             foreach (var product in Products)
             {
                 leftovers.Add(new Leftover()
@@ -32,7 +34,7 @@ namespace Domain.Entity.Documents
                     TypeMove = TypeAccumulationRegisterMove.OUTCOMING
                 });
 
-                Sales.Add(new Sale()
+                sales.Add(new Sale()
                 {
                     Date = DateTime.Now,
                     Nomenclature = product.Nomenclature,
@@ -47,7 +49,7 @@ namespace Domain.Entity.Documents
 
             if (TypeOperation == TypeSaleInvoice.Sale)
             {
-                moves.Add(typeof(Sale), Sales);
+                moves.Add(typeof(Sale), sales);
 
                 var debts = new List<IAccumulationRegister>()
                 {
@@ -57,7 +59,7 @@ namespace Domain.Entity.Documents
                         Organization = Organization,
                         Date = DateTime.Now,
                         TypeMove = TypeAccumulationRegisterMove.INCOMING,
-                        Value = Summa
+                        Value = Summa * (decimal)CurrencyRate
                     }
                 };
 
@@ -74,7 +76,7 @@ namespace Domain.Entity.Documents
                         Organization = Organization,
                         Date = DateTime.Now,
                         TypeMove = TypeAccumulationRegisterMove.INCOMING,
-                        Value = -Summa
+                        Value = -Summa * (decimal)CurrencyRate
                     }
                 };
 

@@ -1,5 +1,7 @@
-﻿using Application.Controllers;
+﻿using Application.Common;
+using Application.Controllers;
 using Application.Interfaces;
+using Domain.Entity;
 using Domain.Entity.Documents;
 using Domain.Entity.DocumentTables;
 using Domain.Entity.Handbooks;
@@ -11,6 +13,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Metadata;
 
 var services = new ServiceCollection()
     .AddSingleton<IDbContext, AppDbContext>()
@@ -26,10 +30,12 @@ var controllerHd = services.GetRequiredService<IHandbookController>();
 var baseUnit = new Unit() { Name = "KG." };
 await controllerHd.AddOrUpdateAsync<Unit>(baseUnit, false);
 
-List<Nomenclature> products = new List<Nomenclature>();
-products.Add(new Nomenclature() { Name = "Apple", Arcticle = "AP", BaseUnit = baseUnit });
-products.Add(new Nomenclature() { Name = "Table", Arcticle = "TB", BaseUnit = baseUnit });
-products.Add(new Nomenclature() { Name = "Door", Arcticle = "DR", BaseUnit = baseUnit });
+List<Nomenclature> products =
+[
+    new Nomenclature() { Name = "Apple", Arcticle = "AP", BaseUnit = baseUnit },
+    new Nomenclature() { Name = "Table", Arcticle = "TB", BaseUnit = baseUnit },
+    new Nomenclature() { Name = "Door", Arcticle = "DR", BaseUnit = baseUnit },
+];
 await controllerHd.AddOrUpdateRangeAsync<Nomenclature>(products);
 
 var warehouse = new Warehouse() {  Name = "warehouse 1" };
@@ -73,6 +79,16 @@ var SaleInvoice = new SaleInvoice()
     Warehouse = warehouse,
     Products = saleProducts
 };
+
+var currency = new Currency()
+{
+    Name = "UAH"
+};
+
+await controllerHd.AddOrUpdateAsync(currency);
+
+await db.SaveChangesAsync(new CancellationToken());
+
 
 var ctr = new AccumulationRegisterController(db);
 res = await controllerDoc.ConductedDoumentAsync(SaleInvoice);

@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces;
+using Domain.Entity;
 using Domain.Entity.Documents;
 using Domain.Entity.DocumentTables;
 using Domain.Entity.Handbooks;

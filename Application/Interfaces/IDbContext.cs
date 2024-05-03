@@ -1,10 +1,12 @@
-﻿using Domain.Entity.Documents;
+﻿using Domain.Entity;
+using Domain.Entity.Documents;
 using Domain.Entity.DocumentTables;
 using Domain.Entity.Handbooks;
 using Domain.Entity.Registers.Accumulations;
 using Domain.Entity.Registers.Informations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Reflection.Metadata;
 
 namespace Application.Interfaces
 {
@@ -42,8 +44,7 @@ namespace Application.Interfaces
         DbSet<ClientsDebt> ClientsDebts { get; set; }
         DbSet<ProvidersDebt> ProvidersDebts { get; set; }
         DbSet<Sale> Sales { get; set; }
-
-
+        
         public Task<int> SaveChangesAsync(CancellationToken cancellationToken);
         public EntityEntry Update(object entity);
         public EntityEntry Remove(object entity);
