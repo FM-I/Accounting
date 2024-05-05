@@ -1,8 +1,8 @@
-﻿using Application.Common;
-using Application.Interfaces;
+﻿using BL.Common;
+using BL.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Controllers
+namespace BL.Controllers
 {
     public class UserController
     {

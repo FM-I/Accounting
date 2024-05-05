@@ -1,8 +1,8 @@
-﻿using Application.Interfaces;
+﻿using BL.Interfaces;
 using Domain.Entity.Handbooks;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Controllers
+namespace BL.Controllers
 {
     public class HandbookController : IHandbookController
     {

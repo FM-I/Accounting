@@ -1,6 +1,6 @@
 ﻿using Domain.Entity.Handbooks;
 
-namespace Application.Interfaces
+namespace BL.Interfaces
 {
     public interface IHandbookController
     {

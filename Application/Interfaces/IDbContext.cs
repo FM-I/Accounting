@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Reflection.Metadata;
 
-namespace Application.Interfaces
+namespace BL.Interfaces
 {
     public interface IDbContext
     {

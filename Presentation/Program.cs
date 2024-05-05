@@ -1,6 +1,6 @@
-﻿using Application.Common;
-using Application.Controllers;
-using Application.Interfaces;
+﻿using BL.Common;
+using BL.Controllers;
+using BL.Interfaces;
 using Domain.Entity;
 using Domain.Entity.Documents;
 using Domain.Entity.DocumentTables;

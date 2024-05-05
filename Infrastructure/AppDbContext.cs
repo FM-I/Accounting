@@ -1,5 +1,4 @@
-﻿using Application.Interfaces;
-using Domain.Entity;
+﻿using BL.Interfaces;
 using Domain.Entity.Documents;
 using Domain.Entity.DocumentTables;
 using Domain.Entity.Handbooks;
@@ -47,7 +46,7 @@ namespace Infrastructure
 
         public AppDbContext()
         {
-            Database.EnsureDeleted();
+            //Database.EnsureDeleted();
             Database.EnsureCreated();
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

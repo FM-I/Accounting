@@ -1,7 +1,7 @@
 ﻿using Domain.Entity.Documents;
 using Domain.Models;
 
-namespace Application.Interfaces
+namespace BL.Interfaces
 {
     public interface IDocumentController
     {

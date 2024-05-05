@@ -1,6 +1,6 @@
 ﻿using Domain.Interfaces;
 
-namespace Application.Interfaces
+namespace BL.Interfaces
 {
     public interface IAccumulationRegisterController
     {

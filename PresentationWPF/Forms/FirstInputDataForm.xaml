@@ -1,0 +1,79 @@
+﻿<Window x:Class="PresentationWPF.Forms.FirstInputDataForm"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PresentationWPF.Forms"
+        mc:Ignorable="d"
+        Title="FirstInputDataForm" Height="300" Width="400">
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Заповніть дані для початку роботи" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"
+                   VerticalAlignment="Center"/>
+
+        <Grid Grid.Row="1">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width=".3*"/>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Логін:" VerticalAlignment="Center" Margin="5"/>
+            <TextBox x:Name="login" Grid.Column ="1"
+                 Height="25" HorizontalAlignment="Stretch" Margin="5"
+                 VerticalAlignment="Center" VerticalContentAlignment="Center"
+                 Padding="5,0,5,0"/>
+
+            <TextBlock Grid.Row="1" Grid.Column ="0" 
+                Text="Пароль:" VerticalAlignment="Center" Margin="5"/>
+            <PasswordBox x:Name="password" Grid.Row="1" Grid.Column ="1" 
+                Height="25" HorizontalAlignment="Stretch" Margin="5"
+                VerticalAlignment="Center" VerticalContentAlignment="Center"
+                 Padding="5,0,5,0"/>
+
+        </Grid>
+
+        <Grid Grid.Row="2">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width=".3*"/>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Організация:" VerticalAlignment="Center" Margin="5"/>
+            <TextBox x:Name="organizationName" Grid.Column ="1"
+         Height="25" HorizontalAlignment="Stretch" Margin="5"
+         VerticalAlignment="Center" VerticalContentAlignment="Center"
+         Padding="5,0,5,0"/>
+
+            <TextBlock Grid.Row="1" Grid.Column ="0" 
+        Text="Валюта:" VerticalAlignment="Center" Margin="5"/>
+            <TextBox x:Name="currencyName" Grid.Row="1" Grid.Column ="1" 
+        Height="25" HorizontalAlignment="Stretch" Margin="5"
+        VerticalAlignment="Center" VerticalContentAlignment="Center"
+         Padding="5,0,5,0"/>
+
+        </Grid>
+
+        <Button Name="btnSave" Content="Зберегти" Grid.Row="3" Width="150" Margin="5"
+                Click="btnSave_ClickAsync"/>
+
+    </Grid>
+</Window>

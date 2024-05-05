@@ -1,4 +1,4 @@
-﻿using Application.Interfaces;
+﻿using BL.Interfaces;
 using Domain.Entity.Documents;
 using Domain.Entity.Registers.Accumulations;
 using Domain.Enum;
@@ -6,7 +6,7 @@ using Domain.Interfaces;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Controllers
+namespace BL.Controllers
 {
     public class DocumentController : IDocumentController
     {

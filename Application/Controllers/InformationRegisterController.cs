@@ -1,8 +1,8 @@
-﻿using Application.Interfaces;
+﻿using BL.Interfaces;
 using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Controllers
+namespace BL.Controllers
 {
     public class InformationRegisterController : IInformationRegisterController
     {

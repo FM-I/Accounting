@@ -1,0 +1,65 @@
+﻿<Window x:Class="PresentationWPF.Forms.AuthForm"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PresentationWPF.Forms"
+        mc:Ignorable="d"
+        Title="Авторизація" Height="150" Width="320"
+        MaxHeight="150" MaxWidth="320" MinWidth="320"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Grid>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width=".2*"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Логін:" VerticalAlignment="Center" Margin="5,0,0,0"/>
+            <TextBox x:Name="login" Grid.Column ="1"
+                     Height="25" HorizontalAlignment="Stretch" Margin="5,0,5,0"
+                     VerticalAlignment="Center" VerticalContentAlignment="Center"
+                     Padding="5,0,5,0"/>
+
+        </Grid>
+
+        <Grid Grid.Row="1">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width=".2*"/>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Пароль:" VerticalAlignment="Center" Margin="5,0,0,0"/>
+            <PasswordBox x:Name="password" Grid.Column ="1" 
+                        Height="25" HorizontalAlignment="Stretch" Margin="5,0,5,0"
+                        VerticalAlignment="Center" VerticalContentAlignment="Center"
+                         Padding="5,0,5,0"/>
+
+        </Grid>
+
+        <Grid Grid.Row="2" HorizontalAlignment="Right">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+                
+            <Button Name="btnLogin" Grid.Column="0" Content="Ввійти" Width="100" Height="25" Margin="5"
+                    Click="btnLogin_ClickAsync"/>
+            <Button x:Name="btnCancel" Grid.Column="1" Content="Відміна" 
+                    Width="100" Height="25" Margin="5"
+                    Click="btnCancel_Click"/>
+            
+        </Grid>
+
+
+    </Grid>
+</Window>

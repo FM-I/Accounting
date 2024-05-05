@@ -10,13 +10,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\Application.csproj", "{366D49D1-4F8D-47BA-83FA-5D5B1F708BA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BL", "Application\BL.csproj", "{366D49D1-4F8D-47BA-83FA-5D5B1F708BA9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresentationCLI", "Presentation\PresentationCLI.csproj", "{AD25F62A-E8D3-4F65-BC4E-56E0C782E63A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{0DC84F3B-0FDA-4486-8525-F70BFF6E6FC8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationWPF", "PresentationWPF\PresentationWPF.csproj", "{53844073-1312-4543-8BBC-2B2BF301579F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresentationWPF", "PresentationWPF\PresentationWPF.csproj", "{53844073-1312-4543-8BBC-2B2BF301579F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
