@@ -1,6 +1,7 @@
 ﻿using BL.Interfaces;
 using Domain.Entity.Handbooks;
 using Microsoft.Extensions.DependencyInjection;
+using PresentationWPF.Common;
 using System.Windows;
 
 namespace PresentationWPF.Forms
@@ -8,9 +9,9 @@ namespace PresentationWPF.Forms
     public partial class FirstInputDataForm : Window
     {
         private readonly IServiceProvider _serviceProvider;
-        public FirstInputDataForm(IServiceProvider serviceProvider)
+        public FirstInputDataForm()
         {
-            _serviceProvider = serviceProvider;
+            _serviceProvider = DIContainer.ServiceProvider;
             InitializeComponent();
         }
 
@@ -40,7 +41,7 @@ namespace PresentationWPF.Forms
             await handboocCtrl.AddOrUpdateAsync(organization, false);
             await handboocCtrl.AddOrUpdateAsync(currency);
 
-            var mainForm = _serviceProvider.GetRequiredService<MainWindow>();
+            var mainForm = new MainWindow();
             mainForm.Show();
             Close();
 

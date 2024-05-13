@@ -12,6 +12,7 @@ namespace Domain.Entity.Handbooks
         public string Code { get; set; }
         public bool IsGroup { get; set; }
         public double Coefficient { get; set; }
+        public bool DeleteMark { get; set; }
         public bool IsDefault { get; set; }
         public DataComplectionResult CheckDataComplection()
         {

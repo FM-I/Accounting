@@ -1,6 +1,7 @@
 ﻿using BL.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using PresentationWPF.Common;
 using System;
 using System.Windows;
 
@@ -12,14 +13,14 @@ namespace PresentationWPF.Forms
         private readonly IDbContext _dbContext;
 
         public bool IsClose { get; private set; }
-        public AuthForm(IServiceProvider services)
+        public AuthForm()
         {
-            _services = services;
-            _dbContext = _services.GetRequiredService<IDbContext>();
+            _services = DIContainer.ServiceProvider;
+            _dbContext = DIContainer.ServiceProvider.GetRequiredService<IDbContext>();
 
             if (_dbContext.Users.Count() == 0)
             {
-                var form = _services.GetRequiredService<FirstInputDataForm>();
+                var form = new FirstInputDataForm();
                 form.Show();
                 IsClose = true;
                 Close();
@@ -42,7 +43,7 @@ namespace PresentationWPF.Forms
 
             if(res != null)
             {
-                var mainForm = _services.GetRequiredService<MainWindow>();
+                var mainForm = new WarehouseListForm();
                 mainForm.Show();
                 Close();
             }

@@ -15,6 +15,7 @@ namespace Domain.Entity.Handbooks
         public string Code { get; set; }
         public bool IsGroup { get; set; }
         public bool IsDefault { get; set; }
+        public bool DeleteMark { get; set; }
         public virtual Nomenclature? Parent { get; set; }
 
         public DataComplectionResult CheckDataComplection()

@@ -44,7 +44,9 @@ namespace BL.Interfaces
         DbSet<ClientsDebt> ClientsDebts { get; set; }
         DbSet<ProvidersDebt> ProvidersDebts { get; set; }
         DbSet<Sale> Sales { get; set; }
-        
+
+        public event EventHandler<SavedChangesEventArgs>? SavedChanges;
+
         public Task<int> SaveChangesAsync(CancellationToken cancellationToken);
         public EntityEntry Update(object entity);
         public EntityEntry Remove(object entity);
