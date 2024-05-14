@@ -8,21 +8,15 @@ using System.Windows.Data;
 
 namespace PresentationWPF.Forms
 {
-    /// <summary>
-    /// Interaction logic for UnitListForm.xaml
-    /// </summary>
-    public partial class UnitListForm : Window
+    public partial class BankAccountListForm : Window
     {
         private readonly IHandbookController _controller;
         private readonly IDbContext _context;
-        private bool _select = false;
-        public Guid SelectedId { get; set; }
-        public UnitListForm(bool select = false)
+        public BankAccountListForm()
         {
             _controller = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
             _context = DIContainer.ServiceProvider.GetRequiredService<IDbContext>();
             _context.SavedChanges += context_SavedChanges;
-            _select = select;
 
             InitializeComponent();
 
@@ -35,11 +29,11 @@ namespace PresentationWPF.Forms
 
         private void context_SavedChanges(object? sender, SavedChangesEventArgs e)
         {
-            var list = _controller.GetHandbooks<Unit>();
+            var list = _controller.GetHandbooks<BankAccount>();
             List<ListItem> items = new List<ListItem>();
             foreach (var item in list)
             {
-                items.Add(new ListItem(item.Id, item.Code, item.Name, item.DeleteMark, item.Coefficient));
+                items.Add(new ListItem(item.Id, item.Code, item.Name, item.DeleteMark, item.Bank?.Name));
             }
             dataList.ItemsSource = items;
         }
@@ -47,22 +41,13 @@ namespace PresentationWPF.Forms
         private void dataList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             ListItem item = (ListItem)dataList.SelectedItem;
-
-            if (_select)
-            {
-                if(item != null)
-                    SelectedId = item.Id;
-             
-                Close();
-                return;
-            }
-            var elementForm = new UnitElementForm(item.Id);
+            var elementForm = new BankAccountElementForm(item.Id);
             elementForm.Show();
         }
 
         private void CreateButton_Click(object sender, RoutedEventArgs e)
         {
-            var elementForm = new UnitElementForm();
+            var elementForm = new BankAccountElementForm();
             elementForm.Show();
         }
 
@@ -72,7 +57,7 @@ namespace PresentationWPF.Forms
                 return;
 
             ListItem item = (ListItem)dataList.SelectedItem;
-            var data = _controller.GetHandbook<Unit>(item.Id);
+            var data = _controller.GetHandbook<BankAccount>(item.Id);
 
             MessageBoxResult result;
             if (item.DeleteMark)
@@ -112,14 +97,14 @@ namespace PresentationWPF.Forms
                 return;
 
             ListItem item = (ListItem)dataList.SelectedItem;
-            var data = _controller.GetHandbook<Unit>(item.Id);
+            var data = _controller.GetHandbook<BankAccount>(item.Id);
             if (data != null)
             {
-                var elementForm = new UnitElementForm((Unit)data.DeepCopy());
+                var elementForm = new BankAccountElementForm((BankAccount)data.DeepCopy());
                 elementForm.Show();
             }
         }
 
-        private record ListItem(Guid Id, string Code, string DataName, bool DeleteMark, double Coefficient);
+        private record ListItem(Guid Id, string Code, string DataName, bool DeleteMark, string Owner);
     }
 }

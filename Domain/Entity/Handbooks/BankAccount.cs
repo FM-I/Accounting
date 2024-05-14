@@ -20,11 +20,11 @@ namespace Domain.Entity.Handbooks
         {
             var result = new DataComplectionResult();
 
-            if (!string.IsNullOrWhiteSpace(Name))
-                result.Properties.Add(nameof(Name));
+            if (string.IsNullOrWhiteSpace(Name))
+                result.Properties.Add("Найменування");
 
-            if (!string.IsNullOrWhiteSpace(Code))
-                result.Properties.Add(nameof(Code));
+            if (Bank == null)
+                result.Properties.Add("Власник");
 
             return result;
         }
@@ -34,6 +34,7 @@ namespace Domain.Entity.Handbooks
             IHandbook handbook = (BankAccount)MemberwiseClone();
             handbook.Id = Guid.Empty;
             handbook.Code = String.Empty;
+            handbook.DeleteMark = false;
             return handbook;
         }
 

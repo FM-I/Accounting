@@ -9,7 +9,7 @@ namespace Domain.Entity.Handbooks
     {
         public Guid Id { get; set; }
         public string? Arcticle { get; set; }
-        public Unit BaseUnit { get; set; }
+        public virtual Unit BaseUnit { get; set; }
         public string Name { get; set; }
         [MaxLength(9)]
         public string Code { get; set; }
@@ -23,18 +23,12 @@ namespace Domain.Entity.Handbooks
             var result = new DataComplectionResult();
 
             if (string.IsNullOrWhiteSpace(Name))
-                result.Properties.Add(nameof(Name));
-
-            if (string.IsNullOrWhiteSpace(Code))
-                result.Properties.Add(nameof(Code));
+                result.Properties.Add("Найменування");
 
             if (!IsGroup)
             {
-                if (string.IsNullOrWhiteSpace(Arcticle))
-                    result.Properties.Add(nameof(Arcticle));
-
                 if (BaseUnit == null)
-                    result.Properties.Add(nameof(BaseUnit));
+                    result.Properties.Add("Одиниця виміру");
             }
 
             return result;

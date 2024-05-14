@@ -8,11 +8,11 @@ using System.Windows;
 
 namespace PresentationWPF.Forms
 {
-    public partial class TypePriceElementForm : Window, INotifyPropertyChanged
+    public partial class BankAccountElementForm : Window, INotifyPropertyChanged
     {
         private readonly IHandbookController _contorller;
         public event PropertyChangedEventHandler? PropertyChanged;
-        private TypePrice _data = new();
+        private BankAccount _data = new();
         private string _title = string.Empty;
         private bool _isChange;
         public bool IsChange { get { return _isChange; } set { _isChange = value; if (_isChange) Title = _title + "*"; else Title = _title; } }
@@ -43,14 +43,26 @@ namespace PresentationWPF.Forms
             }
         }
 
-        public TypePriceElementForm(Guid id = default)
+        public string BankName
+        {
+            get
+            {
+                return _data.Bank == null ? "" : _data.Bank.Name;
+            }
+            set
+            {
+                
+            }
+        }
+
+        public BankAccountElementForm(Guid id = default)
         {
             DataContext = this;
             _contorller = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
 
             if (id != default)
             {
-                var data = _contorller.GetHandbook<TypePrice>(id);
+                var data = _contorller.GetHandbook<BankAccount>(id);
 
                 if (data != null)
                     _data = data;
@@ -62,7 +74,7 @@ namespace PresentationWPF.Forms
             Title = _title;
         }
 
-        public TypePriceElementForm(TypePrice data)
+        public BankAccountElementForm(BankAccount data)
         {
             DataContext = this;
             _contorller = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
@@ -93,7 +105,8 @@ namespace PresentationWPF.Forms
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new(propertyName));
-            IsChange = true;
+            if (propertyName != "BankName")
+                IsChange = true;
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
@@ -103,6 +116,37 @@ namespace PresentationWPF.Forms
             {
                 Button_Click(null, null);
                 e.Cancel = IsChange;
+            }
+        }
+
+        private void btnShowList_Click(object sender, RoutedEventArgs e)
+        {
+            BankListForm form = new BankListForm(true);
+            var result = form.ShowDialog();
+            if (result != null)
+            {
+                if(form.SelectedId != default)
+                {
+                    Guid id = form.SelectedId;
+                    var data = _contorller.GetHandbook<Bank>(id);
+
+                    if(data != null)
+                    {
+                        IsChange = true;
+                        _data.Bank = data;
+                        OnPropertyChanged("BankName");
+                    }
+                }
+            }
+        }
+
+        private void btnOpen_Click(object sender, RoutedEventArgs e)
+        {
+            if(_data.Bank != null)
+            {
+                var form = new BankElementForm(_data.Bank);
+                form.ShowDialog();
+                OnPropertyChanged("BankName");
             }
         }
     }

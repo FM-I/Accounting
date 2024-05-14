@@ -84,12 +84,14 @@ namespace Infrastructure
             return data;
         }
 
-        public void IncludeVirtualProperty<T>(IQueryable<T> data) where T : class
+        public IQueryable<T> IncludeVirtualProperty<T>(IQueryable<T> data) where T : class
         {
-            var virtualProperty = typeof(T).GetProperties().Where(p => p.PropertyType.IsClass && p.GetGetMethod().IsVirtual);
+            var virtualProperty = typeof(T).GetProperties().Where(p => p.PropertyType.IsClass && p.GetGetMethod().IsVirtual && p.PropertyType != typeof(string));
 
             foreach (var item in virtualProperty)
                 data = data.Include(item.Name);
+
+            return data;
         }
     }
 }

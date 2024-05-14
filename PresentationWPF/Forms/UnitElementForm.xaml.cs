@@ -116,5 +116,15 @@ namespace PresentationWPF.Forms
             PropertyChanged?.Invoke(this, new(propertyName));
             IsChange = true;
         }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            if (IsChange
+                && MessageBox.Show("Дані було змінено. Збергти зміни?", "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                Button_Click(null, null);
+                e.Cancel = IsChange;
+            }
+        }
     }
 }

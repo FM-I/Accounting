@@ -46,26 +46,27 @@ namespace BL.Controllers
             if (take < 0)
                 throw new Exception("Invalid parameter value 'take'");
 
-            var data = _context.GetPropertyData<T>();
-            
-            if(skip == 0 && take == 0)
-                return data.AsNoTracking().ToList();
+            IQueryable<T> data = _context.GetPropertyData<T>().AsNoTracking();
+            data = _context.IncludeVirtualProperty(data);
 
-            return data.AsNoTracking().Skip(skip).Take(take).ToList();
+            if (skip == 0 && take == 0)
+                return data.ToList();
+
+            return data.Skip(skip).Take(take).ToList();
         }
 
         public T? GetHandbook<T>(Guid id) where T : class, IHandbook
         {
-            var data = _context.GetPropertyData<T>();
-
-            return data.AsNoTracking().FirstOrDefault(x => x.Id == id);
+            var data = _context.GetPropertyData<T>().AsNoTracking();
+            data = _context.IncludeVirtualProperty(data);
+            return data.FirstOrDefault(x => x.Id == id);
         }
 
         public T? GetHandbook<T>(Func<T,bool> func) where T : class, IHandbook
         {
-            var data = _context.GetPropertyData<T>();
-
-            return data.AsNoTracking().FirstOrDefault(func);
+            var data = _context.GetPropertyData<T>().AsNoTracking();
+            data = _context.IncludeVirtualProperty(data);
+            return data.FirstOrDefault(func);
         }
 
         public async Task<Guid> AddOrUpdateAsync<T>(T handbook, bool saveChanges = true) where T : class, IHandbook

@@ -5,7 +5,131 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PresentationWPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen">
     <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width=".3*"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0" Background="LightGray">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+
+            <Grid x:Name="handbookItem" Grid.Row="0" Background="Transparent">
+                <Button x:Name="showHandbooks" Click="menuItem_Click" Content="Довідники" Background="Transparent"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" FontSize="18"
+                          BorderThickness="0 0 .5 .5"/>
+            </Grid>
+
+            <Grid Grid.Row="1" Background="Transparent" >
+                <Button x:Name="showDocuments" Background="Transparent" Click="menuItem_Click"  BorderThickness="0 0 .5 .5" Content="Документи" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" FontSize="18"/>
+            </Grid>
+
+            <Grid Grid.Row="2" Background="Transparent">
+                <Button x:Name="showRegister" Click="menuItem_Click" Background="Transparent" Content="Регістри відомостей" BorderThickness="0 0 .5 .5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" FontSize="18"/>
+            </Grid>
+
+            <Grid Grid.Row="3" Background="Transparent">
+                <Button x:Name="showReport" Click="menuItem_Click" Background="Transparent" Content="Звіти" BorderThickness="0 0 .5 .5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" FontSize="18"/>
+            </Grid>
+
+        </Grid>
+
+        <Grid x:Name="handbooksGrid" Visibility="Hidden" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Column="0" Text="Основні" HorizontalAlignment="Center" Foreground="SteelBlue" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" />
+            <TextBlock Grid.Column="1" Text="Облік" HorizontalAlignment="Center" Foreground="SteelBlue" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" />
+            <TextBlock Grid.Column="2" Text="Розрахунки" HorizontalAlignment="Center" Foreground="SteelBlue" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" />
+
+            <StackPanel Grid.Row="1" Orientation="Vertical">
+                <Button x:Name="openOrganizationList"  Margin="0 0 0 10" Content="Організації" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
+                <Button x:Name="openTypePriceList" Margin="0 0 0 10" Content="Типи цін" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
+                <Button x:Name="openNomenclatureList" Margin="0 0 0 10" Content="Номенклатура" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
+            </StackPanel>
+
+            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical">
+                <Button x:Name="openWarehouseList"  Margin="0 0 0 10" Content="Склади" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
+                <Button x:Name="openUnitList"  Margin="0 0 0 10" Content="Одиниці виміру" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
+            </StackPanel>
+
+            <StackPanel Grid.Row="1"  Grid.Column="2" Orientation="Vertical">
+                <Button x:Name="openBankList"  Margin="0 0 0 10" Content="Банки" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
+                <Button x:Name="openBankAccountList"  Margin="0 0 0 10" Content="Банківські рахунки" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
+            </StackPanel>
+
+        </Grid>
+
+        <Grid x:Name="documentsGrid" Visibility="Hidden" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Column="0" Text="Продажі" HorizontalAlignment="Center" Foreground="SteelBlue" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" />
+            <TextBlock Grid.Column="1" Text="Закупки" HorizontalAlignment="Center" Foreground="SteelBlue" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" />
+            <TextBlock Grid.Column="2" Text="Розрахунки" HorizontalAlignment="Center" Foreground="SteelBlue" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" />
+
+        </Grid>
+
+        <Grid x:Name="registersGrid" Visibility="Hidden" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Column="0" Text="Дані товарів" HorizontalAlignment="Center" Foreground="SteelBlue" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" />
+            <TextBlock Grid.Column="1" Text="Дані клієнтів" HorizontalAlignment="Center" Foreground="SteelBlue" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" />
+
+        </Grid>
+
+        <Grid x:Name="reportGrid" Visibility="Hidden" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Column="0" Text="Облік" HorizontalAlignment="Center" Foreground="SteelBlue" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" />
+            <TextBlock Grid.Column="1" Text="Розрахунки" HorizontalAlignment="Center" Foreground="SteelBlue" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" />
+
+        </Grid>
+
     </Grid>
 </Window>

@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PresentationWPF.Forms"
         mc:Ignorable="d"
-        Title="FirstInputDataForm" Height="300" Width="400">
+        Title="FirstInputDataForm" Height="300" Width="400"
+        WindowStartupLocation="CenterScreen">
     <Grid>
 
         <Grid.RowDefinitions>

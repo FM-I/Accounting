@@ -20,7 +20,7 @@ namespace BL.Controllers
             if (date == default)
                 date = DateTime.Now;
 
-            _context.IncludeVirtualProperty(data);
+           data = _context.IncludeVirtualProperty(data);
             
             IEnumerable<T> result = data.AsNoTracking();
 
@@ -48,7 +48,7 @@ namespace BL.Controllers
         {
             IQueryable<T> data = _context.GetPropertyData<T>();
 
-            _context.IncludeVirtualProperty(data);
+            data = _context.IncludeVirtualProperty(data);
 
             IEnumerable<T> result = data.AsNoTracking();
 
