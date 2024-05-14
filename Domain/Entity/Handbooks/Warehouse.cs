@@ -19,7 +19,7 @@ namespace Domain.Entity.Handbooks
             var result = new DataComplectionResult();
 
             if (string.IsNullOrWhiteSpace(Name))
-                result.Properties.Add(nameof(Name));
+                result.Properties.Add("Найменування");
 
             //if (string.IsNullOrWhiteSpace(Code))
                 //result.Properties.Add(nameof(Code));
@@ -32,6 +32,7 @@ namespace Domain.Entity.Handbooks
             IHandbook handbook = (Warehouse)MemberwiseClone();
             handbook.Id = Guid.Empty;
             handbook.Code = String.Empty;
+            handbook.DeleteMark = false;
             return handbook;
         }
     }

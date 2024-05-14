@@ -17,11 +17,8 @@ namespace Domain.Entity.Handbooks
         {
             var result = new DataComplectionResult();
 
-            if (!string.IsNullOrWhiteSpace(Name))
+            if (string.IsNullOrWhiteSpace(Name))
                 result.Properties.Add(nameof(Name));
-
-            if (!string.IsNullOrWhiteSpace(Code))
-                result.Properties.Add(nameof(Code));
 
             return result;
         }
@@ -31,6 +28,7 @@ namespace Domain.Entity.Handbooks
             IHandbook handbook = (Bank)MemberwiseClone();
             handbook.Id = Guid.Empty;
             handbook.Code = String.Empty;
+            handbook.DeleteMark = false;
             return handbook;
         }
     }

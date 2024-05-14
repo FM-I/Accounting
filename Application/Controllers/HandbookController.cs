@@ -81,6 +81,8 @@ namespace BL.Controllers
             if(saveChanges)
                 await _context.SaveChangesAsync(new CancellationToken());
 
+            _context.ChangeTracker.Clear();
+
             return handbook.Id;
         }
 
@@ -120,6 +122,7 @@ namespace BL.Controllers
 
             _context.UpdateRange(handbooks);
             await _context.SaveChangesAsync(new CancellationToken());
+            _context.ChangeTracker.Clear();
         }
 
         public async Task RemoveAsync<T>(Guid id, bool saveChanges = true)  where T : class, IHandbook 

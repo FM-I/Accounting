@@ -8,11 +8,11 @@ using System.Windows.Data;
 
 namespace PresentationWPF.Forms
 {
-    public partial class WarehouseListForm : Window
+    public partial class BankListForm : Window
     {
         private readonly IHandbookController _controller;
         private readonly IDbContext _context;
-        public WarehouseListForm()
+        public BankListForm()
         {
             _controller = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
             _context = DIContainer.ServiceProvider.GetRequiredService<IDbContext>();
@@ -29,7 +29,7 @@ namespace PresentationWPF.Forms
 
         private void context_SavedChanges(object? sender, SavedChangesEventArgs e)
         {
-            var list = _controller.GetHandbooks<Warehouse>();
+            var list = _controller.GetHandbooks<Bank>();
             List<ListItem> items = new List<ListItem>();
             foreach (var item in list)
             {
@@ -41,13 +41,13 @@ namespace PresentationWPF.Forms
         private void dataList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             ListItem item = (ListItem)dataList.SelectedItem;
-            var elementForm = new WarehouseElementForm(item.Id);
+            var elementForm = new BankElementForm(item.Id);
             elementForm.Show();
         }
 
         private void CreateButton_Click(object sender, RoutedEventArgs e)
         {
-            var elementForm = new WarehouseElementForm();
+            var elementForm = new BankElementForm();
             elementForm.Show();
         }
 
@@ -57,7 +57,7 @@ namespace PresentationWPF.Forms
                 return;
 
             ListItem item = (ListItem)dataList.SelectedItem;
-            var data = _controller.GetHandbook<Warehouse>(item.Id);
+            var data = _controller.GetHandbook<Bank>(item.Id);
 
             MessageBoxResult result;
             if (item.DeleteMark)
@@ -97,16 +97,14 @@ namespace PresentationWPF.Forms
                 return;
 
             ListItem item = (ListItem)dataList.SelectedItem;
-            var data = _controller.GetHandbook<Warehouse>(item.Id);
-            if(data != null) 
+            var data = _controller.GetHandbook<Bank>(item.Id);
+            if (data != null)
             {
-                var elementForm = new WarehouseElementForm((Warehouse)data.DeepCopy());
+                var elementForm = new BankElementForm((Bank)data.DeepCopy());
                 elementForm.Show();
             }
         }
 
         private record ListItem(Guid Id, string Code, string DataName, bool DeleteMark);
     }
-
-    
 }

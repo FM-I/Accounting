@@ -5,6 +5,7 @@ using Domain.Entity.Handbooks;
 using Domain.Entity.Registers.Accumulations;
 using Domain.Entity.Registers.Informations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Reflection;
 
 namespace Infrastructure

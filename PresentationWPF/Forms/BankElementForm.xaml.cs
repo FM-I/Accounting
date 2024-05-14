@@ -8,28 +8,29 @@ using System.Windows;
 
 namespace PresentationWPF.Forms
 {
-    public partial class WarehouseElementForm : Window, INotifyPropertyChanged
+    public partial class BankElementForm : Window, INotifyPropertyChanged
     {
         private readonly IHandbookController _contorller;
         public event PropertyChangedEventHandler? PropertyChanged;
-        private Warehouse _data = new();
+        private Bank _data = new();
         private string _title = string.Empty;
         private bool _isChange;
-        public bool IsChange { get { return _isChange;  } set { _isChange = value; if (_isChange) Title = _title + "*"; else Title = _title; } }
+        public bool IsChange { get { return _isChange; } set { _isChange = value; if (_isChange) Title = _title + "*"; else Title = _title; } }
 
-        public string Code { 
-            get 
-            { 
-                return _data.Code; 
-            } 
-            set 
+        public string Code
+        {
+            get
+            {
+                return _data.Code;
+            }
+            set
             {
                 _data.Code = value;
                 OnPropertyChanged();
-            } 
+            }
         }
 
-        public string NameData 
+        public string NameData
         {
             get
             {
@@ -42,19 +43,18 @@ namespace PresentationWPF.Forms
             }
         }
 
-
-        public WarehouseElementForm(Guid id = default)
+        public BankElementForm(Guid id = default)
         {
             DataContext = this;
             _contorller = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
 
             if (id != default)
             {
-                var data = _contorller.GetHandbook<Warehouse>(id);
+                var data = _contorller.GetHandbook<Bank>(id);
 
                 if (data != null)
                     _data = data;
-                
+
                 _title = _data.Name;
             }
 
@@ -62,7 +62,7 @@ namespace PresentationWPF.Forms
             Title = _title;
         }
 
-        public WarehouseElementForm(Warehouse data)
+        public BankElementForm(Bank data)
         {
             DataContext = this;
             _contorller = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
@@ -77,7 +77,7 @@ namespace PresentationWPF.Forms
         {
             var result = _data.CheckDataComplection();
 
-            if(result.Success)
+            if (result.Success)
             {
                 await _contorller.AddOrUpdateAsync(_data);
                 OnPropertyChanged(nameof(Code));
@@ -94,16 +94,6 @@ namespace PresentationWPF.Forms
         {
             PropertyChanged?.Invoke(this, new(propertyName));
             IsChange = true;
-        }
-
-        private void Window_Closing(object sender, CancelEventArgs e)
-        {
-            if(IsChange 
-                && MessageBox.Show("Дані було змінено. Збергти зміни?", "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-            {
-                Button_Click(null, null);
-                e.Cancel = IsChange;
-            }
         }
     }
 }

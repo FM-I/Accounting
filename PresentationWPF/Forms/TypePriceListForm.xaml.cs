@@ -3,16 +3,30 @@ using Domain.Entity.Handbooks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PresentationWPF.Common;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 
 namespace PresentationWPF.Forms
 {
-    public partial class WarehouseListForm : Window
+    /// <summary>
+    /// Interaction logic for TypePriceListForm.xaml
+    /// </summary>
+    public partial class TypePriceListForm : Window
     {
         private readonly IHandbookController _controller;
         private readonly IDbContext _context;
-        public WarehouseListForm()
+        public TypePriceListForm()
         {
             _controller = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
             _context = DIContainer.ServiceProvider.GetRequiredService<IDbContext>();
@@ -29,7 +43,7 @@ namespace PresentationWPF.Forms
 
         private void context_SavedChanges(object? sender, SavedChangesEventArgs e)
         {
-            var list = _controller.GetHandbooks<Warehouse>();
+            var list = _controller.GetHandbooks<TypePrice>();
             List<ListItem> items = new List<ListItem>();
             foreach (var item in list)
             {
@@ -41,13 +55,13 @@ namespace PresentationWPF.Forms
         private void dataList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             ListItem item = (ListItem)dataList.SelectedItem;
-            var elementForm = new WarehouseElementForm(item.Id);
+            var elementForm = new TypePriceElementForm(item.Id);
             elementForm.Show();
         }
 
         private void CreateButton_Click(object sender, RoutedEventArgs e)
         {
-            var elementForm = new WarehouseElementForm();
+            var elementForm = new TypePriceElementForm();
             elementForm.Show();
         }
 
@@ -57,7 +71,7 @@ namespace PresentationWPF.Forms
                 return;
 
             ListItem item = (ListItem)dataList.SelectedItem;
-            var data = _controller.GetHandbook<Warehouse>(item.Id);
+            var data = _controller.GetHandbook<TypePrice>(item.Id);
 
             MessageBoxResult result;
             if (item.DeleteMark)
@@ -97,16 +111,14 @@ namespace PresentationWPF.Forms
                 return;
 
             ListItem item = (ListItem)dataList.SelectedItem;
-            var data = _controller.GetHandbook<Warehouse>(item.Id);
-            if(data != null) 
+            var data = _controller.GetHandbook<TypePrice>(item.Id);
+            if (data != null)
             {
-                var elementForm = new WarehouseElementForm((Warehouse)data.DeepCopy());
+                var elementForm = new TypePriceElementForm((TypePrice)data.DeepCopy());
                 elementForm.Show();
             }
         }
 
         private record ListItem(Guid Id, string Code, string DataName, bool DeleteMark);
     }
-
-    
 }

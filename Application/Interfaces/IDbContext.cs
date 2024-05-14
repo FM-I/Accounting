@@ -44,6 +44,7 @@ namespace BL.Interfaces
         DbSet<ClientsDebt> ClientsDebts { get; set; }
         DbSet<ProvidersDebt> ProvidersDebts { get; set; }
         DbSet<Sale> Sales { get; set; }
+        public ChangeTracker ChangeTracker { get; }
 
         public event EventHandler<SavedChangesEventArgs>? SavedChanges;
 
