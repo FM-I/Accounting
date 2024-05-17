@@ -45,10 +45,12 @@ namespace PresentationWPF.Forms
         {
             ListItem item = (ListItem)dataList.SelectedItem;
 
+            if (item == null)
+                return;
+
             if (_select)
             {
-                if (item != null)
-                    SelectedId = item.Id;
+                SelectedId = item.Id;
                 Close();
                 return;
             }

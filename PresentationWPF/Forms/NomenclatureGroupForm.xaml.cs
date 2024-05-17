@@ -8,11 +8,11 @@ using System.Windows;
 
 namespace PresentationWPF.Forms
 {
-    public partial class NomenclatureElementForm : Window, INotifyPropertyChanged
+    public partial class NomenclatureGroupForm : Window, INotifyPropertyChanged
     {
         private readonly IHandbookController _contorller;
         public event PropertyChangedEventHandler? PropertyChanged;
-        private Nomenclature _data = new();
+        private Nomenclature _data = new() { IsGroup = true };
         private string _title = string.Empty;
         private bool _isChange;
         public bool IsChange { get { return _isChange; } set { _isChange = value; if (_isChange) Title = _title + "*"; else Title = _title; } }
@@ -43,18 +43,6 @@ namespace PresentationWPF.Forms
             }
         }
 
-        public string? Article
-        {
-            get { return _data.Arcticle; }
-            set { _data.Arcticle = value; OnPropertyChanged(); }
-        }
-
-        public string UnitName
-        {
-            get { return _data.BaseUnit?.Name; }
-            set { OnPropertyChanged(); }
-        }
-
         public string GroupName
         {
             get { return _data.Parent?.Name; }
@@ -62,7 +50,7 @@ namespace PresentationWPF.Forms
         }
 
 
-        public NomenclatureElementForm(Guid id = default)
+        public NomenclatureGroupForm(Guid id = default)
         {
             DataContext = this;
             _contorller = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
@@ -81,7 +69,7 @@ namespace PresentationWPF.Forms
             Title = _title;
         }
 
-        public NomenclatureElementForm(Nomenclature data)
+        public NomenclatureGroupForm(Nomenclature data)
         {
             DataContext = this;
             _contorller = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
@@ -112,7 +100,7 @@ namespace PresentationWPF.Forms
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new(propertyName));
-            if(propertyName != "UnitName" && propertyName != "GroupName")
+            if (propertyName != "GroupName")
                 IsChange = true;
         }
 
@@ -125,44 +113,11 @@ namespace PresentationWPF.Forms
                 e.Cancel = IsChange;
             }
         }
-
-        private void btnShowList_Click(object sender, RoutedEventArgs e)
-        {
-            UnitListForm form = new UnitListForm(true);
-            var result = form.ShowDialog();
-            if (result != null)
-            {
-                if (form.SelectedId != default)
-                {
-                    Guid id = form.SelectedId;
-                    var data = _contorller.GetHandbook<Unit>(id);
-
-                    if (data != null)
-                    {
-                        IsChange = true;
-                        _data.BaseUnit = data;
-                        OnPropertyChanged("UnitName");
-                    }
-                }
-            }
-        }
-
-        private void btnOpen_Click(object sender, RoutedEventArgs e)
-        {
-            if (_data.BaseUnit != null)
-            {
-                var form = new UnitElementForm(_data.BaseUnit.Id);
-                form.ShowDialog();
-                _data.BaseUnit = _contorller.GetHandbook<Unit>(_data.BaseUnit.Id);
-                OnPropertyChanged("UnitName");
-            }
-        }
-
         private void btnOpenGroup_Click(object sender, RoutedEventArgs e)
         {
             if (_data.Parent != null)
             {
-                var form = new NomenclatureGroupForm(_data.Parent.Id);
+                var form = new NomenclatureElementForm(_data.Parent.Id);
                 form.ShowDialog();
                 _data.Parent = _contorller.GetHandbook<Nomenclature>(_data.Parent.Id);
                 OnPropertyChanged("GroupName");

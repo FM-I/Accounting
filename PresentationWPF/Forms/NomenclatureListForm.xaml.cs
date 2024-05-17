@@ -12,11 +12,17 @@ namespace PresentationWPF.Forms
     {
         private readonly IHandbookController _controller;
         private readonly IDbContext _context;
-        public NomenclatureListForm()
+        private bool _select;
+        private bool _onlyGroup;
+        public Guid SelectedId { get; set; }
+
+        public NomenclatureListForm(bool select = false, bool onlyGroup = false)
         {
             _controller = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
             _context = DIContainer.ServiceProvider.GetRequiredService<IDbContext>();
             _context.SavedChanges += context_SavedChanges;
+            _select = select;
+            _onlyGroup = onlyGroup;
 
             InitializeComponent();
 
@@ -33,6 +39,9 @@ namespace PresentationWPF.Forms
             List<ListItem> items = new List<ListItem>();
             foreach (var item in list)
             {
+                if (_onlyGroup && !item.IsGroup)
+                    continue;
+
                 items.Add(new ListItem(item.Id, item.Code, item.Name, item.DeleteMark, item.BaseUnit?.Name, item.Arcticle));
             }
             dataList.ItemsSource = items;
@@ -41,6 +50,17 @@ namespace PresentationWPF.Forms
         private void dataList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             ListItem item = (ListItem)dataList.SelectedItem;
+
+            if (item == null)
+                return;
+
+            if (_select)
+            {
+                SelectedId = item.Id;
+                Close();
+                return;
+            }
+
             var elementForm = new NomenclatureElementForm(item.Id);
             elementForm.Show();
         }
@@ -103,6 +123,12 @@ namespace PresentationWPF.Forms
                 var elementForm = new NomenclatureElementForm((Nomenclature)data.DeepCopy());
                 elementForm.Show();
             }
+        }
+
+        private void createGroupBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var elementForm = new NomenclatureGroupForm();
+            elementForm.Show();
         }
 
         private record ListItem(Guid Id, string Code, string DataName, bool DeleteMark, string UnitName, string? Article);

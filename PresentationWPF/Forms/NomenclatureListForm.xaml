@@ -32,11 +32,13 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button x:Name="createBtn" Content="Створити" Click="CreateButton_Click" HorizontalAlignment="Left" Height="28" Margin="10,0,0,0" VerticalAlignment="Center" Width="111"/>
-        <Button x:Name="deleteBtn" Content="Видалити" Click="DeleteButton_Click" HorizontalAlignment="Left" Height="28" Margin="126,0,0,0" VerticalAlignment="Center" Width="111"/>
-        <Button x:Name="copyBtn" Content="Копіювати" Click="copyBtn_Click" HorizontalAlignment="Left" Height="28" Margin="242,0,0,0" VerticalAlignment="Center" Width="111"/>
-        <TextBox Name="Search" HorizontalAlignment="Left" Height="18" Margin="579,0,0,0" TextWrapping="Wrap" Background="Transparent" VerticalAlignment="Center" Width="193"
+        <Button x:Name="createBtn" Content="Створити" Click="CreateButton_Click" HorizontalAlignment="Left" Height="28" Margin="10,0,0,0" VerticalAlignment="Center" Width="74"/>
+        <Button x:Name="deleteBtn" Content="Видалити" Click="DeleteButton_Click" HorizontalAlignment="Left" Height="28" Margin="168,0,0,0" VerticalAlignment="Center" Width="74"/>
+        <Button x:Name="copyBtn" Content="Копіювати" Click="copyBtn_Click" HorizontalAlignment="Left" Height="28" Margin="247,0,0,0" VerticalAlignment="Center" Width="72"/>
+        <Button x:Name="createGroupBtn" Content="Группа" Click="createGroupBtn_Click" HorizontalAlignment="Left" Height="28" Margin="89,0,0,0" VerticalAlignment="Center" Width="72"/>
+
+        <TextBox Panel.ZIndex="-1" Name="Search" HorizontalAlignment="Left" Height="18" Margin="579,0,0,0" TextWrapping="Wrap" Background="Transparent" VerticalAlignment="Center" Width="193"
 TextChanged="Search_TextChanged"/>
-        <TextBlock Name="Placeholder" HorizontalAlignment="Left" Margin="589,0,0,0" TextWrapping="Wrap" Text="Пошук" VerticalAlignment="Center"/>
+        <TextBlock Name="Placeholder" HorizontalAlignment="Left" Margin="582,26,0,0" TextWrapping="Wrap" Text="Пошук" VerticalAlignment="Top" Height="22"/>
     </Grid>
 </Window>

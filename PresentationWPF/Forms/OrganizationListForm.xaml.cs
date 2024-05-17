@@ -44,6 +44,10 @@ namespace PresentationWPF.Forms
         private void dataList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             ListItem item = (ListItem)dataList.SelectedItem;
+
+            if (item == null)
+                return;
+
             var elementForm = new OrganizationElementForm(item.Id);
             elementForm.Show();
         }

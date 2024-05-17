@@ -1,6 +1,7 @@
 ﻿using BL.Interfaces;
 using Domain.Entity.Handbooks;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace BL.Controllers
 {
@@ -38,7 +39,7 @@ namespace BL.Controllers
             return string.Empty;
         }
 
-        public List<T> GetHandbooks<T>(int skip = 0, int take = 0) where T : class, IHandbook
+        public List<T> GetHandbooks<T>(Expression<Func<T, bool>>? where = default, int skip = 0, int take = 0) where T : class, IHandbook
         {
             if(skip < 0)
                 throw new Exception("Invalid parameter value 'skip'");
@@ -49,24 +50,29 @@ namespace BL.Controllers
             IQueryable<T> data = _context.GetPropertyData<T>().AsNoTracking();
             data = _context.IncludeVirtualProperty(data);
 
-            if (skip == 0 && take == 0)
-                return data.ToList();
+            if (where != null)
+            {
+                data = data.Where(where);
+            }
 
-            return data.Skip(skip).Take(take).ToList();
+            if (skip == 0 && take == 0)
+                return data.AsNoTracking().ToList();
+
+            return data.AsNoTracking().Skip(skip).Take(take).ToList();
         }
 
         public T? GetHandbook<T>(Guid id) where T : class, IHandbook
         {
-            var data = _context.GetPropertyData<T>().AsNoTracking();
+            IQueryable<T> data = _context.GetPropertyData<T>();
             data = _context.IncludeVirtualProperty(data);
-            return data.FirstOrDefault(x => x.Id == id);
+            return data.AsNoTracking().FirstOrDefault(x => x.Id == id);
         }
 
         public T? GetHandbook<T>(Func<T,bool> func) where T : class, IHandbook
         {
-            var data = _context.GetPropertyData<T>().AsNoTracking();
+            IQueryable<T> data = _context.GetPropertyData<T>();
             data = _context.IncludeVirtualProperty(data);
-            return data.FirstOrDefault(func);
+            return data.AsNoTracking().FirstOrDefault(func);
         }
 
         public async Task<Guid> AddOrUpdateAsync<T>(T handbook, bool saveChanges = true) where T : class, IHandbook
@@ -77,12 +83,12 @@ namespace BL.Controllers
                 handbook.Code = GetNextCode(data);
             }
 
+            _context.ChangeTracker.Clear();
             _context.Update(handbook);
 
             if(saveChanges)
                 await _context.SaveChangesAsync(new CancellationToken());
 
-            _context.ChangeTracker.Clear();
 
             return handbook.Id;
         }

@@ -89,6 +89,8 @@ namespace BL.Controllers
             if (saveChanges)
                 await _context.SaveChangesAsync(new CancellationToken());
 
+            _context.ChangeTracker.Clear();
+
             return document.Id;
         }
 

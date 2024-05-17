@@ -28,7 +28,7 @@ var controllerDoc = services.GetRequiredService<IDocumentController>();
 var controllerHd = services.GetRequiredService<IHandbookController>();
 
 var baseUnit = new Unit() { Name = "KG." };
-await controllerHd.AddOrUpdateAsync<Unit>(baseUnit, false);
+await controllerHd.AddOrUpdateAsync<Unit>(baseUnit);
 
 List<Nomenclature> products =
 [
@@ -60,16 +60,21 @@ foreach (var item in products)
     saleProducts.Add(new() { Nomenclature = item, Price = 10, Quantity = 5, Summa = 20 , Unit = baseUnit });
 }
 
+var cur = new Currency() { Name = "grn" };
+
 var PurchaceInvoice = new PurchaceInvoice()
 {
     Client = client,
     Organization = organization,
     Date = DateTime.Now,
     Warehouse = warehouse,
-    Products = docProduct
+    Products = docProduct,
+    Currency = cur
 };
 
+await controllerHd.AddOrUpdateAsync(cur);
 var res = await controllerDoc.ConductedDoumentAsync(PurchaceInvoice);
+
 
 var SaleInvoice = new SaleInvoice()
 {
@@ -77,27 +82,29 @@ var SaleInvoice = new SaleInvoice()
     Organization = organization,
     Date = DateTime.Now,
     Warehouse = warehouse,
-    Products = saleProducts
+    Products = saleProducts,
+    Currency = cur
 };
 
-var currency = new Currency()
-{
-    Name = "UAH"
-};
+res = await controllerDoc.ConductedDoumentAsync(SaleInvoice);
+//var currency = new Currency()
+//{
+//    Name = "UAH"
+//};
 
-await controllerHd.AddOrUpdateAsync(currency);
-
-await db.SaveChangesAsync(new CancellationToken());
+//await controllerHd.AddOrUpdateAsync(currency);
 
 
 var ctr = new AccumulationRegisterController(db);
-res = await controllerDoc.ConductedDoumentAsync(SaleInvoice);
 var leftovers = ctr.GetListData<Leftover>(s => products.Contains(s.Nomenclature) && s.Warehouse == warehouse);
-await controllerDoc.UnConductedDoumentAsync(SaleInvoice);
+var lt = ctr.GetLeftoverList(leftovers, g => new { g.Nomenclature, g.Warehouse }, s => new { N = s.Key.Nomenclature, w = s.Key.Warehouse, value = s.Sum(sl => sl.TypeMove == Domain.Enum.TypeAccumulationRegisterMove.INCOMING ? sl.Value : -sl.Value) });
+
 leftovers = ctr.GetListData<Leftover>(s => products.Contains(s.Nomenclature) && s.Warehouse == warehouse);
 
-var debts = ctr.GetListData<ClientsDebt>(s => s.Client == SaleInvoice.Client);
-var sales = ctr.GetListData<Sale>(s => products.Contains(s.Nomenclature) && s.Client == SaleInvoice.Client);
+//var debts = ctr.GetListData<ClientsDebt>(s => s.Client == SaleInvoice.Client);
+//var sales = ctr.GetListData<Sale>(s => products.Contains(s.Nomenclature) && s.Client == SaleInvoice.Client);
+//await db.SaveChangesAsync(new CancellationToken());
+//await controllerDoc.UnConductedDoumentAsync(SaleInvoice);
 //await ctr.AddOrUpdateAsync(new Leftover() { Date = DateTime.Now, Nomenclature = products.First(), Warehouse = warehouse, Value = 10, TypeMove = Domain.Enum.TypeAccumulationRegisterMove.INCOMING});
 //await ctr.AddOrUpdateAsync(new Leftover() { Date = DateTime.Now, Nomenclature = products.First(), Warehouse = warehouse, Value = 1, TypeMove = Domain.Enum.TypeAccumulationRegisterMove.OUTCOMING});
 

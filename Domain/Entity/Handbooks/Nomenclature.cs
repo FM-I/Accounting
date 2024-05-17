@@ -9,7 +9,7 @@ namespace Domain.Entity.Handbooks
     {
         public Guid Id { get; set; }
         public string? Arcticle { get; set; }
-        public virtual Unit BaseUnit { get; set; }
+        public virtual Unit? BaseUnit { get; set; }
         public string Name { get; set; }
         [MaxLength(9)]
         public string Code { get; set; }

@@ -27,7 +27,7 @@ namespace PresentationWPF
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
             DIContainer.ServiceProvider = serviceCollection.BuildServiceProvider();
-            var mainWindow = new MainWindow();
+            var mainWindow = new testTree();
             //if(!mainWindow.IsClose)
                 mainWindow.Show();
         }
