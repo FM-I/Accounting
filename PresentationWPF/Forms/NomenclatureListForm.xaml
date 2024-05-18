@@ -14,7 +14,12 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <ListView x:Name="dataList" Grid.Row="1" MouseDoubleClick="dataList_MouseDoubleClick" Grid.ColumnSpan="2">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width=".4*"/>
+        </Grid.ColumnDefinitions>
+
+        <ListView x:Name="dataList" Grid.Row="1" MouseDoubleClick="dataList_MouseDoubleClick">
             <ListView.View>
                 <GridView>
                     <GridViewColumn DisplayMemberBinding="{Binding Id}" Width="0"/>
@@ -37,8 +42,24 @@
         <Button x:Name="copyBtn" Content="Копіювати" Click="copyBtn_Click" HorizontalAlignment="Left" Height="28" Margin="247,0,0,0" VerticalAlignment="Center" Width="72"/>
         <Button x:Name="createGroupBtn" Content="Группа" Click="createGroupBtn_Click" HorizontalAlignment="Left" Height="28" Margin="89,0,0,0" VerticalAlignment="Center" Width="72"/>
 
-        <TextBox Panel.ZIndex="-1" Name="Search" HorizontalAlignment="Left" Height="18" Margin="579,0,0,0" TextWrapping="Wrap" Background="Transparent" VerticalAlignment="Center" Width="193"
+        <TextBox Grid.Column="1" Panel.ZIndex="1" Name="Search" HorizontalAlignment="Left" Height="18" Margin="16,0,0,0" TextWrapping="Wrap" Background="Transparent" VerticalAlignment="Center" Width="193"
 TextChanged="Search_TextChanged"/>
-        <TextBlock Name="Placeholder" HorizontalAlignment="Left" Margin="582,26,0,0" TextWrapping="Wrap" Text="Пошук" VerticalAlignment="Top" Height="22"/>
+        <TextBlock Grid.Column="1" Name="Placeholder" HorizontalAlignment="Left" Margin="19,26,0,0" TextWrapping="Wrap" Text="Пошук" VerticalAlignment="Top" Height="22" RenderTransformOrigin="0.685,0.615"/>
+
+        <TreeView x:Name="treeGroups"  SelectedItemChanged="treeGroups_SelectedItemChanged" Grid.Row="1" Grid.Column="1" Initialized="treeGroups_Initialized" PreviewMouseLeftButtonDown="treeGroups_PreviewMouseLeftButtonDown">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Items}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Image Grid.Column="0" Source="{Binding Image}" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" />
+                        <Label Grid.Column="1" Content="{Binding Content}"/>
+                    </Grid>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+
     </Grid>
 </Window>

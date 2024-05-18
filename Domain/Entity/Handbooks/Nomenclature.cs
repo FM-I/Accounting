@@ -2,6 +2,7 @@
 using Domain.Interfaces;
 using Domain.Models;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entity.Handbooks
 {
@@ -9,6 +10,8 @@ namespace Domain.Entity.Handbooks
     {
         public Guid Id { get; set; }
         public string? Arcticle { get; set; }
+        [ForeignKey(nameof(BaseUnit))]
+        public Guid? BaseUnitId { get; set; }
         public virtual Unit? BaseUnit { get; set; }
         public string Name { get; set; }
         [MaxLength(9)]
@@ -16,6 +19,8 @@ namespace Domain.Entity.Handbooks
         public bool IsGroup { get; set; }
         public bool IsDefault { get; set; }
         public bool DeleteMark { get; set; }
+        [ForeignKey(nameof(Parent))]
+        public Guid? ParentId { get; set; }
         public virtual Nomenclature? Parent { get; set; }
 
         public DataComplectionResult CheckDataComplection()

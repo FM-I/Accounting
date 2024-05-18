@@ -1,6 +1,7 @@
 ﻿using BL.Interfaces;
 using Domain.Entity.Handbooks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Linq.Expressions;
 
 namespace BL.Controllers
@@ -88,7 +89,7 @@ namespace BL.Controllers
 
             if(saveChanges)
                 await _context.SaveChangesAsync(new CancellationToken());
-
+            
 
             return handbook.Id;
         }
@@ -126,10 +127,8 @@ namespace BL.Controllers
                     handbook.Code = code;
                 }
             }
-
             _context.UpdateRange(handbooks);
             await _context.SaveChangesAsync(new CancellationToken());
-            _context.ChangeTracker.Clear();
         }
 
         public async Task RemoveAsync<T>(Guid id, bool saveChanges = true)  where T : class, IHandbook 

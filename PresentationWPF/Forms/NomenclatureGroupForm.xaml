@@ -21,9 +21,10 @@ Text="{Binding Code}" IsReadOnly="True"/>
         <TextBox Text="{Binding NameData, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="30" Margin="65,49,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="241" VerticalContentAlignment="Center" FontSize="16" Grid.Column="1"/>
 
         <Label Content="В групі" FontSize="16" HorizontalAlignment="Left" Height="40" Margin="10,86,0,0" VerticalAlignment="Top" Width="123" Grid.ColumnSpan="2"/>
-        <TextBox Text="{Binding GroupName, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" HorizontalAlignment="Left" Height="30" Margin="65,91,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="183" VerticalContentAlignment="Center" FontSize="16" Grid.Column="1"/>
-        <Button x:Name="btnOpenGroup" Click="btnOpenGroup_Click" Grid.Column="1" Content=". . ." HorizontalAlignment="Left" Margin="277,91,0,0" VerticalAlignment="Top" Height="30" Width="29" Background="Transparent" BorderThickness="0 .5 .5 .5"  />
-        <Button x:Name="btnShowListGroup" Click="btnShowListGroup_Click" Grid.Column="1" Content="▼" HorizontalAlignment="Left" Margin="248,91,0,0" VerticalAlignment="Top" Height="30" Width="29" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
+        <TextBox Text="{Binding GroupName, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" HorizontalAlignment="Center" Height="30" Margin="0,91,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="187" VerticalContentAlignment="Center" FontSize="16" Grid.Column="1"/>
+        <Button x:Name="btnOpenGroup" Click="btnOpenGroup_Click" Grid.Column="1" Content=". . ." HorizontalAlignment="Left" Margin="288,91,0,0" VerticalAlignment="Top" Height="30" Width="18" Background="Transparent" BorderThickness="0 .5 .5 .5"  />
+        <Button x:Name="btnShowListGroup" Click="btnShowListGroup_Click" Grid.Column="1" Content="▼" HorizontalAlignment="Left" Margin="270,91,0,0" VerticalAlignment="Top" Height="30" Width="18" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
+        <Button x:Name="btnClearGroup" Click="btnClearGroup_Click" Grid.Column="1" Content="X" HorizontalAlignment="Left" Margin="252,91,0,0" VerticalAlignment="Top" Height="30" Width="18" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
 
         <Button Content="Записати" HorizontalAlignment="Left" Height="32" Margin="188,130,0,0" VerticalAlignment="Top" Width="118" Grid.Column="1" Click="Button_Click"/>
 

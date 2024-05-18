@@ -49,6 +49,8 @@ namespace Infrastructure
         {
             //Database.EnsureDeleted();
             Database.EnsureCreated();
+            ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -88,10 +90,11 @@ namespace Infrastructure
         {
             var virtualProperty = typeof(T).GetProperties().Where(p => p.PropertyType.IsClass && p.GetGetMethod().IsVirtual && p.PropertyType != typeof(string));
 
+            var copy = data;
             foreach (var item in virtualProperty)
-                data = data.Include(item.Name);
+                copy = copy.Include(item.Name);
 
-            return data;
+            return copy;
         }
     }
 }

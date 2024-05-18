@@ -171,7 +171,7 @@ namespace PresentationWPF.Forms
 
         private void btnShowListGroup_Click(object sender, RoutedEventArgs e)
         {
-            NomenclatureListForm form = new NomenclatureListForm(true, true);
+            NomenclatureGroupListForm form = new NomenclatureGroupListForm();
             var result = form.ShowDialog();
             if (result != null)
             {

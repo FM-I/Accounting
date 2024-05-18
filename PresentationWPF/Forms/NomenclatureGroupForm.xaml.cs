@@ -1,5 +1,6 @@
 ﻿using BL.Interfaces;
 using Domain.Entity.Handbooks;
+using Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using PresentationWPF.Common;
 using System.ComponentModel;
@@ -14,6 +15,7 @@ namespace PresentationWPF.Forms
         public event PropertyChangedEventHandler? PropertyChanged;
         private Nomenclature _data = new() { IsGroup = true };
         private string _title = string.Empty;
+        
         private bool _isChange;
         public bool IsChange { get { return _isChange; } set { _isChange = value; if (_isChange) Title = _title + "*"; else Title = _title; } }
 
@@ -33,9 +35,7 @@ namespace PresentationWPF.Forms
         public string NameData
         {
             get
-            {
-                return _data.Name;
-            }
+            {return _data.Name;}
             set
             {
                 _data.Name = value;
@@ -43,10 +43,12 @@ namespace PresentationWPF.Forms
             }
         }
 
+        private string _groupName;
+
         public string GroupName
         {
-            get { return _data.Parent?.Name; }
-            set { OnPropertyChanged(); }
+            get { return _groupName; }
+            set { _groupName = value; OnPropertyChanged(); }
         }
 
 
@@ -63,6 +65,7 @@ namespace PresentationWPF.Forms
                     _data = data;
 
                 _title = _data.Name;
+                GroupName = _data?.Parent?.Name;
             }
 
             InitializeComponent();
@@ -75,6 +78,7 @@ namespace PresentationWPF.Forms
             _contorller = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
             _data = data;
             _title = _data.Name;
+            GroupName = _data.Parent?.Name;
             InitializeComponent();
             Title = _title;
             IsChange = true;
@@ -88,6 +92,7 @@ namespace PresentationWPF.Forms
             {
                 await _contorller.AddOrUpdateAsync(_data);
                 OnPropertyChanged(nameof(Code));
+                Title = _data.Name;
                 IsChange = false;
             }
             else
@@ -117,7 +122,7 @@ namespace PresentationWPF.Forms
         {
             if (_data.Parent != null)
             {
-                var form = new NomenclatureElementForm(_data.Parent.Id);
+                var form = new NomenclatureGroupForm(_data.Parent.Id);
                 form.ShowDialog();
                 _data.Parent = _contorller.GetHandbook<Nomenclature>(_data.Parent.Id);
                 OnPropertyChanged("GroupName");
@@ -126,7 +131,7 @@ namespace PresentationWPF.Forms
 
         private void btnShowListGroup_Click(object sender, RoutedEventArgs e)
         {
-            NomenclatureListForm form = new NomenclatureListForm(true, true);
+            NomenclatureGroupListForm form = new NomenclatureGroupListForm();
             var result = form.ShowDialog();
             if (result != null)
             {
@@ -135,14 +140,22 @@ namespace PresentationWPF.Forms
                     Guid id = form.SelectedId;
                     var data = _contorller.GetHandbook<Nomenclature>(id);
 
-                    if (data != null)
+                    if (data != null && data.Id != _data.Id)
                     {
                         IsChange = true;
-                        _data.Parent = data;
-                        OnPropertyChanged("GroupName");
+                        _data.ParentId = data.Id;
+                        _data.Parent = null;
+                        GroupName = data.Name;
                     }
                 }
             }
+        }
+
+        private void btnClearGroup_Click(object sender, RoutedEventArgs e)
+        {
+            _data.ParentId = null;
+            _data.Parent = null;
+            GroupName = "";
         }
     }
 }

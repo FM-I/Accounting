@@ -1,4 +1,7 @@
-﻿using Domain.Entity.Handbooks;
+﻿using BL.Interfaces;
+using Domain.Entity.Handbooks;
+using Microsoft.Extensions.DependencyInjection;
+using PresentationWPF.Common;
 using PresentationWPF.Forms;
 using System.Reflection;
 using System.Windows;

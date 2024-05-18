@@ -30,13 +30,35 @@ var controllerHd = services.GetRequiredService<IHandbookController>();
 var baseUnit = new Unit() { Name = "KG." };
 await controllerHd.AddOrUpdateAsync<Unit>(baseUnit);
 
+var g = new Nomenclature() { IsGroup = true, Name = "Product" };
+
+await controllerHd.AddOrUpdateAsync(g);
+
+var r = controllerHd.GetHandbook<Nomenclature>(g.Id);
+var n = new Nomenclature() { Name = "Apple", Arcticle = "AP", BaseUnitId = baseUnit.Id, ParentId = r.Id };
+
+await controllerHd.AddOrUpdateAsync(n);
+
+var h = controllerHd.GetHandbook<Nomenclature>(n.Id);
+n.Parent = null;
+await controllerHd.AddOrUpdateAsync(n);
+h = controllerHd.GetHandbook<Nomenclature>(n.Id);
+
+
+
+return 0;
+
 List<Nomenclature> products =
 [
-    new Nomenclature() { Name = "Apple", Arcticle = "AP", BaseUnit = baseUnit },
     new Nomenclature() { Name = "Table", Arcticle = "TB", BaseUnit = baseUnit },
     new Nomenclature() { Name = "Door", Arcticle = "DR", BaseUnit = baseUnit },
 ];
 await controllerHd.AddOrUpdateRangeAsync<Nomenclature>(products);
+
+
+
+
+await controllerHd.AddOrUpdateAsync(n);
 
 var warehouse = new Warehouse() {  Name = "warehouse 1" };
 await controllerHd.AddOrUpdateAsync(warehouse);
