@@ -19,11 +19,8 @@ namespace Domain.Entity.Handbooks
         {
             var result = new DataComplectionResult();
 
-            if (!string.IsNullOrWhiteSpace(Name))
-                result.Properties.Add(nameof(Name));
-
-            if (!string.IsNullOrWhiteSpace(Code))
-                result.Properties.Add(nameof(Code));
+            if (string.IsNullOrWhiteSpace(Name))
+                result.Properties.Add("Найменування");
 
             return result;
         }
@@ -33,6 +30,8 @@ namespace Domain.Entity.Handbooks
             IHandbook handbook = (Currency)MemberwiseClone();
             handbook.Id = Guid.Empty;
             handbook.Code = String.Empty;
+            handbook.IsDefault = false;
+            handbook.DeleteMark = false;
             return handbook;
         }
     }

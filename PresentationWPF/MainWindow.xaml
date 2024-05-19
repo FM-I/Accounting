@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:PresentationWPF"
         mc:Ignorable="d"
         Title="Облік ''ПРОСТО'' " Height="450" Width="800"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        Closing="Window_Closing">
     <Grid>
 
         <Grid.ColumnDefinitions>
@@ -64,6 +65,7 @@
                 <Button x:Name="openOrganizationList"  Margin="0 0 0 10" Content="Організації" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
                 <Button x:Name="openTypePriceList" Margin="0 0 0 10" Content="Типи цін" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
                 <Button x:Name="openNomenclatureList" Margin="0 0 0 10" Content="Номенклатура" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
+                <Button x:Name="openContactList" Margin="0 0 0 10" Content="Контакти" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
             </StackPanel>
 
             <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical">
@@ -74,6 +76,8 @@
             <StackPanel Grid.Row="1"  Grid.Column="2" Orientation="Vertical">
                 <Button x:Name="openBankList"  Margin="0 0 0 10" Content="Банки" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
                 <Button x:Name="openBankAccountList"  Margin="0 0 0 10" Content="Банківські рахунки" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
+                <Button x:Name="openCashBoxList"  Margin="0 0 0 10" Content="Каси" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
+                <Button x:Name="openCurrencyList"  Margin="0 0 0 10" Content="Валюти" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
             </StackPanel>
 
         </Grid>

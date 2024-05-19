@@ -1,9 +1,4 @@
-﻿using BL.Interfaces;
-using Domain.Entity.Handbooks;
-using Microsoft.Extensions.DependencyInjection;
-using PresentationWPF.Common;
-using PresentationWPF.Forms;
-using System.Reflection;
+﻿using PresentationWPF.Forms;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -63,7 +58,7 @@ namespace PresentationWPF
         private void openForm(object sender, RoutedEventArgs e)
         {
             var btn = (Button)sender;
-
+            
             Window form = null;
 
             switch(btn.Name)
@@ -89,10 +84,24 @@ namespace PresentationWPF
                 case "openNomenclatureList":
                     form = new NomenclatureListForm();
                     break;
+                case "openCashBoxList":
+                    form = new CashBoxListForm();
+                    break;
+                case "openContactList":
+                    form = new ContactListForm();
+                    break;
+                case "openCurrencyList":
+                    form = new CurrencyListForm();
+                    break;
             }
 
             if (form != null)
                 form.Show();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }

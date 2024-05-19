@@ -39,6 +39,8 @@ namespace Domain.Entity.Handbooks
             IHandbook handbook = (User)MemberwiseClone();
             handbook.Id = Guid.Empty;
             handbook.Code = String.Empty;
+            handbook.IsDefault = false;
+            handbook.DeleteMark = false;
             return handbook;
         }
     }

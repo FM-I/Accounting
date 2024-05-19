@@ -1,4 +1,5 @@
 ﻿
+using Domain.Enum;
 using Domain.Interfaces;
 using Domain.Models;
 using System.ComponentModel.DataAnnotations;
@@ -22,6 +23,7 @@ namespace Domain.Entity.Handbooks
         [ForeignKey(nameof(Parent))]
         public Guid? ParentId { get; set; }
         public virtual Nomenclature? Parent { get; set; }
+        public TypeNomenclature TypeNomenclature { get; set; } = TypeNomenclature.None;
 
         public DataComplectionResult CheckDataComplection()
         {
@@ -34,6 +36,10 @@ namespace Domain.Entity.Handbooks
             {
                 if (BaseUnit == null)
                     result.Properties.Add("Одиниця виміру");
+
+                if (TypeNomenclature == TypeNomenclature.None
+                    || TypeNomenclature == null)
+                    result.Properties.Add("Тип номенклатури");
             }
 
             return result;
@@ -41,10 +47,12 @@ namespace Domain.Entity.Handbooks
 
         public IHandbook DeepCopy()
         {
-            Nomenclature nomenclature = (Nomenclature)MemberwiseClone();
-            nomenclature.Id = Guid.Empty;
-            nomenclature.Code = string.Empty;
-            return nomenclature;
+            Nomenclature handbook = (Nomenclature)MemberwiseClone();
+            handbook.Id = Guid.Empty;
+            handbook.Code = String.Empty;
+            handbook.IsDefault = false;
+            handbook.DeleteMark = false;
+            return handbook;
         }
     }
 }

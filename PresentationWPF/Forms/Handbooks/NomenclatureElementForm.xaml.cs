@@ -1,5 +1,6 @@
 ﻿using BL.Interfaces;
 using Domain.Entity.Handbooks;
+using Domain.Enum;
 using Microsoft.Extensions.DependencyInjection;
 using PresentationWPF.Common;
 using System.ComponentModel;
@@ -10,6 +11,12 @@ namespace PresentationWPF.Forms
 {
     public partial class NomenclatureElementForm : Window, INotifyPropertyChanged
     {
+        private class DataType
+        {
+            public string Text { get; set; }
+            public TypeNomenclature Type { get; set; } 
+        }
+
         private readonly IHandbookController _contorller;
         public event PropertyChangedEventHandler? PropertyChanged;
         private Nomenclature _data = new();
@@ -49,16 +56,18 @@ namespace PresentationWPF.Forms
             set { _data.Arcticle = value; OnPropertyChanged(); }
         }
 
+        private string _unitName;
         public string UnitName
         {
-            get { return _data.BaseUnit?.Name; }
-            set { OnPropertyChanged(); }
+            get { return _unitName; }
+            set { _unitName = value; OnPropertyChanged(); }
         }
 
+        private string _groupName;
         public string GroupName
         {
-            get { return _data.Parent?.Name; }
-            set { OnPropertyChanged(); }
+            get { return _groupName; }
+            set { _groupName = value; OnPropertyChanged(); }
         }
 
 
@@ -74,10 +83,21 @@ namespace PresentationWPF.Forms
                 if (data != null)
                     _data = data;
 
+                GroupName = _data.Parent?.Name;
+                UnitName = _data.BaseUnit?.Name;
+
                 _title = _data.Name;
             }
 
+            List<DataType> list = new()
+            {
+                new(){ Text = "Продукт", Type = TypeNomenclature.Product },
+                new(){ Text = "Послуга", Type = TypeNomenclature.Service }
+            };
+
+
             InitializeComponent();
+            TypeProduct.ItemsSource = list;
             Title = _title;
         }
 
@@ -87,7 +107,18 @@ namespace PresentationWPF.Forms
             _contorller = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
             _data = data;
             _title = _data.Name;
+            GroupName = _data.Parent?.Name;
+            UnitName = _data.BaseUnit?.Name;
+
+            List<DataType> list = new()
+            {
+                new(){ Text = "Продукт", Type = TypeNomenclature.Product },
+                new(){ Text = "Послуга", Type = TypeNomenclature.Service }
+            };
+
             InitializeComponent();
+            
+            TypeProduct.ItemsSource = list;
             Title = _title;
             IsChange = true;
         }
@@ -140,8 +171,9 @@ namespace PresentationWPF.Forms
                     if (data != null)
                     {
                         IsChange = true;
+                        _data.BaseUnitId = form.SelectedId;
                         _data.BaseUnit = data;
-                        OnPropertyChanged("UnitName");
+                        UnitName = data.Name;
                     }
                 }
             }
@@ -149,23 +181,23 @@ namespace PresentationWPF.Forms
 
         private void btnOpen_Click(object sender, RoutedEventArgs e)
         {
-            if (_data.BaseUnit != null)
+            if (_data.BaseUnitId != null)
             {
-                var form = new UnitElementForm(_data.BaseUnit.Id);
+                var form = new UnitElementForm((Guid)_data.BaseUnitId);
                 form.ShowDialog();
-                _data.BaseUnit = _contorller.GetHandbook<Unit>(_data.BaseUnit.Id);
-                OnPropertyChanged("UnitName");
+                var data = _contorller.GetHandbook<Unit>((Guid)_data.BaseUnitId);
+                UnitName = data?.Name;
             }
         }
 
         private void btnOpenGroup_Click(object sender, RoutedEventArgs e)
         {
-            if (_data.Parent != null)
+            if (_data.ParentId != null)
             {
-                var form = new NomenclatureGroupForm(_data.Parent.Id);
+                var form = new NomenclatureGroupForm((Guid)_data.ParentId);
                 form.ShowDialog();
-                _data.Parent = _contorller.GetHandbook<Nomenclature>(_data.Parent.Id);
-                OnPropertyChanged("GroupName");
+                var data = _contorller.GetHandbook<Nomenclature>((Guid)_data.ParentId);
+                GroupName = data?.Name;
             }
         }
 
@@ -183,11 +215,35 @@ namespace PresentationWPF.Forms
                     if (data != null)
                     {
                         IsChange = true;
+                        _data.ParentId = data.Id;
                         _data.Parent = data;
-                        OnPropertyChanged("GroupName");
+                        GroupName = data.Name;
                     }
                 }
             }
+        }
+
+        private void btnClear_Click(object sender, RoutedEventArgs e)
+        {
+            _data.BaseUnit = null;
+            _data.BaseUnitId = null;
+            UnitName = "";
+        }
+
+        private void btnClearGroup_Click(object sender, RoutedEventArgs e)
+        {
+            _data.ParentId = null;
+            _data.Parent = null;
+            GroupName = "";
+        }
+
+        private void TypeProduct_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            var item = TypeProduct.SelectedItem as DataType;
+
+            if(item == null) return;
+
+            _data.TypeNomenclature = item.Type;
         }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using BL.Controllers;
 using BL.Interfaces;
 using Domain.Entity.Handbooks;
+using Domain.Enum;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PresentationWPF.Common;
+using System.ComponentModel.DataAnnotations;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -14,6 +16,12 @@ namespace PresentationWPF.Forms
 {
     public partial class NomenclatureListForm : Window
     {
+        private class DataType
+        {
+            public string Text { get; set; }
+            public TypeNomenclature Type { get; set; }
+
+        }
         private readonly IHandbookController _controller;
         private readonly IDbContext _context;
         private bool _select;
@@ -33,6 +41,16 @@ namespace PresentationWPF.Forms
 
             InitializeComponent();
 
+            List<DataType> list = new()
+            {
+                new(){ Text = "Всі", Type = TypeNomenclature.None },
+                new(){ Text = "Продукт", Type = TypeNomenclature.Product },
+                new(){ Text = "Послуга", Type = TypeNomenclature.Service }
+            };
+
+            TypeProduct.ItemsSource = list;
+            TypeProduct.SelectedItem = list.First();
+
             context_SavedChanges(null, null);
         }
 
@@ -48,7 +66,7 @@ namespace PresentationWPF.Forms
                     if (_onlyGroup && !item.IsGroup)
                         continue;
 
-                    items.Add(new ListItem(item.Id, item.Code, item.Name, item.DeleteMark, item.BaseUnit?.Name, item.Arcticle, item.Parent?.Id));
+                    items.Add(new ListItem(item.Id, item.Code, item.Name, item.DeleteMark, item.BaseUnit?.Name, item.Arcticle, item.Parent?.Id, item.TypeNomenclature));
                 }
                 dataList.ItemsSource = items;
 
@@ -126,18 +144,18 @@ namespace PresentationWPF.Forms
         private bool ListFilter(object item)
         {
             var group = (GroupData)treeGroups.SelectedItem;
+            var type = (DataType)TypeProduct.SelectedItem;
 
             bool findText = false;
-            bool findGroup = false;
+            bool findGroup = (item as ListItem).ParentId == group?.Id;
+            bool findType = (type.Type == TypeNomenclature.None || type.Type == (item as ListItem).TypeNomenclature);
 
             if (String.IsNullOrEmpty(Search.Text))
                 findText = true;
             else
                 findText = ((item as ListItem).DataName.IndexOf(Search.Text, StringComparison.OrdinalIgnoreCase) >= 0);
 
-            findGroup = ((item as ListItem).ParentId == group?.Id);
-
-            return findText && findGroup;
+            return findText && findGroup && findType;
         }
 
         private void copyBtn_Click(object sender, RoutedEventArgs e)
@@ -196,7 +214,6 @@ namespace PresentationWPF.Forms
             _reloadGroups = true;
         }
 
-        private record ListItem(Guid Id, string Code, string DataName, bool DeleteMark, string UnitName, string? Article, Guid? ParentId);
 
 
         private void treeGroups_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -210,8 +227,17 @@ namespace PresentationWPF.Forms
 
         private void treeGroups_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            CollectionViewSource.GetDefaultView(dataList.ItemsSource).Refresh();
+            if (dataList.ItemsSource != null)
+                CollectionViewSource.GetDefaultView(dataList.ItemsSource).Refresh();
         }
+
+        private void TypeProduct_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(dataList.ItemsSource != null)
+                CollectionViewSource.GetDefaultView(dataList.ItemsSource).Refresh();
+        }
+        
+        private record ListItem(Guid Id, string Code, string DataName, bool DeleteMark, string UnitName, string? Article, Guid? ParentId, TypeNomenclature TypeNomenclature);
 
         private class GroupData()
         {

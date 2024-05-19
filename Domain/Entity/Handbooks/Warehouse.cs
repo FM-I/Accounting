@@ -21,9 +21,6 @@ namespace Domain.Entity.Handbooks
             if (string.IsNullOrWhiteSpace(Name))
                 result.Properties.Add("Найменування");
 
-            //if (string.IsNullOrWhiteSpace(Code))
-                //result.Properties.Add(nameof(Code));
-
             return result;
         }
 

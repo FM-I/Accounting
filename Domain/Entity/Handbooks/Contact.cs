@@ -20,11 +20,14 @@ namespace Domain.Entity.Handbooks
         {
             var result = new DataComplectionResult();
 
-            if (!string.IsNullOrWhiteSpace(Name))
-                result.Properties.Add(nameof(Name));
+            if (string.IsNullOrWhiteSpace(Name))
+                result.Properties.Add("Найменування");
 
-            if (!string.IsNullOrWhiteSpace(Code))
-                result.Properties.Add(nameof(Code));
+            if (string.IsNullOrWhiteSpace(PhoneNumber))
+                result.Properties.Add("Телефон");
+
+            if (string.IsNullOrWhiteSpace(Email))
+                result.Properties.Add("Пошта");
 
             return result;
         }
@@ -33,6 +36,9 @@ namespace Domain.Entity.Handbooks
         {
             IHandbook handbook = (Contact)MemberwiseClone();
             handbook.Id = Guid.Empty;
+            handbook.Code = String.Empty;
+            handbook.IsDefault = false;
+            handbook.DeleteMark = false;
             return handbook;
         }
     }
