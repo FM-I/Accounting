@@ -3,6 +3,7 @@ using Domain.Enum;
 using Domain.Interfaces;
 using Domain.Models;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entity.Handbooks
 {
@@ -15,18 +16,23 @@ namespace Domain.Entity.Handbooks
         public bool IsGroup { get; set; }
         public bool IsDefault { get; set; }
         public bool DeleteMark { get; set; }
-        public Client? Parent { get; set; }
-        public TypesClient TypeClient { get; set; }
+        [ForeignKey(nameof(Parent))]
+        public Guid? ParentId { get; set; } 
+        public virtual Client? Parent { get; set; }
+        public TypesClient TypeClient { get; set; } = TypesClient.None;
 
         public DataComplectionResult CheckDataComplection()
         {
             var result = new DataComplectionResult();
 
-            if (!string.IsNullOrWhiteSpace(Name))
-                result.Properties.Add(nameof(Name));
+            if (string.IsNullOrWhiteSpace(Name))
+                result.Properties.Add("Найменування");
 
-            if (!string.IsNullOrWhiteSpace(Code))
-                result.Properties.Add(nameof(Code));
+            if (!IsGroup)
+            {
+                if (TypeClient == TypesClient.None)
+                    result.Properties.Add("Тип контрагента");
+            }
 
             return result;
         }

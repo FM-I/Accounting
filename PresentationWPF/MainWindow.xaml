@@ -65,6 +65,7 @@
                 <Button x:Name="openOrganizationList"  Margin="0 0 0 10" Content="Організації" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
                 <Button x:Name="openTypePriceList" Margin="0 0 0 10" Content="Типи цін" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
                 <Button x:Name="openNomenclatureList" Margin="0 0 0 10" Content="Номенклатура" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
+                <Button x:Name="openClientList" Margin="0 0 0 10" Content="Контрагенти" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
                 <Button x:Name="openContactList" Margin="0 0 0 10" Content="Контакти" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
             </StackPanel>
 

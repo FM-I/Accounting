@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PresentationWPF.Forms"
         mc:Ignorable="d"
-                Title="Номенклатура" Height="340" Width="400"
+        Title="Номенклатура" Height="340" Width="400"
         Closing="Window_Closing"
         WindowStartupLocation="CenterScreen">
     <Grid>

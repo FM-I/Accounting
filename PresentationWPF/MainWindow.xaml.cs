@@ -1,4 +1,5 @@
 ﻿using PresentationWPF.Forms;
+using PresentationWPF.Forms.Handbooks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -92,6 +93,9 @@ namespace PresentationWPF
                     break;
                 case "openCurrencyList":
                     form = new CurrencyListForm();
+                    break;
+                case "openClientList":
+                    form = new ClientListForm();
                     break;
             }
 

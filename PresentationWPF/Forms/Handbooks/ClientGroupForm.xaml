@@ -1,11 +1,11 @@
-﻿<Window x:Class="PresentationWPF.Forms.NomenclatureGroupForm"
+﻿<Window x:Class="PresentationWPF.Forms.Handbooks.ClientGroupForm"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PresentationWPF.Forms"
+        xmlns:local="clr-namespace:PresentationWPF.Forms.Handbooks"
         mc:Ignorable="d"
-                Title="Група номенклатури" Height="210" Width="400"
+        Title="Група" Height="210" Width="400"
         Closing="Window_Closing"
         WindowStartupLocation="CenterScreen">
     <Grid>

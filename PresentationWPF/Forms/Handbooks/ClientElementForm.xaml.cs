@@ -1,50 +1,42 @@
 ﻿using BL.Interfaces;
 using Domain.Entity.Handbooks;
-using Infrastructure;
+using Domain.Enum;
 using Microsoft.Extensions.DependencyInjection;
 using PresentationWPF.Common;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 
-namespace PresentationWPF.Forms
+namespace PresentationWPF.Forms.Handbooks
 {
-    public partial class NomenclatureGroupForm : Window, INotifyPropertyChanged
+    public partial class ClientElementForm : Window, INotifyPropertyChanged
     {
+        private class DataType
+        {
+            public string Text { get; set; }
+            public TypesClient Type { get; set; }
+        }
+
         private readonly IHandbookController _contorller;
         public event PropertyChangedEventHandler? PropertyChanged;
-        private Nomenclature _data = new() { IsGroup = true };
+        private Client _data = new();
         private string _title = string.Empty;
-        
         private bool _isChange;
         public bool IsChange { get { return _isChange; } set { _isChange = value; if (_isChange) Title = _title + "*"; else Title = _title; } }
 
         public string Code
         {
-            get
-            {
-                return _data.Code;
-            }
-            set
-            {
-                _data.Code = value;
-                OnPropertyChanged();
-            }
+            get { return _data.Code; }
+            set { _data.Code = value; OnPropertyChanged(); }
         }
 
         public string NameData
         {
-            get
-            {return _data.Name;}
-            set
-            {
-                _data.Name = value;
-                OnPropertyChanged();
-            }
+            get { return _data.Name; }
+            set { _data.Name = value; OnPropertyChanged(); }
         }
 
         private string _groupName;
-
         public string GroupName
         {
             get { return _groupName; }
@@ -52,34 +44,51 @@ namespace PresentationWPF.Forms
         }
 
 
-        public NomenclatureGroupForm(Guid id = default)
+        public ClientElementForm(Guid id = default)
         {
             DataContext = this;
             _contorller = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
 
             if (id != default)
             {
-                var data = _contorller.GetHandbook<Nomenclature>(id);
+                var data = _contorller.GetHandbook<Client>(id);
 
                 if (data != null)
                     _data = data;
 
-                _title = _data?.Name;
-                GroupName = _data?.Parent?.Name;
+                GroupName = _data.Parent?.Name;
+
+                _title = _data.Name;
             }
 
+            List<DataType> list = new()
+            {
+                new(){ Text = "Клієнт", Type = TypesClient.Client },
+                new(){ Text = "Постачальник", Type = TypesClient.Provider }
+            };
+
             InitializeComponent();
+            TypeClient.ItemsSource = list;
             Title = _title;
         }
 
-        public NomenclatureGroupForm(Nomenclature data)
+        public ClientElementForm(Client data)
         {
             DataContext = this;
             _contorller = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
             _data = data;
             _title = _data.Name;
             GroupName = _data.Parent?.Name;
+
+            List<DataType> list = new()
+            {
+                new(){ Text = "Клієнт", Type = TypesClient.Client },
+                new(){ Text = "Постачальник", Type = TypesClient.Provider }
+            };
+
             InitializeComponent();
+
+            TypeClient.ItemsSource = list;
             Title = _title;
             IsChange = true;
         }
@@ -92,7 +101,6 @@ namespace PresentationWPF.Forms
             {
                 await _contorller.AddOrUpdateAsync(_data);
                 OnPropertyChanged(nameof(Code));
-                Title = _data.Name;
                 IsChange = false;
             }
             else
@@ -105,7 +113,7 @@ namespace PresentationWPF.Forms
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new(propertyName));
-            if (propertyName != "GroupName")
+            if (propertyName != "UnitName" && propertyName != "GroupName")
                 IsChange = true;
         }
 
@@ -118,29 +126,30 @@ namespace PresentationWPF.Forms
                 e.Cancel = IsChange;
             }
         }
+
         private void btnOpenGroup_Click(object sender, RoutedEventArgs e)
         {
             if (_data.ParentId != null)
             {
-                var form = new NomenclatureGroupForm((Guid)_data.ParentId);
+                var form = new ClientGroupForm((Guid)_data.ParentId);
                 form.ShowDialog();
-                var data = _contorller.GetHandbook<Nomenclature>((Guid)_data.ParentId);
+                var data = _contorller.GetHandbook<Client>((Guid)_data.ParentId);
                 GroupName = data?.Name;
             }
         }
 
         private void btnShowListGroup_Click(object sender, RoutedEventArgs e)
         {
-            NomenclatureGroupListForm form = new NomenclatureGroupListForm();
+            ClientGroupListForm form = new ClientGroupListForm();
             var result = form.ShowDialog();
             if (result != null)
             {
                 if (form.SelectedId != default)
                 {
                     Guid id = form.SelectedId;
-                    var data = _contorller.GetHandbook<Nomenclature>(id);
+                    var data = _contorller.GetHandbook<Client>(id);
 
-                    if (data != null && data.Id != _data.Id)
+                    if (data != null)
                     {
                         IsChange = true;
                         _data.ParentId = data.Id;
@@ -156,6 +165,15 @@ namespace PresentationWPF.Forms
             _data.ParentId = null;
             _data.Parent = null;
             GroupName = "";
+        }
+
+        private void TypeClient_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            var item = TypeClient.SelectedItem as DataType;
+
+            if (item == null) return;
+
+            _data.TypeClient = item.Type;
         }
     }
 }

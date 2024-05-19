@@ -2,6 +2,7 @@
 {
     public enum TypesClient
     {
+        None,
         Client,
         Provider
     }

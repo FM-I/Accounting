@@ -1,25 +1,29 @@
-﻿using BL.Controllers;
-using BL.Interfaces;
+﻿using BL.Interfaces;
 using Domain.Entity.Handbooks;
 using Domain.Enum;
-using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PresentationWPF.Common;
-using System.ComponentModel.DataAnnotations;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
-namespace PresentationWPF.Forms
+namespace PresentationWPF.Forms.Handbooks
 {
-    public partial class NomenclatureListForm : Window
+    public partial class ClientListForm : Window
     {
         private class DataType
         {
             public string Text { get; set; }
-            public TypeNomenclature Type { get; set; }
+            public TypesClient Type { get; set; }
 
         }
         private readonly IHandbookController _controller;
@@ -29,7 +33,7 @@ namespace PresentationWPF.Forms
 
         public Guid SelectedId { get; set; }
 
-        public NomenclatureListForm(bool select = false, bool onlyGroup = false)
+        public ClientListForm(bool select = false, bool onlyGroup = false)
         {
             _controller = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
             _context = DIContainer.ServiceProvider.GetRequiredService<IDbContext>();
@@ -41,9 +45,9 @@ namespace PresentationWPF.Forms
 
             List<DataType> list = new()
             {
-                new(){ Text = "Всі", Type = TypeNomenclature.None },
-                new(){ Text = "Продукт", Type = TypeNomenclature.Product },
-                new(){ Text = "Послуга", Type = TypeNomenclature.Service }
+                new(){ Text = "Всі", Type = TypesClient.None },
+                new(){ Text = "Покупець", Type = TypesClient.Client },
+                new(){ Text = "Поставщик", Type = TypesClient.Provider }
             };
 
             TypeProduct.ItemsSource = list;
@@ -54,14 +58,14 @@ namespace PresentationWPF.Forms
 
         private void context_SavedChanges(object? sender, SavedChangesEventArgs e)
         {
-            var list = _controller.GetHandbooks<Nomenclature>(where => !where.IsGroup);
+            var list = _controller.GetHandbooks<Client>(where => !where.IsGroup);
             List<ListItem> items = new List<ListItem>();
             foreach (var item in list)
             {
                 if (_onlyGroup && !item.IsGroup)
                     continue;
 
-                items.Add(new ListItem(item.Id, item.Code, item.Name, item.DeleteMark, item.BaseUnit?.Name, item.Arcticle, item.Parent?.Id, item.TypeNomenclature));
+                items.Add(new ListItem(item.Id, item.Code, item.Name, item.DeleteMark, item.Parent?.Id, item.TypeClient));
             }
             dataList.ItemsSource = items;
 
@@ -71,7 +75,7 @@ namespace PresentationWPF.Forms
             treeGroups_Initialized(null, null);
         }
 
-        private void dataList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void dataList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             ListItem item = (ListItem)dataList.SelectedItem;
 
@@ -85,13 +89,13 @@ namespace PresentationWPF.Forms
                 return;
             }
 
-            var elementForm = new NomenclatureElementForm(item.Id);
+            var elementForm = new ClientElementForm(item.Id);
             elementForm.Show();
         }
 
         private void CreateButton_Click(object sender, RoutedEventArgs e)
         {
-            var elementForm = new NomenclatureElementForm();
+            var elementForm = new ClientElementForm();
             elementForm.Show();
         }
 
@@ -101,7 +105,7 @@ namespace PresentationWPF.Forms
                 return;
 
             ListItem item = (ListItem)dataList.SelectedItem;
-            var data = _controller.GetHandbook<Nomenclature>(item.Id);
+            var data = _controller.GetHandbook<Client>(item.Id);
 
             MessageBoxResult result;
             if (item.DeleteMark)
@@ -134,7 +138,7 @@ namespace PresentationWPF.Forms
 
             bool findText = false;
             bool findGroup = (item as ListItem).ParentId == group?.Id;
-            bool findType = (type.Type == TypeNomenclature.None || type.Type == (item as ListItem).TypeNomenclature);
+            bool findType = (type.Type == TypesClient.None || type.Type == (item as ListItem).TypeClient);
 
             if (String.IsNullOrEmpty(Search.Text))
                 findText = true;
@@ -150,31 +154,31 @@ namespace PresentationWPF.Forms
                 return;
 
             ListItem item = (ListItem)dataList.SelectedItem;
-            var data = _controller.GetHandbook<Nomenclature>(item.Id);
+            var data = _controller.GetHandbook<Client>(item.Id);
             if (data != null)
             {
-                var elementForm = new NomenclatureElementForm((Nomenclature)data.DeepCopy());
+                var elementForm = new ClientElementForm((Client)data.DeepCopy());
                 elementForm.Show();
             }
         }
 
         private void createGroupBtn_Click(object sender, RoutedEventArgs e)
         {
-            var elementForm = new NomenclatureGroupForm();
+            var elementForm = new ClientGroupForm();
             elementForm.Show();
         }
 
         private void treeGroups_Initialized(object sender, EventArgs e)
         {
-            var data = _controller.GetHandbooks<Nomenclature>(w => w.IsGroup);
+            var data = _controller.GetHandbooks<Client>(w => w.IsGroup);
 
-            List<GroupData> list = [new() { Id = null, Content = "Без групи", Image = null}];
+            List<GroupData> list = [new() { Id = null, Content = "Без групи", Image = null }];
             AddChildren(data, list, null);
 
             treeGroups.ItemsSource = list;
         }
 
-        private void AddChildren(List<Nomenclature> data, List<GroupData> list, Nomenclature parent)
+        private void AddChildren(List<Client> data, List<GroupData> list, Client parent)
         {
             foreach (var item in data)
             {
@@ -190,10 +194,10 @@ namespace PresentationWPF.Forms
         {
             var item = ((TreeView)sender).SelectedItem as GroupData;
 
-            if(item == null || item.Id == null || item.Id == Guid.Empty)
+            if (item == null || item.Id == null || item.Id == Guid.Empty)
                 return;
 
-            var form = new NomenclatureGroupForm((Guid)item.Id);
+            var form = new ClientGroupForm((Guid)item.Id);
             form.ShowDialog();
         }
 
@@ -201,7 +205,7 @@ namespace PresentationWPF.Forms
 
         private void treeGroups_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            if(e.ClickCount > 1)
+            if (e.ClickCount > 1)
             {
                 e.Handled = true;
                 treeGroups_MouseDoubleClick(sender, e);
@@ -216,11 +220,11 @@ namespace PresentationWPF.Forms
 
         private void TypeProduct_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(dataList.ItemsSource != null)
+            if (dataList.ItemsSource != null)
                 CollectionViewSource.GetDefaultView(dataList.ItemsSource).Refresh();
         }
-        
-        private record ListItem(Guid Id, string Code, string DataName, bool DeleteMark, string UnitName, string? Article, Guid? ParentId, TypeNomenclature TypeNomenclature);
+
+        private record ListItem(Guid Id, string Code, string DataName, bool DeleteMark, Guid? ParentId, TypesClient TypeClient);
 
         private class GroupData()
         {

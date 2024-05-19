@@ -1,21 +1,20 @@
 ﻿using BL.Interfaces;
 using Domain.Entity.Handbooks;
-using Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using PresentationWPF.Common;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 
-namespace PresentationWPF.Forms
+namespace PresentationWPF.Forms.Handbooks
 {
-    public partial class NomenclatureGroupForm : Window, INotifyPropertyChanged
+    public partial class ClientGroupForm : Window, INotifyPropertyChanged
     {
         private readonly IHandbookController _contorller;
         public event PropertyChangedEventHandler? PropertyChanged;
-        private Nomenclature _data = new() { IsGroup = true };
+        private Client _data = new() { IsGroup = true };
         private string _title = string.Empty;
-        
+
         private bool _isChange;
         public bool IsChange { get { return _isChange; } set { _isChange = value; if (_isChange) Title = _title + "*"; else Title = _title; } }
 
@@ -35,7 +34,7 @@ namespace PresentationWPF.Forms
         public string NameData
         {
             get
-            {return _data.Name;}
+            { return _data.Name; }
             set
             {
                 _data.Name = value;
@@ -52,19 +51,19 @@ namespace PresentationWPF.Forms
         }
 
 
-        public NomenclatureGroupForm(Guid id = default)
+        public ClientGroupForm(Guid id = default)
         {
             DataContext = this;
             _contorller = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
 
             if (id != default)
             {
-                var data = _contorller.GetHandbook<Nomenclature>(id);
+                var data = _contorller.GetHandbook<Client>(id);
 
                 if (data != null)
                     _data = data;
 
-                _title = _data?.Name;
+                _title = _data.Name;
                 GroupName = _data?.Parent?.Name;
             }
 
@@ -72,7 +71,7 @@ namespace PresentationWPF.Forms
             Title = _title;
         }
 
-        public NomenclatureGroupForm(Nomenclature data)
+        public ClientGroupForm(Client data)
         {
             DataContext = this;
             _contorller = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
@@ -120,25 +119,25 @@ namespace PresentationWPF.Forms
         }
         private void btnOpenGroup_Click(object sender, RoutedEventArgs e)
         {
-            if (_data.ParentId != null)
+            if (_data.Parent != null)
             {
-                var form = new NomenclatureGroupForm((Guid)_data.ParentId);
+                var form = new ClientGroupForm(_data.Parent.Id);
                 form.ShowDialog();
-                var data = _contorller.GetHandbook<Nomenclature>((Guid)_data.ParentId);
-                GroupName = data?.Name;
+                _data.Parent = _contorller.GetHandbook<Client>(_data.Parent.Id);
+                OnPropertyChanged("GroupName");
             }
         }
 
         private void btnShowListGroup_Click(object sender, RoutedEventArgs e)
         {
-            NomenclatureGroupListForm form = new NomenclatureGroupListForm();
+            ClientGroupListForm form = new ClientGroupListForm();
             var result = form.ShowDialog();
             if (result != null)
             {
                 if (form.SelectedId != default)
                 {
                     Guid id = form.SelectedId;
-                    var data = _contorller.GetHandbook<Nomenclature>(id);
+                    var data = _contorller.GetHandbook<Client>(id);
 
                     if (data != null && data.Id != _data.Id)
                     {
