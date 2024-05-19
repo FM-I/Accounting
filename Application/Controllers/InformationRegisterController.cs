@@ -64,9 +64,14 @@ namespace BL.Controllers
             return result.ToList();
         }
 
-        public async Task AddOrUpdateAsync<T>(T data, bool saveChanges = true) where T : class, IInformationRegister
+        public async Task AddOrUpdateAsync<T>(T data, bool isNew = false, bool saveChanges = true) where T : class, IInformationRegister
         {
-            _context.Update(data);
+            _context.ChangeTracker.Clear();
+
+            if (isNew)
+                _context.Add(data);
+            else
+                _context.Update(data);
 
             if (saveChanges)
                 await _context.SaveChangesAsync(new CancellationToken());
@@ -83,6 +88,7 @@ namespace BL.Controllers
         {
             var dataProp = _context.GetPropertyData<T>();
 
+            _context.ChangeTracker.Clear();
             var value = dataProp.Where(func);
 
             if (value == null)

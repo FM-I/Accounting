@@ -1,5 +1,6 @@
 ﻿using PresentationWPF.Forms;
 using PresentationWPF.Forms.Handbooks;
+using PresentationWPF.Forms.Registers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -96,6 +97,9 @@ namespace PresentationWPF
                     break;
                 case "openClientList":
                     form = new ClientListForm();
+                    break;
+                case "openBarcodeList":
+                    form = new BarcodeListForm();
                     break;
             }
 

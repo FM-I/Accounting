@@ -50,6 +50,7 @@ namespace BL.Interfaces
 
         public Task<int> SaveChangesAsync(CancellationToken cancellationToken);
         public EntityEntry Update(object entity);
+        public EntityEntry Add(object entity);
         public EntityEntry Remove(object entity);
         public void UpdateRange(IEnumerable<object> entities);
         public void RemoveRange(IEnumerable<object> entities);

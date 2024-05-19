@@ -4,6 +4,7 @@ using Domain.Enum;
 using Microsoft.Extensions.DependencyInjection;
 using PresentationWPF.Common;
 using System.ComponentModel;
+using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Windows;
 
@@ -81,7 +82,9 @@ namespace PresentationWPF.Forms
                 var data = _contorller.GetHandbook<Nomenclature>(id);
 
                 if (data != null)
+                {
                     _data = data;
+                }
 
                 GroupName = _data.Parent?.Name;
                 UnitName = _data.BaseUnit?.Name;
@@ -99,6 +102,10 @@ namespace PresentationWPF.Forms
             InitializeComponent();
             TypeProduct.ItemsSource = list;
             Title = _title;
+            
+            if (_data.TypeNomenclature != TypeNomenclature.None || _data.TypeNomenclature != null)
+                TypeProduct.SelectedItem = list.FirstOrDefault(w => w.Type == _data.TypeNomenclature);
+
         }
 
         public NomenclatureElementForm(Nomenclature data)

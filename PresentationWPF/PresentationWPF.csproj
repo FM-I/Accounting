@@ -26,7 +26,6 @@
 
   <ItemGroup>
     <Folder Include="Forms\Documents\" />
-    <Folder Include="Forms\Registers\" />
   </ItemGroup>
 
 </Project>

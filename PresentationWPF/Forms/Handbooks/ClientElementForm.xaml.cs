@@ -54,7 +54,9 @@ namespace PresentationWPF.Forms.Handbooks
                 var data = _contorller.GetHandbook<Client>(id);
 
                 if (data != null)
+                {
                     _data = data;
+                }
 
                 GroupName = _data.Parent?.Name;
 
@@ -70,6 +72,9 @@ namespace PresentationWPF.Forms.Handbooks
             InitializeComponent();
             TypeClient.ItemsSource = list;
             Title = _title;
+
+            if (_data.TypeClient != TypesClient.None || _data.TypeClient != null)
+                TypeClient.SelectedItem = list.FirstOrDefault(w => w.Type == _data.TypeClient);
         }
 
         public ClientElementForm(Client data)
