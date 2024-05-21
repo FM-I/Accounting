@@ -100,6 +100,10 @@
             <TextBlock Grid.Column="1" Text="Закупки" HorizontalAlignment="Center" Foreground="SteelBlue" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" />
             <TextBlock Grid.Column="2" Text="Розрахунки" HorizontalAlignment="Center" Foreground="SteelBlue" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" />
 
+            <StackPanel Grid.Row="1" Orientation="Vertical">
+                <Button x:Name="openClientOrderList"  Margin="0 0 0 10" Content="Замовлення покупців" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
+            </StackPanel>
+
         </Grid>
 
         <Grid x:Name="registersGrid" Visibility="Hidden" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">

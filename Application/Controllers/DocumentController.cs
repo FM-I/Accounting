@@ -78,6 +78,7 @@ namespace BL.Controllers
 
         public async Task<Guid> AddOrUpdateAsync<T>(T document, bool saveChanges = true) where T : Document
         {
+            _context.ChangeTracker.Clear();
             if (string.IsNullOrWhiteSpace(document.Number))
             {
                 var data = _context.GetPropertyData<T>();
@@ -88,8 +89,6 @@ namespace BL.Controllers
 
             if (saveChanges)
                 await _context.SaveChangesAsync(new CancellationToken());
-
-            _context.ChangeTracker.Clear();
 
             return document.Id;
         }

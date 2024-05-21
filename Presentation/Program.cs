@@ -28,21 +28,13 @@ var controllerDoc = services.GetRequiredService<IDocumentController>();
 var controllerHd = services.GetRequiredService<IHandbookController>();
 
 var baseUnit = new Unit() { Name = "KG." };
-await controllerHd.AddOrUpdateAsync<Unit>(baseUnit);
+var n = new Nomenclature() { Name = "Apple", Arcticle = "AP", BaseUnitId = baseUnit.Id };
 
-var g = new Nomenclature() { IsGroup = true, Name = "Product" };
+var order = new ClientOrder();
+order.Products.Add(new() {Nomenclature = n, Unit = baseUnit, Price = 1});
 
-await controllerHd.AddOrUpdateAsync(g);
-
-var r = controllerHd.GetHandbook<Nomenclature>(g.Id);
-var n = new Nomenclature() { Name = "Apple", Arcticle = "AP", BaseUnitId = baseUnit.Id, ParentId = r.Id };
-
-await controllerHd.AddOrUpdateAsync(n);
-
-var h = controllerHd.GetHandbook<Nomenclature>(n.Id);
-n.Parent = null;
-await controllerHd.AddOrUpdateAsync(n);
-h = controllerHd.GetHandbook<Nomenclature>(n.Id);
+ClientOrder k = (ClientOrder)order.DeepCopy();
+k.Products.Clear();
 
 
 

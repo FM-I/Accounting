@@ -70,5 +70,17 @@ namespace Domain.Entity.Documents
             Client = document.Client;
             Organization = document.Organization;
         }
+
+        public override Document DeepCopy()
+        {
+            OutCashOrder document = (OutCashOrder)MemberwiseClone();
+
+            document.Id = Guid.Empty;
+            document.Number = "";
+            document.Date = DateTime.Now;
+            document.DeleteMark = false;
+
+            return document;
+        }
     }
 }

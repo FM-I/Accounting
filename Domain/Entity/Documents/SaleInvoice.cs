@@ -111,5 +111,19 @@ namespace Domain.Entity.Documents
                 }
             }
         }
+
+        public override Document DeepCopy()
+        {
+            SaleInvoice document = (SaleInvoice)MemberwiseClone();
+
+            document.Id = Guid.Empty;
+            document.Number = "";
+            document.Date = DateTime.Now;
+            document.DeleteMark = false;
+
+            document.Products = [.. Products];
+
+            return document;
+        }
     }
 }

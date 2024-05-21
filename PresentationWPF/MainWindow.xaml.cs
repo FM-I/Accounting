@@ -1,4 +1,5 @@
 ﻿using PresentationWPF.Forms;
+using PresentationWPF.Forms.Documents;
 using PresentationWPF.Forms.Handbooks;
 using PresentationWPF.Forms.Registers;
 using System.Windows;
@@ -109,6 +110,9 @@ namespace PresentationWPF
                     break;
                 case "openClientContactList":
                     form = new ClientContactListForm();
+                    break;
+                case "openClientOrderList":
+                    form = new ClientOrderListForm();
                     break;
             }
 

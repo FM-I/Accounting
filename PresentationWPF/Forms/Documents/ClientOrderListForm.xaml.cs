@@ -1,23 +1,27 @@
 ﻿using BL.Interfaces;
+using Domain.Entity.Documents;
 using Domain.Entity.Handbooks;
+using Domain.Enum;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PresentationWPF.Common;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace PresentationWPF.Forms
+namespace PresentationWPF.Forms.Documents
 {
-    public partial class OrganizationListForm : Window
+    public partial class ClientOrderListForm : Window
     {
-        private readonly IHandbookController _controller;
+        private readonly IDocumentController _controller;
         private readonly IDbContext _context;
-        private readonly bool _select;
+        private bool _select;
+
         public Guid SelectedId { get; set; }
 
-        public OrganizationListForm(bool select = false)
+        public ClientOrderListForm(bool select = false)
         {
-            _controller = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
+            _controller = DIContainer.ServiceProvider.GetRequiredService<IDocumentController>();
             _context = DIContainer.ServiceProvider.GetRequiredService<IDbContext>();
             _context.SavedChanges += context_SavedChanges;
             _select = select;
@@ -25,46 +29,43 @@ namespace PresentationWPF.Forms
             InitializeComponent();
 
             context_SavedChanges(null, null);
-
-            var view = (CollectionView)CollectionViewSource.GetDefaultView(dataList.ItemsSource);
-            view.Filter = ListFilter;
-
         }
 
         private void context_SavedChanges(object? sender, SavedChangesEventArgs e)
         {
-            var list = _controller.GetHandbooks<Organization>();
+            var list = _controller.GetDocuments<ClientOrder>();
             List<ListItem> items = new List<ListItem>();
             foreach (var item in list)
             {
-                items.Add(new ListItem(item.Id, item.Code, item.Name, item.DeleteMark));
+                items.Add(new ListItem(item.Id, item.Number, item.Date, item.DeleteMark, item.Client.Name, item.Summa));
             }
             dataList.ItemsSource = items;
+
+            var view = (CollectionView)CollectionViewSource.GetDefaultView(dataList.ItemsSource);
+            view.Filter = ListFilter;
         }
 
         private void dataList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             ListItem item = (ListItem)dataList.SelectedItem;
 
+            if (item == null)
+                return;
+
             if (_select)
             {
-                if (item != null)
-                    SelectedId = item.Id;
-
+                SelectedId = item.Id;
                 Close();
                 return;
             }
 
-            if (item == null)
-                return;
-
-            var elementForm = new OrganizationElementForm(item.Id);
+            var elementForm = new ClientOrderElementForm(item.Id);
             elementForm.Show();
         }
 
         private void CreateButton_Click(object sender, RoutedEventArgs e)
         {
-            var elementForm = new OrganizationElementForm();
+            var elementForm = new ClientOrderElementForm();
             elementForm.Show();
         }
 
@@ -74,7 +75,7 @@ namespace PresentationWPF.Forms
                 return;
 
             ListItem item = (ListItem)dataList.SelectedItem;
-            var data = _controller.GetHandbook<Organization>(item.Id);
+            var data = _controller.GetDocument<ClientOrder>(item.Id);
 
             MessageBoxResult result;
             if (item.DeleteMark)
@@ -102,10 +103,14 @@ namespace PresentationWPF.Forms
 
         private bool ListFilter(object item)
         {
+            bool findText = false;
+
             if (String.IsNullOrEmpty(Search.Text))
-                return true;
+                findText = true;
             else
-                return ((item as ListItem).DataName.IndexOf(Search.Text, StringComparison.OrdinalIgnoreCase) >= 0);
+                findText = ((item as ListItem).ClientName.IndexOf(Search.Text, StringComparison.OrdinalIgnoreCase) >= 0);
+
+            return findText;
         }
 
         private void copyBtn_Click(object sender, RoutedEventArgs e)
@@ -114,14 +119,31 @@ namespace PresentationWPF.Forms
                 return;
 
             ListItem item = (ListItem)dataList.SelectedItem;
-            var data = _controller.GetHandbook<Organization>(item.Id);
+            var data = _controller.GetDocument<ClientOrder>(item.Id);
             if (data != null)
             {
-                var elementForm = new OrganizationElementForm((Organization)data.DeepCopy());
+                var elementForm = new ClientOrderElementForm((ClientOrder)data.DeepCopy());
                 elementForm.Show();
             }
         }
 
-        private record ListItem(Guid Id, string Code, string DataName, bool DeleteMark);
+        private void FillSaleInvoice_Click(object sender, RoutedEventArgs e)
+        {
+            var item = (ListItem)dataList.SelectedItem;
+
+            if (item == null)
+                return;
+
+            var order = _controller.GetDocument<ClientOrder>(item.Id);
+
+            if (order == null)
+                return;
+
+            var document = new SaleInvoice();
+            document.FillWith(order);
+        }
+
+        private record ListItem(Guid Id, string Number, DateTime Date, bool DeleteMark, string ClientName, decimal Summa);
+
     }
 }

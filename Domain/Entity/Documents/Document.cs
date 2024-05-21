@@ -13,6 +13,7 @@ namespace Domain.Entity.Documents
         public string Number { get; set; }
         public Client Client { get; set; }
         public Organization Organization { get; set; }
+        public bool DeleteMark { get; set; }
 
         public virtual void FillWith(Document document) {}
 
@@ -20,5 +21,7 @@ namespace Domain.Entity.Documents
         {
             return new Dictionary<Type, List<IAccumulationRegister>>();
         }
+
+        public abstract Document DeepCopy();
     }
 }

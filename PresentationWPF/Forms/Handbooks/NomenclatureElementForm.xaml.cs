@@ -84,12 +84,10 @@ namespace PresentationWPF.Forms
                 if (data != null)
                 {
                     _data = data;
+                    _title = _data.Name;
+                    GroupName = _data.Parent?.Name;
+                    UnitName = _data.BaseUnit?.Name;
                 }
-
-                GroupName = _data.Parent?.Name;
-                UnitName = _data.BaseUnit?.Name;
-
-                _title = _data.Name;
             }
 
             List<DataType> list = new()

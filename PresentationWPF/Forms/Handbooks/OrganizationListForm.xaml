@@ -18,8 +18,8 @@
             <ListView.View>
                 <GridView>
                     <GridViewColumn DisplayMemberBinding="{Binding Id}" Width="0"/>
-                    <GridViewColumn Header="Код" DisplayMemberBinding="{Binding Code}"/>
-                    <GridViewColumn Header="Найменування" DisplayMemberBinding="{Binding DataName}"/>
+                    <GridViewColumn Header="Код" DisplayMemberBinding="{Binding Code}" Width="100"/>
+                    <GridViewColumn Header="Найменування" DisplayMemberBinding="{Binding DataName}" Width="175"/>
                     <GridViewColumn Header="Помітка видалення">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>

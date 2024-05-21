@@ -2,11 +2,9 @@
 using BL.Interfaces;
 using Domain.Entity.Handbooks;
 using Domain.Enum;
-using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PresentationWPF.Common;
-using System.ComponentModel.DataAnnotations;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
