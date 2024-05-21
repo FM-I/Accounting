@@ -107,6 +107,9 @@ namespace PresentationWPF
                 case "openExchangeRateList":
                     form = new ExchangeRateListForm();
                     break;
+                case "openClientContactList":
+                    form = new ClientContactListForm();
+                    break;
             }
 
             if (form != null)
