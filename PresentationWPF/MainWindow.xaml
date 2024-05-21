@@ -119,6 +119,8 @@
 
             <StackPanel Grid.Row="1" Orientation="Vertical">
                 <Button x:Name="openBarcodeList"  Margin="0 0 0 10" Content="Штрихкоди" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
+                <Button x:Name="openPriceList"  Margin="0 0 0 10" Content="Ціни номенклатури" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
+                <Button x:Name="openExchangeRateList"  Margin="0 0 0 10" Content="Курси валют" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
             </StackPanel>
 
         </Grid>

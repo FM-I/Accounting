@@ -8,11 +8,11 @@ using System.Windows.Data;
 
 namespace PresentationWPF.Forms.Registers
 {
-    public partial class BarcodeListForm : Window
+    public partial class ExchangeRateListForm : Window
     {
         private readonly IInformationRegisterController _controller;
         private readonly IDbContext _context;
-        public BarcodeListForm()
+        public ExchangeRateListForm()
         {
             _controller = DIContainer.ServiceProvider.GetRequiredService<IInformationRegisterController>();
             _context = DIContainer.ServiceProvider.GetRequiredService<IDbContext>();
@@ -25,11 +25,11 @@ namespace PresentationWPF.Forms.Registers
 
         private void context_SavedChanges(object? sender, SavedChangesEventArgs e)
         {
-            var list = _controller.GetListData<Barcode>();
+            var list = _controller.GetListData<ExchangesRate>();
             List<ListItem> items = new List<ListItem>();
             foreach (var item in list)
             {
-                items.Add(new ListItem(item.Nomenclature.Name, item.Unit.Name, item.Value,item.NomenclatureId, item.UnitId));
+                items.Add(new ListItem(item.Currency.Name, item.CurrencyId, item.Rate, item.Date));
             }
 
             dataList.ItemsSource = items;
@@ -45,13 +45,13 @@ namespace PresentationWPF.Forms.Registers
             if (item == null)
                 return;
 
-            var elementForm = new BarcodeElementForm(item.NomenclatureId, item.UnitId);
+            var elementForm = new ExchangeRateElementForm(item.Date, item.CurrencyId);
             elementForm.Show();
         }
 
         private void CreateButton_Click(object sender, RoutedEventArgs e)
         {
-            var elementForm = new BarcodeElementForm();
+            var elementForm = new ExchangeRateElementForm();
             elementForm.Show();
         }
 
@@ -64,7 +64,7 @@ namespace PresentationWPF.Forms.Registers
 
             if (MessageBox.Show("Видалити обраний запис?", "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                await _controller.DeleteAsync<Barcode>(w => w.NomenclatureId == item.NomenclatureId && w.UnitId == item.UnitId);
+                await _controller.DeleteAsync<ExchangesRate>(w => w.Date == item.Date && w.CurrencyId == item.CurrencyId);
             }
         }
 
@@ -84,7 +84,7 @@ namespace PresentationWPF.Forms.Registers
             if (String.IsNullOrEmpty(Search.Text))
                 return true;
             else
-                return ((item as ListItem).NomenclatureName.IndexOf(Search.Text, StringComparison.OrdinalIgnoreCase) >= 0);
+                return ((item as ListItem).CurrencyName.IndexOf(Search.Text, StringComparison.OrdinalIgnoreCase) >= 0);
         }
 
         private void copyBtn_Click(object sender, RoutedEventArgs e)
@@ -93,10 +93,10 @@ namespace PresentationWPF.Forms.Registers
                 return;
 
             ListItem item = (ListItem)dataList.SelectedItem;
-            var elementForm = new BarcodeElementForm(item.NomenclatureId, item.UnitId, true);
+            var elementForm = new ExchangeRateElementForm(item.Date, item.CurrencyId, true);
             elementForm.Show();
         }
 
-        private record ListItem(string NomenclatureName, string UnitName, string Barcode, Guid NomenclatureId, Guid UnitId);
+        private record ListItem(string CurrencyName, Guid CurrencyId, double Rate, DateTime Date);
     }
 }

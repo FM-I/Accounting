@@ -101,6 +101,12 @@ namespace PresentationWPF
                 case "openBarcodeList":
                     form = new BarcodeListForm();
                     break;
+                case "openPriceList":
+                    form = new PriceListForm();
+                    break;
+                case "openExchangeRateList":
+                    form = new ExchangeRateListForm();
+                    break;
             }
 
             if (form != null)

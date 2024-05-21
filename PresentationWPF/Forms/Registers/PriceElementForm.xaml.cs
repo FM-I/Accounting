@@ -5,67 +5,82 @@ using Microsoft.Extensions.DependencyInjection;
 using PresentationWPF.Common;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace PresentationWPF.Forms.Registers
 {
-    public partial class BarcodeElementForm : Window, INotifyPropertyChanged
+    public partial class PriceElementForm : Window, INotifyPropertyChanged
     {
-        private record DataKey(Guid NomenclatureId, Guid UnitId);
+        private record DataKey(DateTime Date, Guid NomenclatureId, Guid TypePriceId);
 
         private readonly IInformationRegisterController _controller;
         private readonly IHandbookController _handbookController;
-        private Barcode _data = new();
+        private Price _data = new();
         private DataKey _prevData;
         private bool _isChange;
         private bool _isNew = true;
         public event PropertyChangedEventHandler? PropertyChanged;
-        public bool IsChange { get { return _isChange; } set { _isChange = value; if (_isChange) Title = Title + "*"; else Title = "Штрихкод"; } }
+        public bool IsChange { get { return _isChange; } set { _isChange = value; if (_isChange) Title = Title + "*"; else Title = "Ціна"; } }
 
         private string _nomenclatureName;
-        private string _unitName;
-        public string NomenclatureName 
+        private string _typePrice;
+        private string _price = string.Empty;
+        
+        public DateTime Period
+        {
+            get { return _data.Date; }
+            set { _data.Date = value; OnPropertyChanged(); }
+        }
+
+        public string NomenclatureName
         {
             get { return _nomenclatureName; }
             set { _nomenclatureName = value; OnPropertyChanged(); }
         }
 
-        public string UnitName
+        public string TypePriceName
         {
-            get { return _unitName; }
-            set { _unitName = value; OnPropertyChanged(); }
+            get { return _typePrice; }
+            set { _typePrice = value; OnPropertyChanged(); }
         }
 
-        public string Barcode
+        public string Price
         {
-            get { return _data?.Value; }
-            set { _data.Value = value; OnPropertyChanged(); }
+            get { return _price; }
+            set { _price = value; OnPropertyChanged(); }
         }
 
-        public BarcodeElementForm(Guid nomenclatureId = default, Guid unitId = default, bool isCopy = false)
+        public PriceElementForm(DateTime date = default, Guid nomenclatureId = default, Guid typePriceId = default, bool isCopy = false)
         {
             DataContext = this;
             _controller = DIContainer.ServiceProvider.GetRequiredService<IInformationRegisterController>();
             _handbookController = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
+            Period = DateTime.Now;
 
-            if (nomenclatureId != default && unitId != default)
+            if (nomenclatureId != default && typePriceId != default)
             {
-                var data = _controller.GetListData<Barcode>(0, 0, w => w.NomenclatureId == nomenclatureId && w.UnitId == unitId);
+                var data = _controller.GetListData<Price>(0, 0, w => w.Date == date && w.NomenclatureId == nomenclatureId && w.TypePriceId == typePriceId);
 
-                if(data != null && data.Count > 0)
+                if (data != null && data.Count > 0)
                 {
                     _data = data.First();
                     NomenclatureName = _data.Nomenclature.Name;
-                    UnitName = _data.Unit.Name;
-                    Barcode = _data.Value;
+                    TypePriceName = _data.TypePrice.Name;
+                    
+                    if(_data.Value != 0)
+                        Price = _data.Value.ToString();
+
+                    Period = _data.Date;
                     _isNew = false;
 
-                    _prevData = new(_data.NomenclatureId, _data.UnitId);
+                    _prevData = new(_data.Date, _data.NomenclatureId, _data.TypePriceId);
                 }
             }
 
-            if(isCopy)
+            if (isCopy)
                 _isNew = isCopy;
 
             InitializeComponent();
@@ -75,6 +90,17 @@ namespace PresentationWPF.Forms.Registers
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
+            decimal res = 0;
+            
+            if (!Regex.IsMatch(_price, @"^[0-9]*\,?[0-9]+$")
+                || !decimal.TryParse(_price, out res))
+            {
+                MessageBox.Show("Значення ціни вказано не вірно!!!", "Помилка");
+                return;
+            };
+
+            _data.Value = res;
+
             var result = _data.CheckDataComplection();
 
             if (result.Success)
@@ -82,17 +108,18 @@ namespace PresentationWPF.Forms.Registers
                 string message = "";
                 if (_isNew)
                 {
-                    var data = _controller.GetListData<Barcode>(selectionFunc: w => w.NomenclatureId == _data.NomenclatureId && w.UnitId == _data.UnitId);
+                    var data = _controller.GetListData<Price>(selectionFunc: w => w.Date == _data.Date && w.NomenclatureId == _data.NomenclatureId && w.TypePriceId == _data.TypePriceId);
 
-                    if(data != null && data.Count > 0)
+                    if (data != null && data.Count > 0)
                         message = "Запис з подібними ключами уже є в таблиці!!!";
 
                 }
-                else if(_prevData != null
+                else if (_prevData != null
                     && (_prevData.NomenclatureId != _data.NomenclatureId
-                    || _prevData.UnitId != _data.UnitId))
+                    || _prevData.TypePriceId != _data.TypePriceId
+                    || _prevData.Date != _data.Date))
                 {
-                    var data = _controller.GetListData<Barcode>(selectionFunc: w => w.NomenclatureId == _data.NomenclatureId && w.UnitId == _data.UnitId);
+                    var data = _controller.GetListData<Price>(selectionFunc: w => w.Date == _data.Date && w.NomenclatureId == _data.NomenclatureId && w.TypePriceId == _data.TypePriceId);
 
                     if (data != null && data.Count > 0)
                     {
@@ -101,22 +128,24 @@ namespace PresentationWPF.Forms.Registers
                     else
                     {
                         _isNew = true;
-                        await _controller.DeleteAsync<Barcode>(w => w.NomenclatureId == _prevData.NomenclatureId && w.UnitId == _prevData.UnitId);
+                        await _controller.DeleteAsync<Price>(w => w.Date == _prevData.Date && w.NomenclatureId == _prevData.NomenclatureId && w.TypePriceId == _prevData.TypePriceId);
                     }
                 }
 
-                if(!string.IsNullOrWhiteSpace(message))
+                if (!string.IsNullOrWhiteSpace(message))
                 {
                     MessageBox.Show(message, "Помилка");
                     return;
                 }
 
                 _data.Nomenclature = null;
-                _data.Unit = null;
+                _data.TypePrice = null;
+                
                 await _controller.AddOrUpdateAsync(_data, _isNew);
+                Price = _data.Value.ToString();
                 IsChange = false;
                 _isNew = false;
-                _prevData = new(_data.NomenclatureId, _data.UnitId);
+                _prevData = new(_data.Date, _data.NomenclatureId, _data.TypePriceId);
             }
             else
             {
@@ -128,7 +157,7 @@ namespace PresentationWPF.Forms.Registers
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new(propertyName));
-            if(!IsChange)
+            if (!IsChange)
                 IsChange = true;
         }
 
@@ -136,7 +165,7 @@ namespace PresentationWPF.Forms.Registers
         {
             var button = (Button)sender;
 
-            if(button != null)
+            if (button != null)
             {
                 var form = new Window();
 
@@ -144,19 +173,19 @@ namespace PresentationWPF.Forms.Registers
                 {
                     case "btnOpenNomenclature":
 
-                        if (_data.NomenclatureId == null && _data.NomenclatureId == default)
+                        if (_data.NomenclatureId == default)
                             return;
 
                         form = new NomenclatureElementForm(_data.NomenclatureId);
 
                         break;
 
-                    case "btnOpenUnit":
+                    case "btnOpenTypePrice":
 
-                        if (_data.UnitId == null && _data.UnitId == default)
+                        if (_data.TypePriceId == default)
                             return;
 
-                        form = new UnitElementForm(_data.UnitId);
+                        form = new TypePriceElementForm(_data.TypePriceId);
 
                         break;
                     default: return;
@@ -174,9 +203,9 @@ namespace PresentationWPF.Forms.Registers
                     }
                     else
                     {
-                        var data = _handbookController.GetHandbook<Unit>(_data.UnitId);
+                        var data = _handbookController.GetHandbook<TypePrice>(_data.TypePriceId);
                         if (data != null)
-                            UnitName = data.Name;
+                            TypePriceName = data.Name;
                     }
                 }
 
@@ -199,9 +228,9 @@ namespace PresentationWPF.Forms.Registers
 
                         break;
 
-                    case "btnShowListUnit":
+                    case "btnShowListTypePrice":
 
-                        form = new UnitListForm(true);
+                        form = new TypePriceListForm(true);
 
                         break;
                     default: return;
@@ -209,7 +238,7 @@ namespace PresentationWPF.Forms.Registers
 
                 var res = form.ShowDialog();
 
-                if(res != null)
+                if (res != null)
                 {
                     Guid id = Guid.Empty;
                     if (button.Name == "btnShowListNomenclature")
@@ -221,25 +250,19 @@ namespace PresentationWPF.Forms.Registers
                             _data.NomenclatureId = id;
                             NomenclatureName = data.Name;
 
-                            if (string.IsNullOrWhiteSpace(UnitName) && data.BaseUnit != null)
-                            {
-                                UnitName = data.BaseUnit.Name;
-                                _data.UnitId = data.BaseUnit.Id;
-                            }
-
-                            if(!IsChange)
+                            if (!IsChange)
                                 IsChange = true;
                         }
                     }
                     else
                     {
-                        id = ((UnitListForm)form).SelectedId;
-                        var data = _handbookController.GetHandbook<Unit>(id);
+                        id = ((TypePriceListForm)form).SelectedId;
+                        var data = _handbookController.GetHandbook<TypePrice>(id);
 
                         if (data != null)
                         {
-                            _data.UnitId = id;
-                            UnitName = data.Name;
+                            _data.TypePriceId = id;
+                            TypePriceName = data.Name;
                             if (!IsChange)
                                 IsChange = true;
                         }
@@ -264,17 +287,34 @@ namespace PresentationWPF.Forms.Registers
 
                         break;
 
-                    case "btnClearUnit":
+                    case "btnClearTypePrice":
 
-                        UnitName = "";
-                        _data.Unit = null;
-                        _data.UnitId = Guid.Empty;
+                        TypePriceName = "";
+                        _data.TypePrice = null;
+                        _data.TypePriceId = Guid.Empty;
 
                         break;
                     default: return;
                 }
 
             }
+        }
+
+        private void PriceInput_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+
+            if(e.Text == ",")
+            {
+                var res = _price.FirstOrDefault(w => w.Equals(','));
+                if(res != default)
+                {
+                    e.Handled = true;
+                    return;
+                }
+            }
+
+            Regex regex = new Regex(@"^[0-9,]+$");
+            e.Handled = !regex.IsMatch(e.Text);
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)

@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace PresentationWPF.Forms
 {
-    public partial class CurrencyElementForm : Window
+    public partial class CurrencyElementForm : Window, INotifyPropertyChanged
     {
         private readonly IHandbookController _contorller;
         public event PropertyChangedEventHandler? PropertyChanged;
