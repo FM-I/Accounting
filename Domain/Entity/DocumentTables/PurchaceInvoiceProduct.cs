@@ -7,8 +7,12 @@ namespace Domain.Entity.DocumentTables
     public class PurchaceInvoiceProduct
     {
         public Guid Id { get; set; }
-        public Nomenclature Nomenclature { get; set; }
-        public Unit Unit { get; set; }
+        [ForeignKey(nameof(Nomenclature))]
+        public Guid NomenclatureId { get; set; }
+        public virtual Nomenclature Nomenclature { get; set; }
+        [ForeignKey(nameof(Unit))]
+        public Guid UnitId { get; set; }
+        public virtual Unit Unit { get; set; }
         public decimal Price { get; set; }
         public decimal Summa { get; set; }
         public double Quantity { get; set; }

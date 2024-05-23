@@ -43,7 +43,7 @@ namespace BL.Controllers
             return string.Empty;
         }
 
-        public List<T> GetDocuments<T>(int skip = 0, int take = 0, bool includeVirtualProperty = false) where T : Document
+        public List<T> GetDocuments<T>(int skip = 0, int take = 0) where T : Document
         {
             if (skip < 0)
                 throw new Exception("Invalid parameter value 'skip'");
@@ -53,38 +53,30 @@ namespace BL.Controllers
 
             IQueryable<T> data = _context.GetPropertyData<T>();
 
-            if (includeVirtualProperty)
-            {
-                var virtualProperty = typeof(T).GetProperties().Where(p => p.GetGetMethod().IsVirtual);
-
-                foreach (var item in virtualProperty)
-                {
-                    data = data.Include(item.Name);
-                }
-            }
+            data = _context.IncludeVirtualProperty(data);
 
             if (skip == 0 && take == 0)
-                return data.ToList();
+                return data.AsNoTracking().ToList();
 
             return data.AsNoTracking().Skip(skip).Take(take).ToList();
         }
 
         public T? GetDocument<T>(Guid id) where T : Document
         {
-            var data = _context.GetPropertyData<T>();
-
+            IQueryable<T> data = _context.GetPropertyData<T>();
+            data = _context.IncludeVirtualProperty(data);
             return data.AsNoTracking().FirstOrDefault(x => x.Id == id);
         }
 
         public async Task<Guid> AddOrUpdateAsync<T>(T document, bool saveChanges = true) where T : Document
         {
-            _context.ChangeTracker.Clear();
             if (string.IsNullOrWhiteSpace(document.Number))
             {
                 var data = _context.GetPropertyData<T>();
                 document.Number = GetNextNumber(data);
             }
 
+            _context.ChangeTracker.Clear();
             _context.Update(document);
 
             if (saveChanges)
@@ -97,12 +89,27 @@ namespace BL.Controllers
         {
             var data = _context.GetPropertyData<T>();
 
-            var handbook = await data.FirstOrDefaultAsync(x => x.Id == id);
+            var document = await data.FirstOrDefaultAsync(x => x.Id == id);
 
-            if (handbook == null)
+            if (document == null)
                 return;
 
-            data.Remove(handbook);
+            _context.ChangeTracker.Clear();
+            data.Remove(document);
+            await _context.SaveChangesAsync(new CancellationToken());
+        }
+
+        public async Task RemoveRangeAsync<T>(Func<T, bool> where) where T : class
+        {
+            var data = _context.GetPropertyData<T>();
+
+            var document = data.Where(where);
+
+            if (document == null)
+                return;
+
+            _context.ChangeTracker.Clear();
+            data.RemoveRange(document);
             await _context.SaveChangesAsync(new CancellationToken());
         }
 

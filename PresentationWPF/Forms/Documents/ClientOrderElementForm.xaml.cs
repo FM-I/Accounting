@@ -1,14 +1,16 @@
 ﻿using BL.Interfaces;
 using Domain.Entity.Documents;
+using Domain.Entity.DocumentTables;
 using Domain.Entity.Handbooks;
+using Domain.Enum;
 using Microsoft.Extensions.DependencyInjection;
 using PresentationWPF.Common;
+using PresentationWPF.Forms.Handbooks;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace PresentationWPF.Forms.Documents
 {
@@ -69,13 +71,49 @@ namespace PresentationWPF.Forms.Documents
         
         private readonly IHandbookController _handbookController;
         private readonly IDocumentController _documentController;
-
+        private List<Guid> _removedItemProducts = new();
         private ClientOrder _data = new();
 
         public string? OrganizationName 
         { 
             get { return _data.Organization?.Name; }
             set { OnPropertyChanged(); }
+        }
+        
+        public string? ClientName
+        {
+            get { return _data.Client?.Name; }
+            set { OnPropertyChanged(); }
+        }
+
+        public string? WarehouseName
+        {
+            get { return _data.Warehouse?.Name; }
+            set { OnPropertyChanged(); }
+        }
+            
+        public string? CurrencyName
+        {
+            get { return _data.Currency?.Name; }
+            set { OnPropertyChanged(); }
+        }
+
+        public string? TypePriceName
+        {
+            get { return _data.TypePrice?.Name; }
+            set { OnPropertyChanged(); }
+        }
+
+        public string? Number
+        {
+            get { return _data?.Number; }
+            set { OnPropertyChanged(); }
+        }
+        
+        public DateTime Date
+        {
+            get { return _data.Date; }
+            set { _data.Date = value; OnPropertyChanged(); }
         }
 
         public ClientOrderElementForm(Guid id = default)
@@ -89,16 +127,54 @@ namespace PresentationWPF.Forms.Documents
                 if(data != null)
                 {
                     _data = data;
+
+                    foreach (var item in _data.Products)
+                    {
+                        _products.Add(new()
+                        {
+                            Id = item.Id,
+                            NomenclatureId =  item.NomenclatureId,
+                            UnitId = item.UnitId,
+                            NomenclatureName = item.Nomenclature.Name,
+                            UnitName = item.Unit.Name,
+                            Quantity = item.Quantity,
+                            Price = (double)item.Price,
+                            Summa = (double)item.Summa
+                        });
+                    }
                 }
             }
 
             InitializeComponent();
             DataContext = this;
+            UnConducted.IsEnabled = _data.Conducted;
         }
 
         public ClientOrderElementForm(ClientOrder data) 
         {
+            _handbookController = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
+            _documentController = DIContainer.ServiceProvider.GetRequiredService<IDocumentController>();
+
+            _data = data;
+
+            foreach (var item in _data.Products)
+            {
+                _products.Add(new()
+                {
+                    Id = item.Id,
+                    NomenclatureId = item.NomenclatureId,
+                    UnitId = item.UnitId,
+                    NomenclatureName = item.Nomenclature.Name,
+                    UnitName = item.Unit.Name,
+                    Quantity = item.Quantity,
+                    Price = (double)item.Price,
+                    Summa = (double)item.Summa
+                });
+            }
+
             InitializeComponent();
+            DataContext = this;
+            UnConducted.IsEnabled = _data.Conducted;
         }
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -114,7 +190,11 @@ namespace PresentationWPF.Forms.Documents
         private void RemoveItemProduct_Click(object sender, RoutedEventArgs e)
         {
             if(ProductsTable.SelectedItem != null)
-                Products.Remove((ItemProduct)ProductsTable.SelectedItem);
+            {
+                var item = (ItemProduct)ProductsTable.SelectedItem;
+                _removedItemProducts.Add(item.Id);
+                Products.Remove(item);
+            }
         }
 
         private void SearchItemProduct_Click(object sender, RoutedEventArgs e)
@@ -167,13 +247,8 @@ namespace PresentationWPF.Forms.Documents
 
         private void btnShowListNomenclature_Click(object sender, RoutedEventArgs e)
         {
+            ProductsTable.SelectedItem = ((Button)sender).DataContext;
             var item = ProductsTable.SelectedItem as ItemProduct;
-
-            if (item == null)
-            {
-                ProductsTable.SelectedItem = ((Button)sender).DataContext;
-                item = ProductsTable.SelectedItem as ItemProduct;
-            }
 
             if (item == null)
                 return;
@@ -328,6 +403,279 @@ namespace PresentationWPF.Forms.Documents
                     OrganizationName = data.Name;
                 }
             }
+        }
+
+        private void btnClearClient_Click(object sender, RoutedEventArgs e)
+        {
+            _data.Client = null;
+            ClientName = "";
+        }
+
+        private void btnShowListClient_Click(object sender, RoutedEventArgs e)
+        {
+            var form = new ClientListForm(true);
+            if(form.ShowDialog() != null)
+            {
+                if(form.SelectedId != default)
+                {
+                    var data = _handbookController.GetHandbook<Client>(form.SelectedId);
+                    if(data != null)
+                    {
+                        _data.Client = data;
+                        ClientName = data.Name;
+                    }
+                }
+            }
+        }
+
+        private void btnOpenClient_Click(object sender, RoutedEventArgs e)
+        {
+            if (_data.Client == null)
+                return;
+
+            var form = new ClientElementForm(_data.Client.Id);
+            if (form.ShowDialog() != null)
+            {
+                var data = _handbookController.GetHandbook<Client>(_data.Client.Id);
+                if (data != null)
+                {
+                    _data.Client = data;
+                    ClientName = data.Name;
+                }
+            }
+        }
+
+        private void btnClearWarehouse_Click(object sender, RoutedEventArgs e)
+        {
+            _data.Warehouse = null;
+            WarehouseName = "";
+        }
+
+        private void btnShowListWarehouse_Click(object sender, RoutedEventArgs e)
+        {
+            var form = new WarehouseListForm(true);
+            if(form.ShowDialog() != null)
+            {
+                if(form.SelectedId != default)
+                {
+                    var data = _handbookController.GetHandbook<Warehouse>(form.SelectedId);
+                    if(data != null)
+                    {
+                        _data.Warehouse = data;
+                        WarehouseName = data.Name;
+                    }
+                }
+            }
+
+        }
+
+        private void btnOpenWarehouse_Click(object sender, RoutedEventArgs e)
+        {
+            if (_data.Warehouse == null)
+                return;
+
+            var form = new WarehouseElementForm(_data.Warehouse.Id);
+            if (form.ShowDialog() != null)
+            {
+                var data = _handbookController.GetHandbook<Warehouse>(_data.Warehouse.Id);
+                if (data != null)
+                {
+                    _data.Warehouse = data;
+                    WarehouseName = data.Name;
+                }
+            }
+        }
+
+        private void btnClearCurrency_Click(object sender, RoutedEventArgs e)
+        {
+            _data.Currency = null;
+            CurrencyName = "";
+        }
+
+        private void btnShowListCurrency_Click(object sender, RoutedEventArgs e)
+        {
+            var form = new CurrencyListForm(true);
+            if(form.ShowDialog() != null)
+            {
+                if(form.SelectedId != default)
+                {
+                    var data = _handbookController.GetHandbook<Currency>(form.SelectedId);
+                    if(data != null)
+                    {
+                        _data.Currency = data;
+                        CurrencyName = data.Name;
+                    }
+                }
+            }
+        }
+
+        private void btnOpenCurrency_Click(object sender, RoutedEventArgs e)
+        {
+            if (_data.Currency == null)
+                return;
+
+            var form = new CurrencyElementForm(_data.Currency.Id);
+            if(form.ShowDialog() != null)
+            {
+                var data = _handbookController.GetHandbook<Currency>(_data.Currency.Id);
+                if(data != null)
+                {
+                    _data.Currency = data;
+                    CurrencyName = data.Name;
+                }
+            }
+
+        }
+
+        private void btnClearypePrice_Click(object sender, RoutedEventArgs e)
+        {
+            _data.TypePrice = null;
+            TypePriceName = "";
+        }
+
+        private void btnShowListypePrice_Click(object sender, RoutedEventArgs e)
+        {
+            var form = new TypePriceListForm(true);
+            if(form.ShowDialog() != null)
+            {
+                if(form.SelectedId != default)
+                {
+                    var data = _handbookController.GetHandbook<TypePrice>(form.SelectedId);
+                    if(data != null)
+                    {
+                        _data.TypePrice = data;
+                        TypePriceName = data.Name;
+                    }
+                }
+            }
+        }
+
+        private void btnOpenTypePrice_Click(object sender, RoutedEventArgs e)
+        {
+            if (_data.TypePrice == null)
+                return;
+
+            var form = new TypePriceElementForm(_data.TypePrice.Id);
+            if(form.ShowDialog() != null)
+            {
+                var data = _handbookController.GetHandbook<TypePrice>(_data.TypePrice.Id);
+                if(data != null)
+                {
+                    _data.TypePrice = data;
+                    TypePriceName = data.Name;
+                }
+            }
+        }
+
+        private bool CheckDataComplection()
+        {
+            var message = "";
+            int number = 1;
+            foreach (var item in Products)
+            {
+                if (item.NomenclatureId == default)
+                    message += "В рядку " + number + " не заповнена номенклатура\n";
+
+                if (item.UnitId == default)
+                    message += "В рядку " + number + " не заповнена од. виміру\n";
+
+                if (item.Quantity == null || item.Quantity == 0)
+                    message += "В рядку " + number + " не заповнена кількість\n";
+
+                if (item.Price == null || item.Price == 0)
+                    message += "В рядку " + number + " не заповнена ціна\n";
+
+                ++number;
+            }
+
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                MessageBox.Show(message);
+                return false;
+            }
+
+            var result = _data.CheckDataComplection();
+
+            if (!result.Success)
+            {
+                var messageText = "Поля " + string.Join(", ", result.Properties) + " незаповнені!!!";
+                MessageBox.Show(messageText, "Помилка");
+                return false;
+            }
+
+            return true;
+        }
+
+        private async void WrideDocument(TypeWriteDocument typeWrite)
+        {
+            if (CheckDataComplection())
+            {
+                _data.Products.Clear();
+                foreach (var item in Products)
+                {
+                    _data.Products.Add(new()
+                    {
+                        Id = item.Id,
+                        Quantity = (double)item.Quantity,
+                        Price = (decimal)item.Price,
+                        Summa = (decimal)item.Summa,
+                        NomenclatureId = item.NomenclatureId,
+                        UnitId = item.UnitId
+                    });
+                }
+
+                if (_data.Date == default)
+                    _data.Date = DateTime.Now;
+
+                switch (typeWrite)
+                {
+                    case TypeWriteDocument.Write:
+                        await _documentController.AddOrUpdateAsync(_data);
+                        break;
+                    case TypeWriteDocument.Conducted:
+                        var result = await _documentController.ConductedDoumentAsync(_data);
+                        if (!result.IsSuccess)
+                        {
+                            var messageText = string.Join("\n", result.Messages);
+                            MessageBox.Show(messageText, "Помилка");
+                            return;
+                        }
+                        UnConducted.IsEnabled = true;
+                        break;
+                    case TypeWriteDocument.UnConducted:
+                        await _documentController.UnConductedDoumentAsync(_data);
+                        UnConducted.IsEnabled = false;
+                        break;
+                }
+                
+                await _documentController.RemoveRangeAsync<ClientOrderProduct>(w => _removedItemProducts.Contains(w.Id));
+                _removedItemProducts.Clear();
+
+                int i = 0;
+                foreach (var item in _data.Products)
+                {
+                    _products[i].Id = item.Id;
+                    ++i;
+                }
+            }
+        }
+
+        private void Save_Click(object sender, RoutedEventArgs e)
+        {
+            if(!_data.Conducted)
+                WrideDocument(TypeWriteDocument.Write);
+            else
+                WrideDocument(TypeWriteDocument.Conducted);
+        }
+
+        private void Conducted_Click(object sender, RoutedEventArgs e)
+        {
+            WrideDocument(TypeWriteDocument.Conducted);
+        }
+
+        private void UnConducted_Click(object sender, RoutedEventArgs e)
+        {
+            WrideDocument(TypeWriteDocument.UnConducted);
         }
     }
 

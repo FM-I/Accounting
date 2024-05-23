@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PresentationWPF.Forms.Documents"
         mc:Ignorable="d"
-                Title="Номенклатура" Height="450" Width="800"
+                Title="Замовлення покупців" Height="450" Width="800"
         WindowStartupLocation="CenterScreen">
     <Grid>
 
@@ -22,6 +22,13 @@
                     <GridViewColumn Header="Номер" DisplayMemberBinding="{Binding Number}" Width="90"/>
                     <GridViewColumn Header="Контрагент" DisplayMemberBinding="{Binding ClientName}" Width="150"/>
                     <GridViewColumn Header="Сума документу" DisplayMemberBinding="{Binding Summa}" Width="150"/>
+                    <GridViewColumn Header="Проведений">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding Conducted}" IsHitTestVisible="False" Focusable="False"  Background="Transparent" BorderThickness="0"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                     <GridViewColumn Header="Помітка видалення">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
@@ -29,6 +36,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
+                   
                 </GridView>
             </ListView.View>
         </ListView>

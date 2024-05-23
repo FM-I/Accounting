@@ -2,14 +2,15 @@
 using Domain.Entity.Registers.Accumulations;
 using Domain.Enum;
 using Domain.Interfaces;
+using Domain.Models;
 
 namespace Domain.Entity.Documents
 {
     public class InBankAccontOrder : Document
     {
-        public Currency Currency { get; set; }
+        public virtual Currency Currency { get; set; }
         public double CurrencyRate { get; set; } = 1;
-        public BankAccount Account { get; set; }
+        public virtual BankAccount Account { get; set; }
         public TypePayment Operation { get; set; }
         public decimal Summa { get; set; }
 
@@ -89,6 +90,11 @@ namespace Domain.Entity.Documents
             document.DeleteMark = false;
 
             return document;
+        }
+
+        public override DataComplectionResult CheckDataComplection()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -88,11 +88,30 @@ namespace Infrastructure
 
         public IQueryable<T> IncludeVirtualProperty<T>(IQueryable<T> data) where T : class
         {
-            var virtualProperty = typeof(T).GetProperties().Where(p => p.PropertyType.IsClass && p.GetGetMethod().IsVirtual && p.PropertyType != typeof(string));
+            var virtualProperty = typeof(T).GetProperties().Where(p => p.PropertyType.IsClass
+            && p.GetGetMethod().IsVirtual && p.PropertyType != typeof(string));
 
             var copy = data;
             foreach (var item in virtualProperty)
-                copy = copy.Include(item.Name);
+                copy = copy.Include(item.Name).AsNoTracking();
+
+            virtualProperty = typeof(T).GetProperties().Where(p => p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)
+            && p.GetGetMethod().IsVirtual);
+
+            foreach (var item in virtualProperty)
+            {
+                copy = copy.Include(item.Name).AsNoTracking();
+
+                var genericType = item.PropertyType.GetGenericArguments().First();
+
+                var propertyGeneric = genericType.GetProperties().Where(p => p.PropertyType.IsClass
+                && p.GetGetMethod().IsVirtual && p.PropertyType != typeof(string) && p.PropertyType != item.DeclaringType);
+
+                foreach(var prop in propertyGeneric)
+                {
+                    copy = copy.Include($"{item.Name}.{prop.Name}").AsNoTracking();
+                }
+            }
 
             return copy;
         }

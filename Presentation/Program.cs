@@ -28,17 +28,7 @@ var controllerDoc = services.GetRequiredService<IDocumentController>();
 var controllerHd = services.GetRequiredService<IHandbookController>();
 
 var baseUnit = new Unit() { Name = "KG." };
-var n = new Nomenclature() { Name = "Apple", Arcticle = "AP", BaseUnitId = baseUnit.Id };
-
-var order = new ClientOrder();
-order.Products.Add(new() {Nomenclature = n, Unit = baseUnit, Price = 1});
-
-ClientOrder k = (ClientOrder)order.DeepCopy();
-k.Products.Clear();
-
-
-
-return 0;
+await controllerHd.AddOrUpdateAsync(baseUnit);
 
 List<Nomenclature> products =
 [
@@ -46,11 +36,6 @@ List<Nomenclature> products =
     new Nomenclature() { Name = "Door", Arcticle = "DR", BaseUnit = baseUnit },
 ];
 await controllerHd.AddOrUpdateRangeAsync<Nomenclature>(products);
-
-
-
-
-await controllerHd.AddOrUpdateAsync(n);
 
 var warehouse = new Warehouse() {  Name = "warehouse 1" };
 await controllerHd.AddOrUpdateAsync(warehouse);
@@ -65,18 +50,18 @@ var client = new Client() { Name = "Client 1", TypeClient = Domain.Enum.TypesCli
 await controllerHd.AddOrUpdateAsync(client);
 
 
-List<PurchaceInvoiceProduct> docProduct = new List<PurchaceInvoiceProduct>();
+List<ClientOrderProduct> docProduct = new List<ClientOrderProduct>();
 List<SalesInvoiceProduct> saleProducts = new List<SalesInvoiceProduct>();
 
 foreach (var item in products)
 {
-    docProduct.Add(new PurchaceInvoiceProduct() { Nomenclature = item, Price = 10, Quantity = 10, Summa = 20 , Unit = baseUnit });
+    docProduct.Add(new() { Nomenclature = item, Price = 10, Quantity = 10, Summa = 20 , Unit = baseUnit });
     saleProducts.Add(new() { Nomenclature = item, Price = 10, Quantity = 5, Summa = 20 , Unit = baseUnit });
 }
 
 var cur = new Currency() { Name = "grn" };
 
-var PurchaceInvoice = new PurchaceInvoice()
+var PurchaceInvoice = new ClientOrder()
 {
     Client = client,
     Organization = organization,
@@ -87,8 +72,10 @@ var PurchaceInvoice = new PurchaceInvoice()
 };
 
 await controllerHd.AddOrUpdateAsync(cur);
-var res = await controllerDoc.ConductedDoumentAsync(PurchaceInvoice);
+var res = await controllerDoc.AddOrUpdateAsync(PurchaceInvoice);
 
+
+return 0;
 
 var SaleInvoice = new SaleInvoice()
 {
@@ -100,7 +87,7 @@ var SaleInvoice = new SaleInvoice()
     Currency = cur
 };
 
-res = await controllerDoc.ConductedDoumentAsync(SaleInvoice);
+//res = await controllerDoc.ConductedDoumentAsync(SaleInvoice);
 //var currency = new Currency()
 //{
 //    Name = "UAH"

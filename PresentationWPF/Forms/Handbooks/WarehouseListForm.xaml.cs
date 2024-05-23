@@ -12,19 +12,19 @@ namespace PresentationWPF.Forms
     {
         private readonly IHandbookController _controller;
         private readonly IDbContext _context;
-        public WarehouseListForm()
+        private bool _select;
+        public Guid SelectedId { get; set; }
+
+        public WarehouseListForm(bool select = false)
         {
             _controller = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
             _context = DIContainer.ServiceProvider.GetRequiredService<IDbContext>();
             _context.SavedChanges += context_SavedChanges;
+            _select = select;
 
             InitializeComponent();
 
             context_SavedChanges(null, null);
-
-            var view = (CollectionView)CollectionViewSource.GetDefaultView(dataList.ItemsSource);
-            view.Filter = ListFilter;
-
         }
 
         private void context_SavedChanges(object? sender, SavedChangesEventArgs e)
@@ -36,11 +36,22 @@ namespace PresentationWPF.Forms
                 items.Add(new ListItem(item.Id, item.Code, item.Name, item.DeleteMark));
             }
             dataList.ItemsSource = items;
+
+            var view = (CollectionView)CollectionViewSource.GetDefaultView(dataList.ItemsSource);
+            view.Filter = ListFilter;
         }
 
         private void dataList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             ListItem item = (ListItem)dataList.SelectedItem;
+
+            if(_select)
+            {
+                if (item != null)
+                    SelectedId = item.Id;
+                Close();
+                return;
+            }
 
             if (item == null)
                 return;

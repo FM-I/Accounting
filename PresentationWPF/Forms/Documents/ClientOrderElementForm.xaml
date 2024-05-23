@@ -18,7 +18,7 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
 
         <Grid x:Name="Header" Grid.Row="0">
@@ -29,9 +29,9 @@
             </Grid.RowDefinitions>
 
             <StackPanel Orientation="Horizontal" Margin="5">
-                <Button Content="Записати" Height="30" Margin="0, 0, 10 , 0" Padding="5"/>
-                <Button Content="Провести" Height="30" Margin="0, 0, 10 , 0" Padding="5" Background="DarkOrange"/>
-                <Button Content="Відміна проведення"  Height="30" Padding="5" Background="WhiteSmoke"/>
+                <Button Name="Save" Click="Save_Click" Content="Записати" Height="30" Margin="0, 0, 10 , 0" Padding="5"/>
+                <Button Name="Conducted" Click="Conducted_Click" Content="Провести" Height="30" Margin="0, 0, 10 , 0" Padding="5" Background="DarkOrange"/>
+                <Button Name="UnConducted" Click="UnConducted_Click" Content="Відміна проведення"  Height="30" Padding="5" Background="WhiteSmoke"/>
             </StackPanel>
 
             <Grid Grid.Row="1">
@@ -52,8 +52,8 @@
                 </StackPanel>
 
                 <StackPanel Orientation="Vertical" Grid.Column="1" Margin="0 0 5 0" >
-                    
-                    <xctk:DateTimePicker Name="Date" Height="25"/>
+
+                    <xctk:DateTimePicker Value="{Binding Date}" Height="25"/>
 
                     <Grid Height="25" Margin="0 2 0 0">
 
@@ -64,7 +64,7 @@
                             <ColumnDefinition Width=".1*"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBox VerticalContentAlignment="Center" x:Name="DocOrganization" IsReadOnly="True" Text="{Binding OrganizationName}" Grid.Column="0"/>
+                        <TextBox VerticalContentAlignment="Center" IsReadOnly="True" Text="{Binding OrganizationName}" Grid.Column="0"/>
                         <Button Grid.Column="1" x:Name="btnClearOrganization" Click="btnClearOrganization_Click"  Content="X" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
                         <Button Grid.Column="2" x:Name="btnShowListOrganization" Click="btnShowListOrganization_Click"  Content="▼" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
                         <Button Grid.Column="3" x:Name="btnOpenOrganization" Click="btnOpenOrganization_Click"  Content=". . ."  Background="Transparent" BorderThickness="0 .5 .5 .5"  />
@@ -80,10 +80,10 @@
                             <ColumnDefinition Width=".1*"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBox Grid.Column="0"/>
-                        <Button Grid.Column="3" x:Name="btnOpenClient" Content=". . ."  Background="Transparent" BorderThickness="0 .5 .5 .5"  />
-                        <Button Grid.Column="2" x:Name="btnShowListClient"  Content="▼" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
-                        <Button Grid.Column="1" x:Name="btnClearClient" Content="X" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
+                        <TextBox VerticalContentAlignment="Center" IsReadOnly="True" Text="{Binding ClientName}"  Grid.Column="0"/>
+                        <Button Grid.Column="1" x:Name="btnClearClient" Click="btnClearClient_Click" Content="X" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
+                        <Button Grid.Column="2" x:Name="btnShowListClient" Click="btnShowListClient_Click" Content="▼" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
+                        <Button Grid.Column="3" x:Name="btnOpenClient" Click="btnOpenClient_Click" Content=". . ."  Background="Transparent" BorderThickness="0 .5 .5 .5"  />
 
                     </Grid>
 
@@ -96,10 +96,10 @@
                             <ColumnDefinition Width=".1*"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBox Grid.Column="0"/>
-                        <Button Grid.Column="3" x:Name="btnOpenWarehouse"  Content=". . ."  Background="Transparent" BorderThickness="0 .5 .5 .5"  />
-                        <Button Grid.Column="2" x:Name="btnShowListWarehouse" Content="▼" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
-                        <Button Grid.Column="1" x:Name="btnClearWarehouse" Content="X" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
+                        <TextBox Grid.Column="0" IsReadOnly="True" Text="{Binding WarehouseName}" VerticalContentAlignment="Center"/>
+                        <Button Grid.Column="1" x:Name="btnClearWarehouse" Click="btnClearWarehouse_Click" Content="X" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
+                        <Button Grid.Column="2" x:Name="btnShowListWarehouse" Click="btnShowListWarehouse_Click" Content="▼" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
+                        <Button Grid.Column="3" x:Name="btnOpenWarehouse" Click="btnOpenWarehouse_Click" Content=". . ."  Background="Transparent" BorderThickness="0 .5 .5 .5"  />
 
                     </Grid>
 
@@ -122,7 +122,7 @@
                             <ColumnDefinition Width=".1*"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBox Grid.Column="0"/>
+                        <TextBox Text="{Binding Number}" Grid.Column="0" IsReadOnly="True" VerticalContentAlignment="Center"/>
 
                     </Grid>
 
@@ -135,10 +135,10 @@
                             <ColumnDefinition Width=".1*"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBox Grid.Column="0"/>
-                        <Button Grid.Column="3" x:Name="btnOpenCurrency" Content=". . ."  Background="Transparent" BorderThickness="0 .5 .5 .5"  />
-                        <Button Grid.Column="2" x:Name="btnShowListCurrency"  Content="▼" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
-                        <Button Grid.Column="1" x:Name="btnClearCurrency" Content="X" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
+                        <TextBox Grid.Column="0" IsReadOnly="True" VerticalContentAlignment="Center" Text="{Binding CurrencyName}"/>
+                        <Button Grid.Column="1" x:Name="btnClearCurrency" Click="btnClearCurrency_Click" Content="X" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
+                        <Button Grid.Column="2" x:Name="btnShowListCurrency" Click="btnShowListCurrency_Click" Content="▼" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
+                        <Button Grid.Column="3" x:Name="btnOpenCurrency" Click="btnOpenCurrency_Click" Content=". . ." Background="Transparent" BorderThickness="0 .5 .5 .5"  />
 
                     </Grid>
 
@@ -151,10 +151,10 @@
                             <ColumnDefinition Width=".1*"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBox Grid.Column="0"/>
-                        <Button Grid.Column="3" x:Name="btnOpenTypePrice"  Content=". . ."  Background="Transparent" BorderThickness="0 .5 .5 .5"  />
-                        <Button Grid.Column="2" x:Name="btnShowListypePrice" Content="▼" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
-                        <Button Grid.Column="1" x:Name="btnClearypePrice" Content="X" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
+                        <TextBox Grid.Column="0" IsReadOnly="True" VerticalContentAlignment="Center" Text="{Binding TypePriceName}"/>
+                        <Button Grid.Column="1" x:Name="btnClearypePrice" Click="btnClearypePrice_Click" Content="X" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
+                        <Button Grid.Column="2" x:Name="btnShowListypePrice" Click="btnShowListypePrice_Click" Content="▼" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
+                        <Button Grid.Column="3" x:Name="btnOpenTypePrice" Click="btnOpenTypePrice_Click" Content=". . ."  Background="Transparent" BorderThickness="0 .5 .5 .5"  />
 
                     </Grid>
 
@@ -169,7 +169,7 @@
         <Grid x:Name="TableProduct" Grid.Row="1" Margin="0 5 0 0 ">
 
             <Grid.RowDefinitions>
-                <RowDefinition Height=".15*"/>
+                <RowDefinition Height=".1*"/>
                 <RowDefinition Height=".9*"/>
             </Grid.RowDefinitions>
 

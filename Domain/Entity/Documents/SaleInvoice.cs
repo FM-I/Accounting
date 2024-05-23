@@ -3,16 +3,18 @@ using Domain.Entity.Handbooks;
 using Domain.Entity.Registers.Accumulations;
 using Domain.Enum;
 using Domain.Interfaces;
+using Domain.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entity.Documents
 {
     public class SaleInvoice : Document
     {
-        public Warehouse Warehouse { get; set; }
+        public virtual Warehouse Warehouse { get; set; }
         public virtual ICollection<SalesInvoiceProduct> Products { get; set; } = new List<SalesInvoiceProduct>();
         public decimal Summa { get => Products.Sum(s => s.Summa); }
         public TypeSaleInvoice TypeOperation { get; set; }
-        public Currency Currency { get; set; }
+        public virtual Currency Currency { get; set; }
         public double CurrencyRate { get; set; } = 1;
         public virtual ClientOrder? ClientOrder { get; set; }
 
@@ -119,11 +121,33 @@ namespace Domain.Entity.Documents
             document.Id = Guid.Empty;
             document.Number = "";
             document.Date = DateTime.Now;
+            document.Conducted = false;
             document.DeleteMark = false;
 
-            document.Products = [.. Products];
+            var products = new List<SalesInvoiceProduct>();
+
+            foreach (var item in Products)
+            {
+                products.Add(new()
+                {
+                    Nomenclature = item.Nomenclature,
+                    Unit = item.Unit,
+                    NomenclatureId = item.NomenclatureId,
+                    UnitId = item.UnitId,
+                    Quantity = item.Quantity,
+                    Price = item.Price,
+                    Summa = item.Summa
+                });
+            }
+
+            document.Products = products;
 
             return document;
+        }
+
+        public override DataComplectionResult CheckDataComplection()
+        {
+            throw new NotImplementedException();
         }
     }
 }
