@@ -10,12 +10,29 @@ namespace Domain.Entity.Documents
         public virtual Currency Currency { get; set; }
         public double CurrencyRate { get; set; } = 1;
         public virtual Warehouse Warehouse { get; set; }
-        public virtual ICollection<ProviderOrderProduct> Products { get; set; }
+        public virtual ICollection<ProviderOrderProduct> Products { get; set; } = new List<ProviderOrderProduct>();
         public decimal Summa { get => Products.Sum(s => s.Summa); }
 
         public override DataComplectionResult CheckDataComplection()
         {
-            throw new NotImplementedException();
+            var result = new DataComplectionResult();
+
+            if (Client == null)
+                result.Properties.Add("Контрагент");
+
+            if (Organization == null)
+                result.Properties.Add("Організація");
+
+            if (Warehouse == null)
+                result.Properties.Add("Склад");
+
+            if (TypePrice == null)
+                result.Properties.Add("Тип ціни");
+
+            if (Currency == null)
+                result.Properties.Add("Валюта");
+
+            return result;
         }
 
         public override Document DeepCopy()

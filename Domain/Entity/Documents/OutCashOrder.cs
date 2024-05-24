@@ -86,7 +86,24 @@ namespace Domain.Entity.Documents
 
         public override DataComplectionResult CheckDataComplection()
         {
-            throw new NotImplementedException();
+            var result = new DataComplectionResult();
+
+            if (Client == null)
+                result.Properties.Add("Контрагент");
+
+            if (Organization == null)
+                result.Properties.Add("Організація");
+
+            if (CashBox == null)
+                result.Properties.Add("Каса");
+
+            if (Currency == null)
+                result.Properties.Add("Валюта");
+
+            if (Operation == default)
+                result.Properties.Add("Тип операції");
+
+            return result;
         }
     }
 }

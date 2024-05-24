@@ -1,20 +1,19 @@
-﻿<Window x:Class="PresentationWPF.Forms.Documents.ClientOrderElementForm"
+﻿<Window x:Class="PresentationWPF.Forms.Documents.ProviderOrderElementForm"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PresentationWPF.Forms.Documents" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="Замовлення покупця " Height="450" Width="800"
-        WindowStartupLocation="CenterScreen"
-        Closing="Window_Closing">
+        Title="Замовлення поставщика" Height="450" Width="800"
+    WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <Style TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         </Style>
     </Window.Resources>
-    
+
     <Grid>
 
         <Grid.RowDefinitions>
@@ -69,7 +68,7 @@
                         <Button Grid.Column="1" x:Name="btnClearOrganization" Click="btnClearOrganization_Click"  Content="X" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
                         <Button Grid.Column="2" x:Name="btnShowListOrganization" Click="btnShowListOrganization_Click"  Content="▼" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
                         <Button Grid.Column="3" x:Name="btnOpenOrganization" Click="btnOpenOrganization_Click"  Content=". . ."  Background="Transparent" BorderThickness="0 .5 .5 .5"  />
-                        
+
                     </Grid>
 
                     <Grid Height="25" Margin="0 2 0 0">

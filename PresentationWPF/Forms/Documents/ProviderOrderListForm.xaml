@@ -1,11 +1,11 @@
-﻿<Window x:Class="PresentationWPF.Forms.Documents.ClientOrderListForm"
+﻿<Window x:Class="PresentationWPF.Forms.Documents.ProviderOrderListForm"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PresentationWPF.Forms.Documents"
         mc:Ignorable="d"
-        Title="Замовлення покупців" Height="450" Width="800"
+                Title="Замовлення постачальників" Height="450" Width="800"
         WindowStartupLocation="CenterScreen">
     <Grid>
 
@@ -36,7 +36,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                   
+
                 </GridView>
             </ListView.View>
         </ListView>
@@ -51,9 +51,9 @@ TextChanged="Search_TextChanged"/>
         <Menu x:Name="FillWith" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="246,0,0,0" VerticalAlignment="Center" >
 
             <MenuItem Header="Заповнити на основі ▼" Height="28" BorderThickness="1" BorderBrush="Gray">
-                <MenuItem Click="FillSaleInvoice_Click" Header="Видаткова накладна"/>
+                <MenuItem Click="FillPurchaceInvoice_Click" Header="Прибуткова накладна"/>
             </MenuItem>
-            
+
         </Menu>
 
     </Grid>
