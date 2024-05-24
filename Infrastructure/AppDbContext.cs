@@ -50,6 +50,7 @@ namespace Infrastructure
             //Database.EnsureDeleted();
             Database.EnsureCreated();
             ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            ChangeTracker.AutoDetectChangesEnabled = false;
 
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

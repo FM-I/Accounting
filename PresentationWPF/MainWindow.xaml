@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PresentationWPF"
         mc:Ignorable="d"
-        Title="Облік ''ПРОСТО'' " Height="450" Width="800"
+        Title="Облік ''ПРОСТО'' " Height="450" Width="1000"
         WindowStartupLocation="CenterScreen"
         Closing="Window_Closing">
     <Grid>
@@ -103,6 +103,11 @@
             <StackPanel Grid.Row="1" Orientation="Vertical">
                 <Button x:Name="openClientOrderList"  Margin="0 0 0 10" Content="Замовлення покупців" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
                 <Button x:Name="openSalesInvoiceList"  Margin="0 0 0 10" Content="Видаткові накладні" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
+            </StackPanel>
+
+            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical">
+                <Button x:Name="openProviderOrderList"  Margin="0 0 0 10" Content="Замовлення постачальників" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
+                <Button x:Name="openPurchaceInvoiceList"  Margin="0 0 0 10" Content="Прибуткові накладні" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
             </StackPanel>
 
         </Grid>

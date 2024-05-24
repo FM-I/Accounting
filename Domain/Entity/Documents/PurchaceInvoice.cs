@@ -30,16 +30,16 @@ namespace Domain.Entity.Documents
                 leftovers.Add(new Leftover()
                 {
                     Date = DateTime.Now,
-                    Nomenclature = product.Nomenclature,
+                    NomenclatureId = product.NomenclatureId,
                     Warehouse = Warehouse,
-                    Value = product.Quantity / (product.Nomenclature.BaseUnit.Coefficient == 0 ? 1 : product.Nomenclature.BaseUnit.Coefficient),
+                    Value = product.Quantity,
                     TypeMove = Enum.TypeAccumulationRegisterMove.INCOMING
                 });
 
                 sales.Add(new Sale()
                 {
                     Date = DateTime.Now,
-                    Nomenclature = product.Nomenclature,
+                    NomenclatureId = product.NomenclatureId,
                     Client = Client,
                     Organization = Organization,
                     Price = product.Price,
@@ -97,6 +97,8 @@ namespace Domain.Entity.Documents
                 Client = data.Client;
                 Organization = data.Organization;
                 Warehouse = data.Warehouse;
+                Currency = data.Currency;
+                TypePrice = data.TypePrice;
 
                 foreach (var product in data.Products)
                 {
@@ -104,6 +106,8 @@ namespace Domain.Entity.Documents
                     {
                         Document = this,
                         Nomenclature = product.Nomenclature,
+                        NomenclatureId = product.NomenclatureId,
+                        UnitId = product.UnitId,
                         Price = product.Price,
                         Unit = product.Unit,
                         Quantity = product.Quantity,
@@ -147,7 +151,24 @@ namespace Domain.Entity.Documents
 
         public override DataComplectionResult CheckDataComplection()
         {
-            throw new NotImplementedException();
+            var result = new DataComplectionResult();
+
+            if (Client == null)
+                result.Properties.Add("Контрагент");
+
+            if (Organization == null)
+                result.Properties.Add("Організація");
+
+            if (Warehouse == null)
+                result.Properties.Add("Склад");
+
+            if (TypePrice == null)
+                result.Properties.Add("Тип ціни");
+
+            if (Currency == null)
+                result.Properties.Add("Валюта");
+
+            return result;
         }
     }
 }

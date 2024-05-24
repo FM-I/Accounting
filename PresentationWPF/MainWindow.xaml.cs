@@ -117,6 +117,12 @@ namespace PresentationWPF
                 case "openSalesInvoiceList":
                     form = new SalesInvoiceListForm();
                     break;
+                case "openProviderOrderList":
+                    form = new ClientOrderListForm();
+                    break;
+                case "openPurchaceInvoiceList":
+                    form = new PurchaceInvoiceListForm();
+                    break;
             }
 
             if (form != null)

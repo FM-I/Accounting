@@ -179,9 +179,9 @@ namespace BL.Controllers
                             }
 
                             var leftovers = _accumulationController.GetLeftoverList(list,
-                                g => new { g.NomenclatureId, g.Warehouse },
+                                g => new { g.NomenclatureId, g.Warehouse.Id },
                                 s => new {
-                                    id = string.Join("", s.Key.NomenclatureId, s.Key.Warehouse.Id),
+                                    id = string.Join("", s.Key.NomenclatureId, s.Key.Id),
                                     value = s.Sum(selector => selector.TypeMove == TypeAccumulationRegisterMove.INCOMING ? selector.Value : selector.Value * -1)
                                 });
 
@@ -214,25 +214,29 @@ namespace BL.Controllers
                                 foreach (Leftover item in move.Value)
                                 {
                                     var nomenclature = nomenclatureList.FirstOrDefault(w => w.Id == item.NomenclatureId);
-                                    var id = string.Join("", item.Nomenclature.Id, item.Warehouse.Id);
+                                    var id = string.Join("", item.NomenclatureId, item.Warehouse.Id);
                                     var data = leftovers.FirstOrDefault(x => x.id == id);
                                     double leftover = 0;
-                                    double prevValue = 0;
                                     double coefficient = 1;
+                                    
+                                    oldMove.TryGetValue(id, out leftover);
 
                                     if(nomenclature.BaseUnit != null && nomenclature.BaseUnit.Coefficient > 0)
                                         coefficient = nomenclature.BaseUnit.Coefficient;
 
                                     if (data != null)
-                                        leftover = data.value;
+                                        leftover += data.value;
 
-                                    oldMove.TryGetValue(id, out prevValue);
 
-                                    var value = leftover + prevValue - (item.Value / coefficient);
-                                    if (Math.Abs(value) <= 0)
+                                    var value = leftover - (item.Value / coefficient);
+                                    if (value < 0)
                                     {
+
+                                        if (leftover < 0)
+                                            value = item.Value;
+
                                         if(nomenclature != null)
-                                            result.Messages.Add($"Не вистачає {Math.Abs(value)} {nomenclature.BaseUnit.Name} залишків {nomenclature.Name} на {item.Warehouse.Name}");
+                                            result.Messages.Add($"Не вистачає  {Math.Abs(value)} {nomenclature.BaseUnit.Name} залишків {nomenclature.Name} на {item.Warehouse.Name}");
                                     }
                                 }
                             }
@@ -308,6 +312,8 @@ namespace BL.Controllers
                     document.Conducted = false;
 
                     await AddOrUpdateAsync(document);
+
+                    await transaction.CommitAsync();
                 }
                 catch (Exception)
                 {

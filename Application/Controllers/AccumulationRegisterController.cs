@@ -33,6 +33,7 @@ namespace BL.Controllers
 
         public async Task AddOrUpdateAsync(IAccumulationRegister data, bool saveChanges = true)
         {
+            _context.ChangeTracker.Clear();
             _context.Update(data);
                            
             if(saveChanges)
@@ -41,18 +42,21 @@ namespace BL.Controllers
 
         public async Task AddOrUpdateRangeAsync(IEnumerable<IAccumulationRegister> data)
         {
+            _context.ChangeTracker.Clear();
             _context.UpdateRange(data);
             await _context.SaveChangesAsync(new CancellationToken());
         }
         
         public async Task RemoveAsync(IAccumulationRegister data)
         {
+            _context.ChangeTracker.Clear();
             _context.Remove(data);
             await _context.SaveChangesAsync(new CancellationToken());
         }
 
         public async Task RemoveRangeAsync(IEnumerable<IAccumulationRegister> data)
         {
+            _context.ChangeTracker.Clear();
             _context.RemoveRange(data);
             await _context.SaveChangesAsync(new CancellationToken());
         }

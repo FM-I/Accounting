@@ -59,7 +59,7 @@ namespace BL.Controllers
             if (skip == 0 && take == 0)
                 return data.AsNoTracking().ToList();
 
-            return data.AsNoTracking().Skip(skip).Take(take).ToList();
+            return data.Skip(skip).Take(take).AsNoTracking().ToList();
         }
 
         public T? GetHandbook<T>(Guid id) where T : class, IHandbook
