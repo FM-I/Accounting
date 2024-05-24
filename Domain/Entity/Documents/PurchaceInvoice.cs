@@ -9,6 +9,7 @@ namespace Domain.Entity.Documents
 {
     public class PurchaceInvoice : Document
     {
+        public virtual TypePrice TypePrice { get; set; }
         public virtual Warehouse Warehouse { get; set; }
         public virtual ICollection<PurchaceInvoiceProduct> Products { get; set; } = new List<PurchaceInvoiceProduct>();
         public decimal Summa { get => Products.Sum(s => s.Summa); }

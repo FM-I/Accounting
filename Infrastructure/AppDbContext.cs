@@ -44,7 +44,7 @@ namespace Infrastructure
         public DbSet<ClientsDebt> ClientsDebts { get; set; }
         public DbSet<ProvidersDebt> ProvidersDebts { get; set; }
         public DbSet<Sale> Sales { get; set; }
-
+        
         public AppDbContext()
         {
             //Database.EnsureDeleted();

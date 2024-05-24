@@ -14,7 +14,7 @@ using System.Windows.Controls;
 
 namespace PresentationWPF.Forms.Documents
 {
-    public partial class ClientOrderElementForm : Window, INotifyPropertyChanged
+    public partial class SalesInvoiceElementForm : Window, INotifyPropertyChanged
     {
         public class ItemProduct : INotifyPropertyChanged
         {
@@ -26,31 +26,31 @@ namespace PresentationWPF.Forms.Documents
             public Guid Id { get; set; }
             public Guid NomenclatureId { get; set; }
             public Guid UnitId { get; set; }
-            public string NomenclatureName 
-            { 
+            public string NomenclatureName
+            {
                 get { return _nomenclatureName; }
                 set { _nomenclatureName = value; OnPropertyChanged(); }
             }
-            public string UnitName 
-            { 
+            public string UnitName
+            {
                 get { return _unitName; }
                 set { _unitName = value; OnPropertyChanged(); }
             }
 
-            public double? Quantity 
-            { 
-                get { return _quantity; } 
-                set { _quantity = value; OnPropertyChanged(); OnPropertyChanged(nameof(Summa)); } 
-            }
-            
-            public double? Price 
+            public double? Quantity
             {
-                get { return _price; } 
-                set { _price = value; OnPropertyChanged(); OnPropertyChanged(nameof(Summa)); } 
+                get { return _quantity; }
+                set { _quantity = value; OnPropertyChanged(); OnPropertyChanged(nameof(Summa)); }
             }
 
-            public double? Summa 
-            { 
+            public double? Price
+            {
+                get { return _price; }
+                set { _price = value; OnPropertyChanged(); OnPropertyChanged(nameof(Summa)); }
+            }
+
+            public double? Summa
+            {
                 get { return _price != null && _quantity != null ? _price * _quantity : null; }
                 set { OnPropertyChanged(); }
             }
@@ -59,27 +59,27 @@ namespace PresentationWPF.Forms.Documents
 
             private void OnPropertyChanged([CallerMemberName] string propertyName = null)
             {
-                PropertyChanged?.Invoke(this ,new(propertyName));
+                PropertyChanged?.Invoke(this, new(propertyName));
             }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private ObservableCollection<ItemProduct> _products = new();
-        
+
         public ObservableCollection<ItemProduct> Products { get { return _products; } set { _products = value; } }
-        
+
         private readonly IHandbookController _handbookController;
         private readonly IDocumentController _documentController;
         private List<Guid> _removedItemProducts = new();
-        private ClientOrder _data = new();
+        private SaleInvoice _data = new();
 
-        public string? OrganizationName 
-        { 
+        public string? OrganizationName
+        {
             get { return _data.Organization?.Name; }
             set { OnPropertyChanged(); }
         }
-        
+
         public string? ClientName
         {
             get { return _data.Client?.Name; }
@@ -91,7 +91,7 @@ namespace PresentationWPF.Forms.Documents
             get { return _data.Warehouse?.Name; }
             set { OnPropertyChanged(); }
         }
-            
+
         public string? CurrencyName
         {
             get { return _data.Currency?.Name; }
@@ -109,22 +109,22 @@ namespace PresentationWPF.Forms.Documents
             get { return _data?.Number; }
             set { OnPropertyChanged(); }
         }
-        
+
         public DateTime Date
         {
             get { return _data.Date; }
             set { _data.Date = value; OnPropertyChanged(); }
         }
 
-        public ClientOrderElementForm(Guid id = default)
+        public SalesInvoiceElementForm(Guid id = default)
         {
             _handbookController = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
             _documentController = DIContainer.ServiceProvider.GetRequiredService<IDocumentController>();
 
-            if(id != default)
+            if (id != default)
             {
-                var data = _documentController.GetDocument<ClientOrder>(id);
-                if(data != null)
+                var data = _documentController.GetDocument<SaleInvoice>(id);
+                if (data != null)
                 {
                     _data = data;
 
@@ -133,7 +133,7 @@ namespace PresentationWPF.Forms.Documents
                         _products.Add(new()
                         {
                             Id = item.Id,
-                            NomenclatureId =  item.NomenclatureId,
+                            NomenclatureId = item.NomenclatureId,
                             UnitId = item.UnitId,
                             NomenclatureName = item.Nomenclature.Name,
                             UnitName = item.Unit.Name,
@@ -150,7 +150,7 @@ namespace PresentationWPF.Forms.Documents
             UnConducted.IsEnabled = _data.Conducted;
         }
 
-        public ClientOrderElementForm(ClientOrder data) 
+        public SalesInvoiceElementForm(SaleInvoice data)
         {
             _handbookController = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
             _documentController = DIContainer.ServiceProvider.GetRequiredService<IDocumentController>();
@@ -189,7 +189,7 @@ namespace PresentationWPF.Forms.Documents
 
         private void RemoveItemProduct_Click(object sender, RoutedEventArgs e)
         {
-            if(ProductsTable.SelectedItem != null)
+            if (ProductsTable.SelectedItem != null)
             {
                 var item = (ItemProduct)ProductsTable.SelectedItem;
                 _removedItemProducts.Add(item.Id);
@@ -202,13 +202,13 @@ namespace PresentationWPF.Forms.Documents
             var form = new BarcodeInput();
             var res = form.ShowDialog();
 
-            if(res != null)
+            if (res != null)
             {
-                if(form.Nomenclature != null)
+                if (form.Nomenclature != null)
                 {
                     var item = Products.FirstOrDefault(w => w.NomenclatureId == form.Nomenclature.Id && w.UnitId == form.Unit.Id);
 
-                    if(item != null)
+                    if (item != null)
                     {
                         ++item.Quantity;
                     }
@@ -254,9 +254,9 @@ namespace PresentationWPF.Forms.Documents
                 return;
 
             var form = new NomenclatureListForm(true);
-            if(form.ShowDialog() != null)
+            if (form.ShowDialog() != null)
             {
-                if(form.SelectedId != default)
+                if (form.SelectedId != default)
                 {
                     var data = _handbookController.GetHandbook<Nomenclature>(form.SelectedId);
                     if (data != null)
@@ -284,11 +284,11 @@ namespace PresentationWPF.Forms.Documents
                 return;
 
             var form = new NomenclatureElementForm(item.NomenclatureId);
-            
-            if(form.ShowDialog() != null)
+
+            if (form.ShowDialog() != null)
             {
                 var data = _handbookController.GetHandbook<Nomenclature>(item.NomenclatureId);
-                if(data != null)
+                if (data != null)
                 {
                     item.NomenclatureName = data.Name;
                 }
@@ -376,10 +376,10 @@ namespace PresentationWPF.Forms.Documents
             var form = new OrganizationListForm(true);
             if (form.ShowDialog() != null)
             {
-                if(form.SelectedId != default)
+                if (form.SelectedId != default)
                 {
                     var data = _handbookController.GetHandbook<Organization>(form.SelectedId);
-                    if(data != null)
+                    if (data != null)
                     {
                         _data.Organization = data;
                         OrganizationName = data.Name;
@@ -414,12 +414,12 @@ namespace PresentationWPF.Forms.Documents
         private void btnShowListClient_Click(object sender, RoutedEventArgs e)
         {
             var form = new ClientListForm(true);
-            if(form.ShowDialog() != null)
+            if (form.ShowDialog() != null)
             {
-                if(form.SelectedId != default)
+                if (form.SelectedId != default)
                 {
                     var data = _handbookController.GetHandbook<Client>(form.SelectedId);
-                    if(data != null)
+                    if (data != null)
                     {
                         _data.Client = data;
                         ClientName = data.Name;
@@ -454,12 +454,12 @@ namespace PresentationWPF.Forms.Documents
         private void btnShowListWarehouse_Click(object sender, RoutedEventArgs e)
         {
             var form = new WarehouseListForm(true);
-            if(form.ShowDialog() != null)
+            if (form.ShowDialog() != null)
             {
-                if(form.SelectedId != default)
+                if (form.SelectedId != default)
                 {
                     var data = _handbookController.GetHandbook<Warehouse>(form.SelectedId);
-                    if(data != null)
+                    if (data != null)
                     {
                         _data.Warehouse = data;
                         WarehouseName = data.Name;
@@ -495,12 +495,12 @@ namespace PresentationWPF.Forms.Documents
         private void btnShowListCurrency_Click(object sender, RoutedEventArgs e)
         {
             var form = new CurrencyListForm(true);
-            if(form.ShowDialog() != null)
+            if (form.ShowDialog() != null)
             {
-                if(form.SelectedId != default)
+                if (form.SelectedId != default)
                 {
                     var data = _handbookController.GetHandbook<Currency>(form.SelectedId);
-                    if(data != null)
+                    if (data != null)
                     {
                         _data.Currency = data;
                         CurrencyName = data.Name;
@@ -515,10 +515,10 @@ namespace PresentationWPF.Forms.Documents
                 return;
 
             var form = new CurrencyElementForm(_data.Currency.Id);
-            if(form.ShowDialog() != null)
+            if (form.ShowDialog() != null)
             {
                 var data = _handbookController.GetHandbook<Currency>(_data.Currency.Id);
-                if(data != null)
+                if (data != null)
                 {
                     _data.Currency = data;
                     CurrencyName = data.Name;
@@ -536,12 +536,12 @@ namespace PresentationWPF.Forms.Documents
         private void btnShowListypePrice_Click(object sender, RoutedEventArgs e)
         {
             var form = new TypePriceListForm(true);
-            if(form.ShowDialog() != null)
+            if (form.ShowDialog() != null)
             {
-                if(form.SelectedId != default)
+                if (form.SelectedId != default)
                 {
                     var data = _handbookController.GetHandbook<TypePrice>(form.SelectedId);
-                    if(data != null)
+                    if (data != null)
                     {
                         _data.TypePrice = data;
                         TypePriceName = data.Name;
@@ -556,10 +556,10 @@ namespace PresentationWPF.Forms.Documents
                 return;
 
             var form = new TypePriceElementForm(_data.TypePrice.Id);
-            if(form.ShowDialog() != null)
+            if (form.ShowDialog() != null)
             {
                 var data = _handbookController.GetHandbook<TypePrice>(_data.TypePrice.Id);
-                if(data != null)
+                if (data != null)
                 {
                     _data.TypePrice = data;
                     TypePriceName = data.Name;
@@ -621,7 +621,7 @@ namespace PresentationWPF.Forms.Documents
                         Summa = (decimal)item.Summa,
                         NomenclatureId = item.NomenclatureId,
                         UnitId = item.UnitId
-                    });
+                    }); ;
                 }
 
                 if (_data.Date == default)
@@ -647,8 +647,8 @@ namespace PresentationWPF.Forms.Documents
                         UnConducted.IsEnabled = false;
                         break;
                 }
-                
-                await _documentController.RemoveRangeAsync<ClientOrderProduct>(w => _removedItemProducts.Contains(w.Id));
+
+                await _documentController.RemoveRangeAsync<SalesInvoiceProduct>(w => _removedItemProducts.Contains(w.Id));
                 _removedItemProducts.Clear();
 
                 int i = 0;
@@ -665,7 +665,7 @@ namespace PresentationWPF.Forms.Documents
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            if(!_data.Conducted)
+            if (!_data.Conducted)
                 WrideDocument(TypeWriteDocument.Write);
             else
                 WrideDocument(TypeWriteDocument.Conducted);
@@ -681,5 +681,4 @@ namespace PresentationWPF.Forms.Documents
             WrideDocument(TypeWriteDocument.UnConducted);
         }
     }
-
 }

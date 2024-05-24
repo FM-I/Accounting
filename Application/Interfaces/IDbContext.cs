@@ -6,6 +6,8 @@ using Domain.Entity.Registers.Accumulations;
 using Domain.Entity.Registers.Informations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using System.Reflection.Metadata;
 
 namespace BL.Interfaces
@@ -44,6 +46,8 @@ namespace BL.Interfaces
         DbSet<ClientsDebt> ClientsDebts { get; set; }
         DbSet<ProvidersDebt> ProvidersDebts { get; set; }
         DbSet<Sale> Sales { get; set; }
+        public DatabaseFacade Database { get; }
+
         public ChangeTracker ChangeTracker { get; }
 
         public event EventHandler<SavedChangesEventArgs>? SavedChanges;

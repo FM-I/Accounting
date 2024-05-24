@@ -4,12 +4,12 @@ using Domain.Entity.Registers.Accumulations;
 using Domain.Enum;
 using Domain.Interfaces;
 using Domain.Models;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entity.Documents
 {
     public class SaleInvoice : Document
     {
+        public virtual TypePrice TypePrice { get; set; }
         public virtual Warehouse Warehouse { get; set; }
         public virtual ICollection<SalesInvoiceProduct> Products { get; set; } = new List<SalesInvoiceProduct>();
         public decimal Summa { get => Products.Sum(s => s.Summa); }
@@ -30,16 +30,16 @@ namespace Domain.Entity.Documents
                 leftovers.Add(new Leftover()
                 {
                     Date = DateTime.Now,
-                    Nomenclature = product.Nomenclature,
+                    NomenclatureId = product.NomenclatureId,
                     Warehouse = Warehouse,
-                    Value = product.Quantity / (product.Nomenclature.BaseUnit.Coefficient == 0 ? 1 : product.Nomenclature.BaseUnit.Coefficient),
+                    Value = product.Quantity,
                     TypeMove = TypeAccumulationRegisterMove.OUTCOMING
                 });
 
                 sales.Add(new Sale()
                 {
                     Date = DateTime.Now,
-                    Nomenclature = product.Nomenclature,
+                    NomenclatureId = product.NomenclatureId,
                     Client = Client,
                     Organization = Organization,
                     Price = product.Price,
@@ -98,6 +98,8 @@ namespace Domain.Entity.Documents
                 Organization = data.Organization;
                 Warehouse = data.Warehouse;
                 ClientOrder = data;
+                Currency = data.Currency;
+                TypePrice = data.TypePrice;
 
                 foreach (var product in data.Products)
                 {
@@ -105,6 +107,8 @@ namespace Domain.Entity.Documents
                     {
                         Document = this,
                         Nomenclature = product.Nomenclature,
+                        UnitId = product.UnitId,
+                        NomenclatureId = product.NomenclatureId,
                         Unit = product.Unit,
                         Price = product.Price,
                         Quantity = product.Quantity,
@@ -147,7 +151,24 @@ namespace Domain.Entity.Documents
 
         public override DataComplectionResult CheckDataComplection()
         {
-            throw new NotImplementedException();
+            var result = new DataComplectionResult();
+
+            if (Client == null)
+                result.Properties.Add("Контрагент");
+
+            if (Organization == null)
+                result.Properties.Add("Організація");
+
+            if (Warehouse == null)
+                result.Properties.Add("Склад");
+
+            if (TypePrice == null)
+                result.Properties.Add("Тип ціни");
+
+            if (Currency == null)
+                result.Properties.Add("Валюта");
+
+            return result;
         }
     }
 }

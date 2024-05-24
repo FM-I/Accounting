@@ -8,7 +8,7 @@ using System.Windows.Data;
 
 namespace PresentationWPF.Forms.Documents
 {
-    public partial class ClientOrderListForm : Window
+    public partial class SalesInvoiceListForm : Window
     {
         private readonly IDocumentController _controller;
         private readonly IDbContext _context;
@@ -16,7 +16,7 @@ namespace PresentationWPF.Forms.Documents
 
         public Guid SelectedId { get; set; }
 
-        public ClientOrderListForm(bool select = false)
+        public SalesInvoiceListForm(bool select = false)
         {
             _controller = DIContainer.ServiceProvider.GetRequiredService<IDocumentController>();
             _context = DIContainer.ServiceProvider.GetRequiredService<IDbContext>();
@@ -30,16 +30,14 @@ namespace PresentationWPF.Forms.Documents
 
         private void context_SavedChanges(object? sender, SavedChangesEventArgs e)
         {
-            var list = _controller.GetDocuments<ClientOrder>();            
+            var list = _controller.GetDocuments<SaleInvoice>();
             List<ListItem> items = new List<ListItem>();
-            
             foreach (var item in list)
             {
                 items.Add(new ListItem(item.Id, item.Number, item.Date, item.DeleteMark, item.Conducted, item.Client.Name, item.Summa));
             }
-
             dataList.ItemsSource = items;
-            
+
             var view = (CollectionView)CollectionViewSource.GetDefaultView(dataList.ItemsSource);
             view.Filter = ListFilter;
             view.SortDescriptions.Add(new("Number", System.ComponentModel.ListSortDirection.Descending));
@@ -59,13 +57,13 @@ namespace PresentationWPF.Forms.Documents
                 return;
             }
 
-            var elementForm = new ClientOrderElementForm(item.Id);
+            var elementForm = new SalesInvoiceElementForm(item.Id);
             elementForm.Show();
         }
 
         private void CreateButton_Click(object sender, RoutedEventArgs e)
         {
-            var elementForm = new ClientOrderElementForm();
+            var elementForm = new SalesInvoiceElementForm();
             elementForm.Show();
         }
 
@@ -75,7 +73,7 @@ namespace PresentationWPF.Forms.Documents
                 return;
 
             ListItem item = (ListItem)dataList.SelectedItem;
-            var data = _controller.GetDocument<ClientOrder>(item.Id);
+            var data = _controller.GetDocument<SaleInvoice>(item.Id);
 
             MessageBoxResult result;
             if (item.DeleteMark)
@@ -123,31 +121,44 @@ namespace PresentationWPF.Forms.Documents
                 return;
 
             ListItem item = (ListItem)dataList.SelectedItem;
-            var data = _controller.GetDocument<ClientOrder>(item.Id);
+            var data = _controller.GetDocument<SaleInvoice>(item.Id);
             if (data != null)
             {
-                var elementForm = new ClientOrderElementForm((ClientOrder)data.DeepCopy());
+                var elementForm = new SalesInvoiceElementForm((SaleInvoice)data.DeepCopy());
                 elementForm.Show();
             }
         }
 
-        private void FillSaleInvoice_Click(object sender, RoutedEventArgs e)
+        private void FillInCashOrder_Click(object sender, RoutedEventArgs e)
         {
             var item = (ListItem)dataList.SelectedItem;
 
             if (item == null)
                 return;
 
-            var order = _controller.GetDocument<ClientOrder>(item.Id);
+            var order = _controller.GetDocument<SaleInvoice>(item.Id);
 
             if (order == null)
                 return;
 
-            var document = new SaleInvoice();
+            var document = new InCashOrder();
             document.FillWith(order);
-            
-            var form = new SalesInvoiceElementForm(document);
-            form.Show();
+        }
+
+        private void FillInBankAccountOrder_Click(object sender, RoutedEventArgs e)
+        {
+            var item = (ListItem)dataList.SelectedItem;
+
+            if (item == null)
+                return;
+
+            var order = _controller.GetDocument<SaleInvoice>(item.Id);
+
+            if (order == null)
+                return;
+
+            var document = new InBankAccontOrder();
+            document.FillWith(order);
         }
 
         private record ListItem(Guid Id, string Number, DateTime Date, bool DeleteMark, bool Conducted, string ClientName, decimal Summa);

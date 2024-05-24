@@ -1,5 +1,6 @@
 ﻿using BL.Interfaces;
 using Domain.Entity.Documents;
+using Domain.Entity.Handbooks;
 using Domain.Entity.Registers.Accumulations;
 using Domain.Enum;
 using Domain.Interfaces;
@@ -12,10 +13,12 @@ namespace BL.Controllers
     {
         private readonly IDbContext _context;
         private readonly IAccumulationRegisterController _accumulationController;
-        public DocumentController(IDbContext context, IAccumulationRegisterController accumulationController)
+        private readonly IHandbookController _handbookController;
+        public DocumentController(IDbContext context, IAccumulationRegisterController accumulationController, IHandbookController handbookController)
         {
             _context = context;
             _accumulationController = accumulationController;
+            _handbookController = handbookController;
         }
 
         private string GetNextNumber<T>(DbSet<T> data) where T : Document
@@ -147,7 +150,7 @@ namespace BL.Controllers
                             {
                                 if(value.TypeMove == TypeAccumulationRegisterMove.OUTCOMING)
                                 {
-                                    nomenclatures.Add(value.Nomenclature.Id);
+                                    nomenclatures.Add(value.NomenclatureId);
                                     warehouses.Add(value.Warehouse.Id);
                                 }
                             }
@@ -158,25 +161,40 @@ namespace BL.Controllers
                             var list = _accumulationController.GetListData<Leftover>(w => nomenclatures.Contains(w.NomenclatureId)
                                                                                           && warehouses.Contains(w.WarehouseId));
 
+                            var nomenclatureList = _handbookController.GetHandbooks<Nomenclature>(w => nomenclatures.Contains(w.Id));
+
                             if (list.Count == 0)
                             {
+
                                 foreach (Leftover value in move.Value)
-                                    result.Messages.Add($"Не вистачає {value.Value} {value.Nomenclature.BaseUnit.Name} залишків {value.Nomenclature.Name} на {value.Warehouse.Name}");
+                                {
+                                    var nomenclature = nomenclatureList.FirstOrDefault(w => w.Id == value.NomenclatureId);
+
+                                    if(nomenclature != null)
+                                        result.Messages.Add($"Не вистачає {value.Value} {nomenclature.BaseUnit.Name} залишків {nomenclature.Name} на {value.Warehouse.Name}");
+
+                                }
 
                                 break;
                             }
 
                             var leftovers = _accumulationController.GetLeftoverList(list,
-                                g => new { g.Nomenclature, g.Warehouse },
+                                g => new { g.NomenclatureId, g.Warehouse },
                                 s => new {
-                                    id = string.Join("", s.Key.Nomenclature.Id, s.Key.Warehouse.Id),
+                                    id = string.Join("", s.Key.NomenclatureId, s.Key.Warehouse.Id),
                                     value = s.Sum(selector => selector.TypeMove == TypeAccumulationRegisterMove.INCOMING ? selector.Value : selector.Value * -1)
                                 });
 
                             if (leftovers.Count == 0)
                             {
                                 foreach (Leftover value in move.Value)
-                                    result.Messages.Add($"Не вистачає {value.Value} {value.Nomenclature.BaseUnit.Name} залишків {value.Nomenclature.Name} на {value.Warehouse.Name}");
+                                {
+                                    var nomenclature = nomenclatureList.FirstOrDefault(w => w.Id == value.NomenclatureId);
+
+                                    if(nomenclature != null)
+                                        result.Messages.Add($"Не вистачає {value.Value} {nomenclature.BaseUnit.Name} залишків {nomenclature.Name} на {value.Warehouse.Name}");
+
+                                }
                             }
                             else
                             {
@@ -195,18 +213,27 @@ namespace BL.Controllers
 
                                 foreach (Leftover item in move.Value)
                                 {
+                                    var nomenclature = nomenclatureList.FirstOrDefault(w => w.Id == item.NomenclatureId);
                                     var id = string.Join("", item.Nomenclature.Id, item.Warehouse.Id);
                                     var data = leftovers.FirstOrDefault(x => x.id == id);
                                     double leftover = 0;
                                     double prevValue = 0;
+                                    double coefficient = 1;
+
+                                    if(nomenclature.BaseUnit != null && nomenclature.BaseUnit.Coefficient > 0)
+                                        coefficient = nomenclature.BaseUnit.Coefficient;
 
                                     if (data != null)
                                         leftover = data.value;
 
                                     oldMove.TryGetValue(id, out prevValue);
 
-                                    if (leftover + prevValue - item.Value <= 0)
-                                        result.Messages.Add($"Не вистачає {Math.Abs(leftover + prevValue - item.Value)} {item.Nomenclature.BaseUnit.Name} залишків {item.Nomenclature.Name} на {item.Warehouse.Name}");
+                                    var value = leftover + prevValue - (item.Value / coefficient);
+                                    if (Math.Abs(value) <= 0)
+                                    {
+                                        if(nomenclature != null)
+                                            result.Messages.Add($"Не вистачає {Math.Abs(value)} {nomenclature.BaseUnit.Name} залишків {nomenclature.Name} на {item.Warehouse.Name}");
+                                    }
                                 }
                             }
 
@@ -216,25 +243,38 @@ namespace BL.Controllers
                         break;
                 }
             }
-
+            
             if (result.IsSuccess)
             {
-                foreach (var item in oldMoves)
-                    await _accumulationController.RemoveRangeAsync(item.Value);
-
-                document.Conducted = true;
-                document.Date = DateTime.Now;
-
-                await AddOrUpdateAsync(document);
-
-                foreach (var move in moves)
+                using (var transaction = await _context.Database.BeginTransactionAsync())
                 {
-                    foreach (var item in move.Value)
+                    try
                     {
-                        item.DocumentId = document.Id;
-                    }
+                        foreach (var item in oldMoves)
+                            await _accumulationController.RemoveRangeAsync(item.Value);
 
-                    await _accumulationController.AddOrUpdateRangeAsync(move.Value);
+                        document.Conducted = true;
+                        document.Date = DateTime.Now;
+
+                        await AddOrUpdateAsync(document);
+
+                        foreach (var move in moves)
+                        {
+                            foreach (var item in move.Value)
+                            {
+                                item.DocumentId = document.Id;
+                            }
+
+                            await _accumulationController.AddOrUpdateRangeAsync(move.Value);
+                        }
+
+                        await transaction.CommitAsync();
+                    }
+                    catch (Exception e)
+                    {
+                        await transaction.RollbackAsync();
+                        result.Messages.Add("Помилка під час проведння документу: " + e.Message);
+                    }
                 }
             }
 
@@ -243,27 +283,37 @@ namespace BL.Controllers
 
         public async Task UnConductedDoumentAsync<T>(T document) where T : Document
         {
-            var moves = document.GetAccumulationMove();
-
-            Dictionary<Type, IEnumerable<IAccumulationRegister>> oldMoves = new();
-            if (document.Id != Guid.Empty)
+            using (var transaction = await _context.Database.BeginTransactionAsync())
             {
-                Func<IAccumulationRegister, bool> kva = k => k.DocumentId == document.Id;
-                foreach (var move in moves)
+                try
                 {
-                    var oldMove = (IEnumerable<IAccumulationRegister>)_accumulationController.GetType().GetMethod("GetListData").MakeGenericMethod(move.Key).Invoke(_accumulationController, [kva]);
+                    var moves = document.GetAccumulationMove();
 
-                    if (oldMove != null && oldMove.Count() != 0)
-                        oldMoves.Add(move.Key, oldMove);
+                    Dictionary<Type, IEnumerable<IAccumulationRegister>> oldMoves = new();
+                    if (document.Id != Guid.Empty)
+                    {
+                        Func<IAccumulationRegister, bool> kva = k => k.DocumentId == document.Id;
+                        foreach (var move in moves)
+                        {
+                            var oldMove = (IEnumerable<IAccumulationRegister>)_accumulationController.GetType().GetMethod("GetListData").MakeGenericMethod(move.Key).Invoke(_accumulationController, [kva]);
+
+                            if (oldMove != null && oldMove.Count() != 0)
+                                oldMoves.Add(move.Key, oldMove);
+                        }
+                    }
+
+                    foreach (var item in oldMoves)
+                        await _accumulationController.RemoveRangeAsync(item.Value);
+
+                    document.Conducted = false;
+
+                    await AddOrUpdateAsync(document);
+                }
+                catch (Exception)
+                {
+                    await transaction.RollbackAsync();
                 }
             }
-
-            foreach (var item in oldMoves)
-                await _accumulationController.RemoveRangeAsync(item.Value);
-
-            document.Conducted = false;
-
-            await AddOrUpdateAsync(document);
         }
 
     }
