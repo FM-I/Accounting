@@ -61,18 +61,25 @@ namespace BL.Controllers
             if (skip == 0 && take == 0)
                 return data.AsNoTracking().ToList();
 
-            return data.AsNoTracking().Skip(skip).Take(take).ToList();
+            return data.Skip(skip).Take(take).AsNoTracking().ToList();
         }
 
         public T? GetDocument<T>(Guid id) where T : Document
         {
             IQueryable<T> data = _context.GetPropertyData<T>();
             data = _context.IncludeVirtualProperty(data);
-            return data.AsNoTracking().FirstOrDefault(x => x.Id == id);
+            var doc = data.AsNoTracking().FirstOrDefault(x => x.Id == id);
+
+            _context.Entry(doc).State = EntityState.Detached;
+
+            _context.ChangeTracker.Clear();
+            return doc;
         }
 
         public async Task<Guid> AddOrUpdateAsync<T>(T document, bool saveChanges = true) where T : Document
         {
+            _context.ChangeTracker.Clear();
+
             if (string.IsNullOrWhiteSpace(document.Number))
             {
                 var data = _context.GetPropertyData<T>();

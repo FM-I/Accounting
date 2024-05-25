@@ -52,7 +52,9 @@
 
             <MenuItem Header="Заповнити на основі ▼" Height="28" BorderThickness="1" BorderBrush="Gray">
                 <MenuItem Click="FillInCashOrder_Click" Header="Надходження в касу"/>
+                <MenuItem Click="FillOutCashOrder_Click" Header="Витрата з каси"/>
                 <MenuItem Click="FillInBankAccountOrder_Click" Header="Надходження на рахунок"/>
+                <MenuItem Click="FillOutBankAccountOrder_Click" Header="Витрата з рахунку"/>
             </MenuItem>
 
         </Menu>

@@ -18,6 +18,11 @@ namespace Domain.Entity.Documents
         public double CurrencyRate { get; set; } = 1;
         public virtual ClientOrder? ClientOrder { get; set; }
 
+        public override string ToString()
+        {
+            return $"Видаткова накладна {Number} від {Date}";
+        }
+
         public override Dictionary<Type, List<IAccumulationRegister>> GetAccumulationMove()
         {
             Dictionary<Type, List<IAccumulationRegister>> moves = new();
@@ -99,6 +104,7 @@ namespace Domain.Entity.Documents
                 Warehouse = data.Warehouse;
                 ClientOrder = data;
                 Currency = data.Currency;
+                CurrencyRate = data.CurrencyRate;
                 TypePrice = data.TypePrice;
 
                 foreach (var product in data.Products)

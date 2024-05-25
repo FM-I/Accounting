@@ -2,6 +2,7 @@
 using Domain.Entity.Documents;
 using Domain.Entity.DocumentTables;
 using Domain.Entity.Handbooks;
+using Domain.Entity.Registers.Informations;
 using Domain.Enum;
 using Microsoft.Extensions.DependencyInjection;
 using PresentationWPF.Common;
@@ -17,6 +18,13 @@ namespace PresentationWPF.Forms.Documents
     public partial class PurchaceInvoiceElementForm : Window, INotifyPropertyChanged
     {
 
+        private bool _isChange;
+        public bool IsChange
+        {
+            get { return _isChange; }
+            set { _isChange = value; Title = _isChange ? Title += "*" : Title.TrimEnd('*'); }
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private ObservableCollection<ItemProduct> _products = new();
@@ -25,6 +33,7 @@ namespace PresentationWPF.Forms.Documents
 
         private readonly IHandbookController _handbookController;
         private readonly IDocumentController _documentController;
+        private readonly IInformationRegisterController _infoController;
         private List<Guid> _removedItemProducts = new();
         private PurchaceInvoice _data = new();
 
@@ -52,6 +61,12 @@ namespace PresentationWPF.Forms.Documents
             set { OnPropertyChanged(); }
         }
 
+        public double? CurrencyRate
+        {
+            get { return _data.CurrencyRate; }
+            set { OnPropertyChanged(); }
+        }
+
         public string? TypePriceName
         {
             get { return _data.TypePrice?.Name; }
@@ -61,6 +76,12 @@ namespace PresentationWPF.Forms.Documents
         public string? Number
         {
             get { return _data?.Number; }
+            set { OnPropertyChanged(); }
+        }
+
+        public string? OrderName
+        {
+            get { return _data.ProviderOrder != null ? $"Замовлення постачальника {_data.ProviderOrder.Number} від {_data.ProviderOrder.Date}" : null; }
             set { OnPropertyChanged(); }
         }
 
@@ -74,6 +95,7 @@ namespace PresentationWPF.Forms.Documents
         {
             _handbookController = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
             _documentController = DIContainer.ServiceProvider.GetRequiredService<IDocumentController>();
+            _infoController = DIContainer.ServiceProvider.GetRequiredService<IInformationRegisterController>();
 
             if (id != default)
             {
@@ -95,6 +117,9 @@ namespace PresentationWPF.Forms.Documents
                             Price = (double)item.Price,
                             Summa = (double)item.Summa
                         });
+
+                        var product = _products.Last();
+                        product.OnChange += ProductItem_OnChange;
                     }
                 }
             }
@@ -108,6 +133,7 @@ namespace PresentationWPF.Forms.Documents
         {
             _handbookController = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
             _documentController = DIContainer.ServiceProvider.GetRequiredService<IDocumentController>();
+            _infoController = DIContainer.ServiceProvider.GetRequiredService<IInformationRegisterController>();
 
             _data = data;
 
@@ -124,6 +150,9 @@ namespace PresentationWPF.Forms.Documents
                     Price = (double)item.Price,
                     Summa = (double)item.Summa
                 });
+
+                var product = _products.Last();
+                product.OnChange += ProductItem_OnChange;
             }
 
             InitializeComponent();
@@ -134,11 +163,21 @@ namespace PresentationWPF.Forms.Documents
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new(propertyName));
+            if (!_isChange)
+                IsChange = true;
         }
 
         private void AddItemProduct_Click(object sender, RoutedEventArgs e)
         {
-            Products.Add(new ItemProduct());
+            ItemProduct item = new();
+            item.OnChange += ProductItem_OnChange;
+            Products.Add(item);
+        }
+
+        private void ProductItem_OnChange(object? sender, EventArgs e)
+        {
+            if (!_isChange)
+                IsChange = true;
         }
 
         private void RemoveItemProduct_Click(object sender, RoutedEventArgs e)
@@ -176,6 +215,19 @@ namespace PresentationWPF.Forms.Documents
                             UnitName = form.Unit.Name,
                             Quantity = 1
                         });
+
+                        item = Products.Last();
+
+                        if (_data.TypePrice != null)
+                        {
+                            var prices = _infoController.GetLastDateData<Price>(selectionFunc: s => s.TypePriceId == _data.TypePrice.Id && s.NomenclatureId == item.NomenclatureId);
+
+                            if (prices != null && prices.Count != 0)
+                            {
+                                var priceData = prices.FirstOrDefault();
+                                item.Price = priceData != null ? (double)priceData.Value : 0;
+                            }
+                        }
                     }
                 }
             }
@@ -219,6 +271,17 @@ namespace PresentationWPF.Forms.Documents
                         item.NomenclatureId = data.Id;
                         item.UnitName = data.BaseUnit?.Name;
                         item.UnitId = (Guid)data?.BaseUnitId;
+
+                        if (_data.TypePrice != null && (item.Price == 0 || item.Price == null))
+                        {
+                            var prices = _infoController.GetLastDateData<Price>(selectionFunc: s => s.TypePriceId == _data.TypePrice.Id && s.NomenclatureId == data.Id);
+
+                            if (prices != null && prices.Count != 0)
+                            {
+                                var priceData = prices.FirstOrDefault();
+                                item.Price = priceData != null ? (double)priceData.Value : 0;
+                            }
+                        }
                     }
                 }
             }
@@ -443,6 +506,8 @@ namespace PresentationWPF.Forms.Documents
         private void btnClearCurrency_Click(object sender, RoutedEventArgs e)
         {
             _data.Currency = null;
+            _data.CurrencyRate = 1;
+            CurrencyRate = 1;
             CurrencyName = "";
         }
 
@@ -456,8 +521,19 @@ namespace PresentationWPF.Forms.Documents
                     var data = _handbookController.GetHandbook<Currency>(form.SelectedId);
                     if (data != null)
                     {
+                        var rates = _infoController.GetLastDateData<ExchangesRate>(selectionFunc: s => s.CurrencyId == form.SelectedId);
+
+                        double rate = 1;
+
+                        if (rates != null && rates.Count != 0)
+                        {
+                            rate = rates.First().Rate;
+                        }
+
+                        _data.CurrencyRate = rate;
                         _data.Currency = data;
                         CurrencyName = data.Name;
+                        CurrencyRate = rate;
                     }
                 }
             }
@@ -492,13 +568,36 @@ namespace PresentationWPF.Forms.Documents
             var form = new TypePriceListForm(true);
             if (form.ShowDialog() != null)
             {
-                if (form.SelectedId != default)
+                if (form.SelectedId != default && form.SelectedId != _data.TypePrice?.Id)
                 {
                     var data = _handbookController.GetHandbook<TypePrice>(form.SelectedId);
                     if (data != null)
                     {
                         _data.TypePrice = data;
                         TypePriceName = data.Name;
+
+                        var res = MessageBox.Show("Тип ціни змінено, перерахувати ціни?", "Питання", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                        if (res == MessageBoxResult.Yes)
+                        {
+                            var products = new List<Guid>();
+
+                            foreach (var item in _products)
+                            {
+                                products.Add(item.NomenclatureId);
+                            }
+
+                            var prices = _infoController.GetLastDateData<Price>(selectionFunc: s => s.TypePriceId == data.Id && products.Contains(s.NomenclatureId));
+
+                            if (prices == null)
+                                prices = new();
+
+                            foreach (var item in Products)
+                            {
+                                var priceData = prices.FirstOrDefault(w => w.NomenclatureId == item.NomenclatureId);
+                                item.Price = priceData != null ? (double)priceData.Value : 0;
+                            }
+                        }
                     }
                 }
             }
@@ -520,6 +619,74 @@ namespace PresentationWPF.Forms.Documents
                 }
             }
         }
+
+        private void btnClearOrder_Click(object sender, RoutedEventArgs e)
+        {
+            _data.ProviderOrder = null;
+            OrderName = "";
+        }
+
+        private void btnShowListOrder_Click(object sender, RoutedEventArgs e)
+        {
+            var form = new ProviderOrderListForm(true);
+            if (form.ShowDialog() != null)
+            {
+                if (form.SelectedId != default && form.SelectedId != _data.ProviderOrder?.Id)
+                {
+                    var data = _documentController.GetDocument<ProviderOrder>(form.SelectedId);
+                    if (data != null)
+                    {
+                        _data.ProviderOrder = data;
+                        OrderName = "";
+
+                        var res = MessageBox.Show("Перезаповнити товари відповідно до замовлення?", "Питання", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                        if (res == MessageBoxResult.Yes)
+                        {
+                            _products.Clear();
+
+                            var products = new List<Guid>();
+
+                            foreach (var item in data.Products)
+                            {
+                                _products.Add(new()
+                                {
+                                    Id = item.Id,
+                                    NomenclatureId = item.NomenclatureId,
+                                    UnitId = item.UnitId,
+                                    NomenclatureName = item.Nomenclature.Name,
+                                    UnitName = item.Unit.Name,
+                                    Quantity = item.Quantity,
+                                    Price = (double)item.Price,
+                                    Summa = (double)item.Summa
+                                });
+
+                                var product = _products.Last();
+                                product.OnChange += ProductItem_OnChange;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void btnOpenOrder_Click(object sender, RoutedEventArgs e)
+        {
+            if (_data.ProviderOrder == null)
+                return;
+
+            var form = new ProviderOrderElementForm(_data.ProviderOrder.Id);
+            if (form.ShowDialog() != null)
+            {
+                var data = _documentController.GetDocument<ProviderOrder>(_data.ProviderOrder.Id);
+                if (data != null)
+                {
+                    _data.ProviderOrder = data;
+                    OrderName = "";
+                }
+            }
+        }
+
 
         private bool CheckDataComplection()
         {
@@ -587,6 +754,13 @@ namespace PresentationWPF.Forms.Documents
                         await _documentController.AddOrUpdateAsync(_data);
                         break;
                     case TypeWriteDocument.Conducted:
+
+                        if (_data.DeleteMark)
+                        {
+                            MessageBox.Show("Документ помічено на видалення! Проведення неможливе.", "Помилка");
+                            return;
+                        }
+
                         var result = await _documentController.ConductedDoumentAsync(_data);
                         if (!result.IsSuccess)
                         {
@@ -614,6 +788,7 @@ namespace PresentationWPF.Forms.Documents
 
                 OnPropertyChanged(nameof(Number));
                 OnPropertyChanged(nameof(Date));
+                IsChange = false;
             }
         }
 
@@ -633,6 +808,16 @@ namespace PresentationWPF.Forms.Documents
         private void UnConducted_Click(object sender, RoutedEventArgs e)
         {
             WrideDocument(TypeWriteDocument.UnConducted);
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            if (IsChange
+                && MessageBox.Show("Дані було змінено. Збергти зміни?", "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                Save_Click(null, null);
+                e.Cancel = IsChange;
+            }
         }
     }
 }

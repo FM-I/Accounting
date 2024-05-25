@@ -3,6 +3,7 @@ using Domain.Entity.Registers.Accumulations;
 using Domain.Enum;
 using Domain.Interfaces;
 using Domain.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entity.Documents
 {
@@ -13,6 +14,15 @@ namespace Domain.Entity.Documents
         public virtual CashBox CashBox { get; set; }
         public TypePayment Operation { get; set; }
         public decimal Summa { get; set; }
+
+        [ForeignKey(nameof(SaleInvoice))]
+        public Guid? SaleInvoiceId { get; set; }
+        public SaleInvoice? SaleInvoice { get; set; }
+
+        [ForeignKey(nameof(PurchaceInvoice))]
+        public Guid? PurchaceInvoiceId { get; set; }
+        public PurchaceInvoice? PurchaceInvoice { get; set; }
+
 
         public override Dictionary<Type, List<IAccumulationRegister>> GetAccumulationMove()
         {
@@ -57,15 +67,25 @@ namespace Domain.Entity.Documents
 
         public override void FillWith(Document document)
         {
-            if (document is ClientOrder)
+            if (document is SaleInvoice)
             {
-                Summa = ((ClientOrder)document).Summa;
+                var saleInvoice = (SaleInvoice)document;
+                Summa = saleInvoice.Summa;
+                Currency = saleInvoice.Currency;
+                CurrencyRate = saleInvoice.CurrencyRate;
                 Operation = TypePayment.Client;
+                SaleInvoiceId = saleInvoice.Id;
+                SaleInvoice = saleInvoice;
             }
-            else if (document is ProviderOrder)
+            else if (document is PurchaceInvoice)
             {
-                Summa = ((ProviderOrder)document).Summa;
+                var purchaceInvoice = (PurchaceInvoice)document;
+                Summa = purchaceInvoice.Summa;
+                Currency = purchaceInvoice.Currency;
+                CurrencyRate = purchaceInvoice.CurrencyRate;
                 Operation = TypePayment.Provider;
+                PurchaceInvoiceId = purchaceInvoice.Id;
+                PurchaceInvoice = purchaceInvoice;
             }
 
             Client = document.Client;
@@ -80,6 +100,7 @@ namespace Domain.Entity.Documents
             document.Number = "";
             document.Date = DateTime.Now;
             document.DeleteMark = false;
+            document.Conducted = false;
 
             return document;
         }
@@ -100,8 +121,8 @@ namespace Domain.Entity.Documents
             if (Currency == null)
                 result.Properties.Add("Валюта");
 
-            if (Operation == default)
-                result.Properties.Add("Тип операції");
+            if (Summa <= 0)
+                result.Properties.Add("Сума");
 
             return result;
         }

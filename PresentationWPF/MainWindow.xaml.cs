@@ -123,6 +123,18 @@ namespace PresentationWPF
                 case "openPurchaceInvoiceList":
                     form = new PurchaceInvoiceListForm();
                     break;
+                case "openInCashOrderList":
+                    form = new InCashOrderListForm();
+                    break;
+                case "openOutCashOrderList":
+                    form = new OutCashOrderListForm();
+                    break;
+                case "openInBankAccountOrderList":
+                    form = new InBankAccountOrderListForm();
+                    break;
+                case "openOutBankAccountOrderList":
+                    form = new OutBankAccontOrderListForm();
+                    break;
             }
 
             if (form != null)

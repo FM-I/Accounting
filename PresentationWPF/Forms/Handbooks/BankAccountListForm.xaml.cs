@@ -12,10 +12,13 @@ namespace PresentationWPF.Forms
     {
         private readonly IHandbookController _controller;
         private readonly IDbContext _context;
-        public BankAccountListForm()
+        private bool _select;
+        public Guid SelectedId { get; set; }
+        public BankAccountListForm(bool select = false)
         {
             _controller = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
             _context = DIContainer.ServiceProvider.GetRequiredService<IDbContext>();
+            _select = select;
             _context.SavedChanges += context_SavedChanges;
 
             InitializeComponent();
@@ -42,6 +45,13 @@ namespace PresentationWPF.Forms
         {
             ListItem item = (ListItem)dataList.SelectedItem;
             
+            if(_select && item != null)
+            {
+                SelectedId = item.Id;
+                Close();
+                return;
+            }
+
             if (item == null)
                 return;
 

@@ -51,11 +51,11 @@ namespace Infrastructure
             Database.EnsureCreated();
             ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             ChangeTracker.AutoDetectChangesEnabled = false;
-
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("Filename=Mobile.db");
+            optionsBuilder.UseSqlite("Filename=Mobile.db")
+                .EnableSensitiveDataLogging();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -94,14 +94,14 @@ namespace Infrastructure
 
             var copy = data;
             foreach (var item in virtualProperty)
-                copy = copy.Include(item.Name).AsNoTracking();
+                copy = copy.Include(item.Name);
 
             virtualProperty = typeof(T).GetProperties().Where(p => p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)
             && p.GetGetMethod().IsVirtual);
 
             foreach (var item in virtualProperty)
             {
-                copy = copy.Include(item.Name).AsNoTracking();
+                copy = copy.Include(item.Name);
 
                 var genericType = item.PropertyType.GetGenericArguments().First();
 
@@ -110,11 +110,13 @@ namespace Infrastructure
 
                 foreach(var prop in propertyGeneric)
                 {
-                    copy = copy.Include($"{item.Name}.{prop.Name}").AsNoTracking();
+                    copy = copy.Include($"{item.Name}.{prop.Name}");
                 }
             }
 
-            return copy;
+            ChangeTracker.Clear();
+
+            return copy.AsNoTracking();
         }
     }
 }

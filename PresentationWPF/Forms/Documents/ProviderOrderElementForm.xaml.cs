@@ -18,11 +18,10 @@ namespace PresentationWPF.Forms.Documents
     public partial class ProviderOrderElementForm : Window, INotifyPropertyChanged
     {
         private bool _isChange;
-
         public bool IsChange
         {
             get { return _isChange; }
-            set { _isChange = value; if (_isChange) Title = "d"; else Title = "d"; }
+            set { _isChange = value; Title = _isChange ? Title += "*" : Title.TrimEnd('*'); }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -111,6 +110,9 @@ namespace PresentationWPF.Forms.Documents
                             Price = (double)item.Price,
                             Summa = (double)item.Summa
                         });
+
+                        var product = _products.Last();
+                        product.OnChange += ProductItem_OnChange;
                     }
                 }
             }
@@ -141,6 +143,9 @@ namespace PresentationWPF.Forms.Documents
                     Price = (double)item.Price,
                     Summa = (double)item.Summa
                 });
+
+                var product = _products.Last();
+                product.OnChange += ProductItem_OnChange;
             }
 
             InitializeComponent();
@@ -151,13 +156,21 @@ namespace PresentationWPF.Forms.Documents
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new(propertyName));
-            if (!IsChange)
+            if (!_isChange)
                 IsChange = true;
         }
 
         private void AddItemProduct_Click(object sender, RoutedEventArgs e)
         {
-            Products.Add(new ItemProduct());
+            ItemProduct item = new();
+            item.OnChange += ProductItem_OnChange;
+            Products.Add(item);
+        }
+
+        private void ProductItem_OnChange(object? sender, EventArgs e)
+        {
+            if (!_isChange)
+                IsChange = true;
         }
 
         private void RemoveItemProduct_Click(object sender, RoutedEventArgs e)
@@ -666,6 +679,13 @@ namespace PresentationWPF.Forms.Documents
                         await _documentController.AddOrUpdateAsync(_data);
                         break;
                     case TypeWriteDocument.Conducted:
+
+                        if (_data.DeleteMark)
+                        {
+                            MessageBox.Show("Документ помічено на видалення! Проведення неможливе.", "Помилка");
+                            return;
+                        }
+
                         var result = await _documentController.ConductedDoumentAsync(_data);
                         if (!result.IsSuccess)
                         {
@@ -693,6 +713,7 @@ namespace PresentationWPF.Forms.Documents
 
                 OnPropertyChanged(nameof(Number));
                 OnPropertyChanged(nameof(Date));
+                IsChange = false;
             }
         }
 
@@ -712,6 +733,16 @@ namespace PresentationWPF.Forms.Documents
         private void UnConducted_Click(object sender, RoutedEventArgs e)
         {
             WrideDocument(TypeWriteDocument.UnConducted);
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            if (IsChange
+                && MessageBox.Show("Дані було змінено. Збергти зміни?", "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                Save_Click(null, null);
+                e.Cancel = IsChange;
+            }
         }
     }
 }

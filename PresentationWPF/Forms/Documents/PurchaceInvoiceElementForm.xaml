@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PresentationWPF.Forms.Documents"
         mc:Ignorable="d" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        Title="Прибуткова накладна" Height="450" Width="800"    WindowStartupLocation="CenterScreen">
+        Title="Прибуткова накладна" Height="450" Width="800"  Closing="Window_Closing"  WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <Style TargetType="ListViewItem">
@@ -108,6 +108,7 @@
                     <Label Content="Номер"/>
                     <Label Content="Валюта"/>
                     <Label Content="Тип ціни"/>
+                    <Label Content="Замовлення"/>
                 </StackPanel>
 
                 <StackPanel Orientation="Vertical" Grid.Column="3" Margin="0 0 5 0" >
@@ -157,6 +158,31 @@
 
                     </Grid>
 
+                    <Grid Height="25" Margin="0 2 0 0">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width=".7*"/>
+                            <ColumnDefinition Width=".1*"/>
+                            <ColumnDefinition Width=".1*"/>
+                            <ColumnDefinition Width=".1*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox Grid.Column="0" IsReadOnly="True" VerticalContentAlignment="Center" Text="{Binding OrderName}"/>
+                        <Button Grid.Column="1" x:Name="btnClearOrder" Click="btnClearOrder_Click" Content="X" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
+                        <Button Grid.Column="2" x:Name="btnShowOrder" Click="btnShowListOrder_Click" Content="▼" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
+                        <Button Grid.Column="3" x:Name="btnOpenOrder" Click="btnOpenOrder_Click" Content=". . ."  Background="Transparent" BorderThickness="0 .5 .5 .5"  />
+
+                    </Grid>
+
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" Grid.Column="4">
+                    <Label Content=""/>
+                    <StackPanel Orientation="Horizontal" Margin="0 5 0 0" >
+                        <Label Content="Курс" VerticalContentAlignment="Center"/>
+                        <Label Content="{Binding CurrencyRate}" VerticalContentAlignment="Center"/>
+                    </StackPanel>
+                    <Label Content=""/>
                 </StackPanel>
 
 

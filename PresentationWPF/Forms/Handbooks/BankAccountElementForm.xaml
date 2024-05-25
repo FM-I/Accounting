@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:PresentationWPF.Forms"
         mc:Ignorable="d"
         Title="Банківський рахунок" Height="210" Width="400"
+        WindowStartupLocation="CenterScreen"
         Closing="Window_Closing">
     <Grid>
 

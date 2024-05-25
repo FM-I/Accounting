@@ -683,6 +683,13 @@ namespace PresentationWPF.Forms.Documents
                         await _documentController.AddOrUpdateAsync(_data);
                         break;
                     case TypeWriteDocument.Conducted:
+
+                        if (_data.DeleteMark)
+                        {
+                            MessageBox.Show("Документ помічено на видалення! Проведення неможливе.", "Помилка");
+                            return;
+                        }
+
                         var result = await _documentController.ConductedDoumentAsync(_data);
                         if (!result.IsSuccess)
                         {

@@ -1,12 +1,12 @@
-﻿<Window x:Class="PresentationWPF.Forms.Documents.PurchaceInvoiceListForm"
+﻿<Window x:Class="PresentationWPF.Forms.Documents.OutCashOrderListForm"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PresentationWPF.Forms.Documents"
         mc:Ignorable="d"
-        Title="Прибуткові накладні" Height="450" Width="800"
-    WindowStartupLocation="CenterScreen">
+        Title="Витрати з каси" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen">
     <Grid>
 
         <Grid.RowDefinitions>
@@ -20,6 +20,7 @@
                     <GridViewColumn DisplayMemberBinding="{Binding Id}" Width="0"/>
                     <GridViewColumn Header="Дата" DisplayMemberBinding="{Binding Date, StringFormat=dd-MM-yyyy}" Width="100"/>
                     <GridViewColumn Header="Номер" DisplayMemberBinding="{Binding Number}" Width="90"/>
+                    <GridViewColumn Header="Операція" DisplayMemberBinding="{Binding OperationName}" Width="150"/>
                     <GridViewColumn Header="Контрагент" DisplayMemberBinding="{Binding ClientName}" Width="150"/>
                     <GridViewColumn Header="Сума документу" DisplayMemberBinding="{Binding Summa}" Width="150"/>
                     <GridViewColumn Header="Проведений">
@@ -45,19 +46,8 @@
         <Button x:Name="copyBtn" Content="Копіювати" Click="copyBtn_Click" HorizontalAlignment="Left" Height="28" Margin="169,0,0,0" VerticalAlignment="Center" Width="72"/>
 
         <TextBox  Panel.ZIndex="1" Name="Search" HorizontalAlignment="Left" Height="18" Margin="585,0,0,0" TextWrapping="Wrap" Background="Transparent" VerticalAlignment="Center" Width="193"
-    TextChanged="Search_TextChanged"/>
+TextChanged="Search_TextChanged"/>
         <TextBlock Name="Placeholder" HorizontalAlignment="Left" Margin="588,27,0,0" TextWrapping="Wrap" Text="Пошук" VerticalAlignment="Top" Height="22" RenderTransformOrigin="0.685,0.615"/>
-
-        <Menu x:Name="FillWith" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="246,0,0,0" VerticalAlignment="Center" >
-
-            <MenuItem Header="Заповнити на основі ▼" Height="28" BorderThickness="1" BorderBrush="Gray">
-                <MenuItem Click="FillInCashOrder_Click" Header="Надходження в касу"/>
-                <MenuItem Click="FillOutCashOrder_Click" Header="Витрата з каси"/>
-                <MenuItem Click="FillInBankAccountOrder_Click" Header="Надходження на рахунок"/>
-                <MenuItem Click="FillOutBankAccountOrder_Click" Header="Витрата з рахунку"/>
-            </MenuItem>
-
-        </Menu>
 
     </Grid>
 </Window>

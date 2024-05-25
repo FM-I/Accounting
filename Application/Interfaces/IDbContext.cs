@@ -52,6 +52,7 @@ namespace BL.Interfaces
 
         public event EventHandler<SavedChangesEventArgs>? SavedChanges;
 
+        public EntityEntry Entry(object entity);
         public Task<int> SaveChangesAsync(CancellationToken cancellationToken);
         public EntityEntry Update(object entity);
         public EntityEntry Add(object entity);
