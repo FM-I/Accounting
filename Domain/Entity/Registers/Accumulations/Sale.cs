@@ -1,5 +1,4 @@
-﻿using Domain.Entity.Documents;
-using Domain.Entity.Handbooks;
+﻿using Domain.Entity.Handbooks;
 using Domain.Interfaces;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -16,11 +15,11 @@ namespace Domain.Entity.Registers.Accumulations
 
         [ForeignKey(nameof(Client))]
         public Guid ClientId { get; set; }
-        public Client Client { get; set; }
+        public virtual Client Client { get; set; }
 
         [ForeignKey(nameof(Organization))]
         public Guid OrganizationId { get; set; }
-        public Organization Organization { get; set; }
+        public virtual Organization Organization { get; set; }
 
         public double Quantity { get; set; }
         public decimal Price { get; set; }

@@ -17,6 +17,12 @@ namespace PresentationWPF.Forms.Documents
 {
     public partial class SalesInvoiceElementForm : Window, INotifyPropertyChanged
     {
+        public class OperationItem
+        {
+            public string Text { get; set; }
+            public TypeSaleInvoice Type { get; set; }
+        }
+
         private bool _isChange;
         public bool IsChange
         {
@@ -29,6 +35,14 @@ namespace PresentationWPF.Forms.Documents
         private ObservableCollection<ItemProduct> _products = new();
 
         public ObservableCollection<ItemProduct> Products { get { return _products; } set { _products = value; } }
+
+        private ObservableCollection<OperationItem> _operations = new()
+        {
+                new(){ Text = "Повернення постачальнику", Type = TypeSaleInvoice.ProviderRetun},
+                new(){ Text = "Продаж покупцю", Type = TypeSaleInvoice.Sale},
+        };
+
+        public ObservableCollection<OperationItem> Operations { get { return _operations; } set { _operations = value; } }
 
         private readonly IHandbookController _handbookController;
         private readonly IDocumentController _documentController;
@@ -84,10 +98,11 @@ namespace PresentationWPF.Forms.Documents
             set { _data.Date = value; OnPropertyChanged(); }
         }
 
+        private string? _orderName;
         public string? OrderName
         {
-            get { return _data.ClientOrder != null ? $"Замовлення покупця {_data.ClientOrder.Number} від {_data.ClientOrder.Date}" : null; }
-            set { OnPropertyChanged(); }
+            get { return _orderName; }
+            set { _orderName = value; OnPropertyChanged(); }
         }
 
         public SalesInvoiceElementForm(Guid id = default)
@@ -124,9 +139,19 @@ namespace PresentationWPF.Forms.Documents
                 }
             }
 
+            if (_data.TypeOperation == default)
+                _data.TypeOperation = TypeSaleInvoice.Sale;
+
+            if (_data.TypeOperation == TypeSaleInvoice.ProviderRetun)
+                OrderName = _data.ProviderOrder?.ToString();
+            else if (_data.TypeOperation == TypeSaleInvoice.Sale)
+                OrderName = _data.ClientOrder?.ToString();
+
             InitializeComponent();
             DataContext = this;
             UnConducted.IsEnabled = _data.Conducted;
+            TypeOperation.SelectedItem = Operations.First(w => w.Type == _data.TypeOperation);
+            IsChange = false;
         }
 
         public SalesInvoiceElementForm(SaleInvoice data)
@@ -156,9 +181,19 @@ namespace PresentationWPF.Forms.Documents
 
             }
 
+            if (_data.TypeOperation == default)
+                _data.TypeOperation = TypeSaleInvoice.Sale;
+
+            if (_data.TypeOperation == TypeSaleInvoice.ProviderRetun)
+                OrderName = _data.ProviderOrder?.ToString();
+            else if (_data.TypeOperation == TypeSaleInvoice.Sale)
+                OrderName = _data.ClientOrder?.ToString();
+
             InitializeComponent();
             DataContext = this;
             UnConducted.IsEnabled = _data.Conducted;
+            TypeOperation.SelectedItem = Operations.First(w => w.Type == _data.TypeOperation);
+            IsChange = false;
         }
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -623,47 +658,101 @@ namespace PresentationWPF.Forms.Documents
 
         private void btnClearOrder_Click(object sender, RoutedEventArgs e)
         {
-            _data.ClientOrder = null;
+            if (_data.TypeOperation == TypeSaleInvoice.Sale)
+            {
+                _data.ClientOrder = null;
+                _data.ClientOrderId = null;
+            }
+            else if (_data.TypeOperation == TypeSaleInvoice.ProviderRetun)
+            {
+                _data.ProviderOrder = null;
+                _data.ProviderOrderId = null;
+            }
+                
             OrderName = "";
         }
 
         private void btnShowListOrder_Click(object sender, RoutedEventArgs e)
         {
-            var form = new ClientOrderListForm(true);
-            if (form.ShowDialog() != null)
+            if (_data.TypeOperation == TypeSaleInvoice.Sale)
             {
-                if (form.SelectedId != default && form.SelectedId != _data.ClientOrder?.Id)
+                var form = new ClientOrderListForm(true);
+                if (form.ShowDialog() != null)
                 {
-                    var data = _documentController.GetDocument<ClientOrder>(form.SelectedId);
-                    if (data != null)
+                    if (form.SelectedId != default && form.SelectedId != _data.ClientOrder?.Id)
                     {
-                        _data.ClientOrder = data;
-                        OrderName = "";
-
-                        var res = MessageBox.Show("Перезаповнити товари відповідно до замовлення?", "Питання", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-                        if (res == MessageBoxResult.Yes)
+                        var data = _documentController.GetDocument<ClientOrder>(form.SelectedId);
+                        if (data != null)
                         {
-                            _products.Clear();
+                            _data.ClientOrderId = data.Id;
+                            OrderName = data.ToString();
 
-                            var products = new List<Guid>();
+                            var res = MessageBox.Show("Перезаповнити товари відповідно до замовлення?", "Питання", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
-                            foreach (var item in data.Products)
+                            if (res == MessageBoxResult.Yes)
                             {
-                                _products.Add(new()
-                                {
-                                    Id = item.Id,
-                                    NomenclatureId = item.NomenclatureId,
-                                    UnitId = item.UnitId,
-                                    NomenclatureName = item.Nomenclature.Name,
-                                    UnitName = item.Unit.Name,
-                                    Quantity = item.Quantity,
-                                    Price = (double)item.Price,
-                                    Summa = (double)item.Summa
-                                });
+                                _products.Clear();
 
-                                var product = _products.Last();
-                                product.OnChange += ProductItem_OnChange;
+                                var products = new List<Guid>();
+
+                                foreach (var item in data.Products)
+                                {
+                                    _products.Add(new()
+                                    {
+                                        NomenclatureId = item.NomenclatureId,
+                                        UnitId = item.UnitId,
+                                        NomenclatureName = item.Nomenclature.Name,
+                                        UnitName = item.Unit.Name,
+                                        Quantity = item.Quantity,
+                                        Price = (double)item.Price,
+                                        Summa = (double)item.Summa
+                                    });
+
+                                    var product = _products.Last();
+                                    product.OnChange += ProductItem_OnChange;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else if(_data.TypeOperation == TypeSaleInvoice.ProviderRetun)
+            {
+                var form = new ProviderOrderListForm(true);
+                if (form.ShowDialog() != null)
+                {
+                    if (form.SelectedId != default && form.SelectedId != _data.ClientOrder?.Id)
+                    {
+                        var data = _documentController.GetDocument<ProviderOrder>(form.SelectedId);
+                        if (data != null)
+                        {
+                            _data.ProviderOrderId = data.Id;
+                            OrderName = data.ToString();
+
+                            var res = MessageBox.Show("Перезаповнити товари відповідно до замовлення?", "Питання", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                            if (res == MessageBoxResult.Yes)
+                            {
+                                _products.Clear();
+
+                                var products = new List<Guid>();
+
+                                foreach (var item in data.Products)
+                                {
+                                    _products.Add(new()
+                                    {
+                                        NomenclatureId = item.NomenclatureId,
+                                        UnitId = item.UnitId,
+                                        NomenclatureName = item.Nomenclature.Name,
+                                        UnitName = item.Unit.Name,
+                                        Quantity = item.Quantity,
+                                        Price = (double)item.Price,
+                                        Summa = (double)item.Summa
+                                    });
+
+                                    var product = _products.Last();
+                                    product.OnChange += ProductItem_OnChange;
+                                }
                             }
                         }
                     }
@@ -673,22 +762,28 @@ namespace PresentationWPF.Forms.Documents
 
         private void btnOpenOrder_Click(object sender, RoutedEventArgs e)
         {
-            if (_data.ClientOrder == null)
-                return;
-
-            var form = new ClientOrderElementForm(_data.ClientOrder.Id);
-            if (form.ShowDialog() != null)
+            if (_data.TypeOperation == TypeSaleInvoice.Sale && _data.ClientOrderId != null)
             {
-                var data = _documentController.GetDocument<ClientOrder>(_data.ClientOrder.Id);
-                if (data != null)
+                var form = new ClientOrderElementForm((Guid)_data.ClientOrderId);
+                if (form.ShowDialog() != null)
                 {
-                    _data.ClientOrder = data;
-                    OrderName = "";
+                    var data = _documentController.GetDocument<ClientOrder>((Guid)_data.ClientOrderId);
+                    if (data != null)
+                        OrderName = data.ToString();
                 }
             }
+            else if(_data.TypeOperation == TypeSaleInvoice.Sale && _data.ProviderOrderId != null)
+            {
+                var form = new ProviderOrderElementForm((Guid)_data.ProviderOrderId);
+                if (form.ShowDialog() != null)
+                {
+                    var data = _documentController.GetDocument<ProviderOrder>((Guid)_data.ProviderOrderId);
+                    if (data != null)
+                        OrderName = data.ToString();
+                }
+            }
+            
         }
-
-
 
         private bool CheckDataComplection()
         {
@@ -749,6 +844,9 @@ namespace PresentationWPF.Forms.Documents
 
                 if (_data.Date == default)
                     _data.Date = DateTime.Now;
+
+                _data.ProviderOrder = null;
+                _data.ClientOrder = null;
 
                 switch (typeWrite)
                 {
@@ -820,6 +918,25 @@ namespace PresentationWPF.Forms.Documents
                 Save_Click(null, null);
                 e.Cancel = IsChange;
             }
+        }
+
+        private void TypeOperation_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var item = TypeOperation.SelectedItem as OperationItem;
+
+            if (item == null || _data.TypeOperation == item.Type) return;
+
+            _data.TypeOperation = item.Type;
+
+            if (_data.TypeOperation == TypeSaleInvoice.ProviderRetun)
+                OrderName = _data.ProviderOrder?.ToString();
+            else if (_data.TypeOperation == TypeSaleInvoice.Sale)
+                OrderName = _data.ClientOrder?.ToString();
+            else
+                OrderName = "";
+
+            if (!IsChange)
+                IsChange = true;
         }
     }
 }

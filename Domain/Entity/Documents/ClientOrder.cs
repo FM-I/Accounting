@@ -65,5 +65,10 @@ namespace Domain.Entity.Documents
 
             return document;
         }
+
+        public override string ToString()
+        {
+            return $"Замовлення покупця {Number} від {Date}";
+        }
     }
 }

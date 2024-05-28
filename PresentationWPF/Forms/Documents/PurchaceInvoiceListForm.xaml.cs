@@ -34,7 +34,14 @@ namespace PresentationWPF.Forms.Documents
             List<ListItem> items = new List<ListItem>();
             foreach (var item in list)
             {
-                items.Add(new ListItem(item.Id, item.Number, item.Date, item.DeleteMark, item.Conducted, item.Client.Name, item.Summa));
+                items.Add(new ListItem(item.Id,
+                                       item.Number,
+                                       item.Date,
+                                       item.DeleteMark,
+                                       item.Conducted,
+                                       item.Client.Name,
+                                       item.Summa,
+                                       item.TypeOperation == Domain.Enum.TypePurchaceInvoice.Buying ? "Від постачальника" : "Від покупця"));
             }
             dataList.ItemsSource = items;
 
@@ -205,6 +212,6 @@ namespace PresentationWPF.Forms.Documents
             form.Show();
         }
 
-        private record ListItem(Guid Id, string Number, DateTime Date, bool DeleteMark, bool Conducted, string ClientName, decimal Summa);
+        private record ListItem(Guid Id, string Number, DateTime Date, bool DeleteMark, bool Conducted, string ClientName, decimal Summa, string OperationName);
     }
 }

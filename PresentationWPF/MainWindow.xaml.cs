@@ -2,6 +2,7 @@
 using PresentationWPF.Forms.Documents;
 using PresentationWPF.Forms.Handbooks;
 using PresentationWPF.Forms.Registers;
+using PresentationWPF.Forms.Reports;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -134,6 +135,15 @@ namespace PresentationWPF
                     break;
                 case "openOutBankAccountOrderList":
                     form = new OutBankAccontOrderListForm();
+                    break;
+                case "openLeftoverReport":
+                    form = new LeftoverReportForm();
+                    break;
+                case "openClientProviderDebtReport":
+                    form = new ClientProviderDebtReportForm();
+                    break;
+                case "openSalesReport":
+                    form = new SalesReport();
                     break;
             }
 

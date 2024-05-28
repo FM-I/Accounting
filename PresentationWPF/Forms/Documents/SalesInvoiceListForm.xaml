@@ -20,6 +20,7 @@
                     <GridViewColumn DisplayMemberBinding="{Binding Id}" Width="0"/>
                     <GridViewColumn Header="Дата" DisplayMemberBinding="{Binding Date, StringFormat=dd-MM-yyyy}" Width="100"/>
                     <GridViewColumn Header="Номер" DisplayMemberBinding="{Binding Number}" Width="90"/>
+                    <GridViewColumn Header="Операція" DisplayMemberBinding="{Binding OperationName}" Width="150"/>
                     <GridViewColumn Header="Контрагент" DisplayMemberBinding="{Binding ClientName}" Width="150"/>
                     <GridViewColumn Header="Сума документу" DisplayMemberBinding="{Binding Summa}" Width="150"/>
                     <GridViewColumn Header="Проведений">

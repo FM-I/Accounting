@@ -262,7 +262,8 @@ namespace BL.Controllers
                     try
                     {
                         foreach (var item in oldMoves)
-                            await _accumulationController.RemoveRangeAsync(item.Value);
+                            foreach (var value in item.Value)
+                                await _accumulationController.RemoveAsync(value);
 
                         document.Conducted = true;
                         document.Date = DateTime.Now;
@@ -314,7 +315,8 @@ namespace BL.Controllers
                     }
 
                     foreach (var item in oldMoves)
-                        await _accumulationController.RemoveRangeAsync(item.Value);
+                        foreach (var value in item.Value)
+                            await _accumulationController.RemoveAsync(value);
 
                     document.Conducted = false;
 

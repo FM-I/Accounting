@@ -54,5 +54,16 @@ namespace Domain.Entity.Handbooks
             handbook.DeleteMark = false;
             return handbook;
         }
+
+        public override bool Equals(object? obj)
+        {
+            return Id == ((Nomenclature)obj).Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id);
+        }
+
     }
 }

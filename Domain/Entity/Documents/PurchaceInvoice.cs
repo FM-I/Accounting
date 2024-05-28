@@ -4,6 +4,7 @@ using Domain.Entity.Registers.Accumulations;
 using Domain.Enum;
 using Domain.Interfaces;
 using Domain.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entity.Documents
 {
@@ -16,7 +17,13 @@ namespace Domain.Entity.Documents
         public TypePurchaceInvoice TypeOperation { get; set; }
         public virtual Currency Currency { get; set; }
         public double CurrencyRate { get; set; } = 1;
+        [ForeignKey(nameof(ProviderOrder))]
+        public Guid? ProviderOrderId { get; set; }
         public virtual ProviderOrder? ProviderOrder { get; set; }
+
+        [ForeignKey(nameof(ClientOrder))]
+        public Guid? ClientOrderId { get; set; }
+        public virtual ClientOrder? ClientOrder { get; set; }
 
         public override string ToString()
         {
@@ -99,6 +106,7 @@ namespace Domain.Entity.Documents
                 var data = (ProviderOrder)document;
 
                 ProviderOrder = data;
+                ProviderOrderId = data.Id;
                 Client = data.Client;
                 Organization = data.Organization;
                 Warehouse = data.Warehouse;
@@ -111,6 +119,7 @@ namespace Domain.Entity.Documents
                     Products.Add(new()
                     {
                         Document = this,
+                        DocumentId = Id,
                         Nomenclature = product.Nomenclature,
                         NomenclatureId = product.NomenclatureId,
                         UnitId = product.UnitId,
@@ -121,6 +130,35 @@ namespace Domain.Entity.Documents
                     });
                 }
 
+            }
+            else if (document is ClientOrder)
+            {
+                var data = (ClientOrder)document;
+
+                ClientOrder = data;
+                ClientOrderId = data.Id;
+                Client = data.Client;
+                Organization = data.Organization;
+                Warehouse = data.Warehouse;
+                Currency = data.Currency;
+                CurrencyRate = data.CurrencyRate;
+                TypePrice = data.TypePrice;
+
+                foreach (var product in data.Products)
+                {
+                    Products.Add(new()
+                    {
+                        Document = this,
+                        DocumentId = Id,
+                        Nomenclature = product.Nomenclature,
+                        NomenclatureId = product.NomenclatureId,
+                        UnitId = product.UnitId,
+                        Price = product.Price,
+                        Unit = product.Unit,
+                        Quantity = product.Quantity,
+                        Summa = product.Summa
+                    });
+                }
             }
         }
 

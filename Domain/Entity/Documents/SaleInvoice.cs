@@ -4,6 +4,7 @@ using Domain.Entity.Registers.Accumulations;
 using Domain.Enum;
 using Domain.Interfaces;
 using Domain.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entity.Documents
 {
@@ -16,6 +17,13 @@ namespace Domain.Entity.Documents
         public TypeSaleInvoice TypeOperation { get; set; }
         public virtual Currency Currency { get; set; }
         public double CurrencyRate { get; set; } = 1;
+
+        [ForeignKey(nameof(ProviderOrder))]
+        public Guid? ProviderOrderId { get; set; }
+        public virtual ProviderOrder? ProviderOrder { get; set; }
+
+        [ForeignKey(nameof(ClientOrder))]
+        public Guid? ClientOrderId { get; set; }
         public virtual ClientOrder? ClientOrder { get; set; }
 
         public override string ToString()
@@ -103,6 +111,35 @@ namespace Domain.Entity.Documents
                 Organization = data.Organization;
                 Warehouse = data.Warehouse;
                 ClientOrder = data;
+                ClientOrderId = data.Id;
+                Currency = data.Currency;
+                CurrencyRate = data.CurrencyRate;
+                TypePrice = data.TypePrice;
+
+                foreach (var product in data.Products)
+                {
+                    Products.Add(new()
+                    {
+                        Document = this,
+                        Nomenclature = product.Nomenclature,
+                        UnitId = product.UnitId,
+                        NomenclatureId = product.NomenclatureId,
+                        Unit = product.Unit,
+                        Price = product.Price,
+                        Quantity = product.Quantity,
+                        Summa = product.Summa
+                    });
+                }
+            }
+            else if (document is ProviderOrder)
+            {
+                var data = (ProviderOrder)document;
+
+                Client = data.Client;
+                Organization = data.Organization;
+                Warehouse = data.Warehouse;
+                ProviderOrder = data;
+                ProviderOrderId = data.Id;
                 Currency = data.Currency;
                 CurrencyRate = data.CurrencyRate;
                 TypePrice = data.TypePrice;

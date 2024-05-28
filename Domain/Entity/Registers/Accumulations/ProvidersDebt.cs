@@ -13,11 +13,11 @@ namespace Domain.Entity.Registers.Accumulations
         
         [ForeignKey(nameof(Provider))]
         public Guid ProviderId { get; set; }
-        public Client Provider { get; set; }
+        public virtual Client Provider { get; set; }
 
         [ForeignKey(nameof(Organization))]
         public Guid OrganizationId { get; set; }
-        public Organization Organization { get; set; }
+        public virtual Organization Organization { get; set; }
         public decimal Value { get; set; }
     }
 }
