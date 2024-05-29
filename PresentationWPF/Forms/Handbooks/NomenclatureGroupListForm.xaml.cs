@@ -18,7 +18,7 @@ namespace PresentationWPF.Forms
         {
             public Guid Id { get; set; }
             public object Content { get; set; }
-            public object Image { get; set; } = new BitmapImage(new Uri("D:\\Politeh\\2024\\Project\\Accounting\\PresentationWPF\\Images\\folder.png"));
+            public object Image { get; set; } = new BitmapImage(new Uri("pack://application:,,,/Images/folder.png"));
             public List<Data> Items { get; set; } = new();
         }
 

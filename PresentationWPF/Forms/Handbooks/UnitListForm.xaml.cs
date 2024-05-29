@@ -27,10 +27,6 @@ namespace PresentationWPF.Forms
             InitializeComponent();
 
             context_SavedChanges(null, null);
-
-            var view = (CollectionView)CollectionViewSource.GetDefaultView(dataList.ItemsSource);
-            view.Filter = ListFilter;
-
         }
 
         private void context_SavedChanges(object? sender, SavedChangesEventArgs e)
@@ -42,6 +38,8 @@ namespace PresentationWPF.Forms
                 items.Add(new ListItem(item.Id, item.Code, item.Name, item.DeleteMark, item.Coefficient));
             }
             dataList.ItemsSource = items;
+            var view = (CollectionView)CollectionViewSource.GetDefaultView(dataList.ItemsSource);
+            view.Filter = ListFilter;
         }
 
         private void dataList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)

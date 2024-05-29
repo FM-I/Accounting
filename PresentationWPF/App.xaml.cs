@@ -27,8 +27,8 @@ namespace PresentationWPF
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
             DIContainer.ServiceProvider = serviceCollection.BuildServiceProvider();
-            var mainWindow = new MainWindow();
-            //if(!mainWindow.IsClose)
+            var mainWindow = new AuthForm();
+            if(!mainWindow.IsClose)
                 mainWindow.Show();
         }
 

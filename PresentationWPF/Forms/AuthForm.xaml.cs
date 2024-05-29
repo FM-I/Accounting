@@ -43,7 +43,7 @@ namespace PresentationWPF.Forms
 
             if(res != null)
             {
-                var mainForm = new WarehouseListForm();
+                var mainForm = new LaunchForm();
                 mainForm.Show();
                 Close();
             }

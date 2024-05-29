@@ -24,9 +24,7 @@
                 <GridView>
                     <GridViewColumn DisplayMemberBinding="{Binding Id}" Width="0"/>
                     <GridViewColumn Header="Код" DisplayMemberBinding="{Binding Code}" Width="90"/>
-                    <GridViewColumn Header="Артикул" DisplayMemberBinding="{Binding Article}" Width="70"/>
                     <GridViewColumn Header="Найменування" DisplayMemberBinding="{Binding DataName}" Width="150"/>
-                    <GridViewColumn Header="Од. виміру" DisplayMemberBinding="{Binding UnitName}" Width="70"/>
                     <GridViewColumn Header="Помітка видалення">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
@@ -37,14 +35,107 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button x:Name="createBtn" Content="Створити" Click="CreateButton_Click" HorizontalAlignment="Left" Height="28" Margin="10,0,0,0" VerticalAlignment="Center" Width="74"/>
-        <Button x:Name="deleteBtn" Content="Видалити" Click="DeleteButton_Click" HorizontalAlignment="Left" Height="28" Margin="168,0,0,0" VerticalAlignment="Center" Width="74"/>
-        <Button x:Name="copyBtn" Content="Копіювати" Click="copyBtn_Click" HorizontalAlignment="Left" Height="28" Margin="247,0,0,0" VerticalAlignment="Center" Width="72"/>
-        <Button x:Name="createGroupBtn" Content="Группа" Click="createGroupBtn_Click" HorizontalAlignment="Left" Height="28" Margin="89,0,0,0" VerticalAlignment="Center" Width="72"/>
 
-        <TextBox Grid.Column="1" Panel.ZIndex="1" Name="Search" HorizontalAlignment="Left" Height="18" Margin="16,13,0,0" TextWrapping="Wrap" Background="Transparent" VerticalAlignment="Top" Width="193"
-TextChanged="Search_TextChanged"/>
-        <TextBlock Grid.Column="1" Name="Placeholder" HorizontalAlignment="Left" Margin="19,13,0,0" TextWrapping="Wrap" Text="Пошук" VerticalAlignment="Top" Height="22" RenderTransformOrigin="0.685,0.615"/>
+        <Grid Grid.Row="0" Grid.Column="0">
+
+            <StackPanel Orientation="Horizontal" >
+
+                <Button Margin="5" Style="{StaticResource ButtonStyle}" x:Name="createBtn" Click="CreateButton_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <Image Source="pack://application:,,,/Images/addIcon.png" Width="20" Height="20" Margin="2"/>
+                        <Label Grid.Column="1" Content="Створити"/>
+                    </Grid>
+                </Button>
+
+                <Button Margin="5" Style="{StaticResource ButtonStyle}" x:Name="deleteBtn"  Click="DeleteButton_Click" HorizontalAlignment="Left" VerticalAlignment="Center" >
+
+                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <Image Source="pack://application:,,,/Images/removeIcon.png" Width="20" Height="20" Margin="2"/>
+                        <Label Grid.Column="1" Content="Видалити"/>
+                    </Grid>
+
+                </Button>
+
+                <Button Margin="5" Style="{StaticResource ButtonStyle}" x:Name="copyBtn" Click="copyBtn_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <Image Source="pack://application:,,,/Images/copyIcon.png" Width="20" Height="20" Margin="2"/>
+                        <Label Grid.Column="1" Content="Копіювати"/>
+                    </Grid>
+                </Button>
+
+                <Button Style="{StaticResource ButtonStyle}" x:Name="createGroupBtn" Click="createGroupBtn_Click" HorizontalAlignment="Left" Height="28" Margin="5" VerticalAlignment="Center">
+                    <Grid Margin="5 0 5 0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <Image Source="pack://application:,,,/Images/folder.png" Width="20" Height="20" Margin="2"/>
+                        <Label Grid.Column="1" Content="Группа"/>
+                    </Grid>
+                </Button>
+
+            </StackPanel>
+
+
+        </Grid>
+        
+        <Grid Grid.Column="1">
+
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+
+                <TextBox HorizontalAlignment="Stretch" VerticalContentAlignment="Center" VerticalAlignment="Stretch" Margin="5" Name="Search" TextWrapping="Wrap" Background="Transparent" TextChanged="Search_TextChanged"/>
+                <TextBlock Panel.ZIndex="-1" Name="Placeholder" HorizontalAlignment="Left" Margin="10" Text="Пошук" VerticalAlignment="Center" />
+
+            </Grid>
+            
+            <Grid Grid.Row="1" >
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock HorizontalAlignment="Left" FontSize="14" TextWrapping="Wrap" Text="Тип" VerticalAlignment="Center" Margin="10"/>
+
+                <ComboBox Margin="5" Grid.Column="1" SelectionChanged="TypeProduct_SelectionChanged" Name="TypeProduct" VerticalContentAlignment="Center" VerticalAlignment="Stretch">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Text}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+                                <TextBlock Visibility="Hidden" Text="{Binding Type}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+            </Grid>
+
+        </Grid>
 
         <TreeView x:Name="treeGroups"  SelectedItemChanged="treeGroups_SelectedItemChanged" Grid.Row="1" Grid.Column="1" Initialized="treeGroups_Initialized" PreviewMouseLeftButtonDown="treeGroups_PreviewMouseLeftButtonDown">
             <TreeView.ItemTemplate>
@@ -60,17 +151,6 @@ TextChanged="Search_TextChanged"/>
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
         </TreeView>
-        <ComboBox SelectionChanged="TypeProduct_SelectionChanged" Name="TypeProduct" Grid.Column="1" HorizontalAlignment="Left" Height="24" Margin="52,36,0,0" VerticalAlignment="Top" Width="157">
-            <ComboBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Text}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-                        <TextBlock Visibility="Hidden" Text="{Binding Type}"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
-        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Height="16" Margin="16,40,0,0" TextWrapping="Wrap" Text="Тип" VerticalAlignment="Top" Width="31"/>
 
     </Grid>
 </Window>

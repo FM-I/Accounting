@@ -7,7 +7,8 @@
         mc:Ignorable="d"
         Title="Група" Height="210" Width="400"
         Closing="Window_Closing"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
     <Grid>
 
         <Grid.ColumnDefinitions>
@@ -26,7 +27,7 @@ Text="{Binding Code}" IsReadOnly="True"/>
         <Button x:Name="btnShowListGroup" Click="btnShowListGroup_Click" Grid.Column="1" Content="▼" HorizontalAlignment="Left" Margin="270,91,0,0" VerticalAlignment="Top" Height="30" Width="18" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
         <Button x:Name="btnClearGroup" Click="btnClearGroup_Click" Grid.Column="1" Content="X" HorizontalAlignment="Left" Margin="252,91,0,0" VerticalAlignment="Top" Height="30" Width="18" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
 
-        <Button Content="Записати" HorizontalAlignment="Left" Height="32" Margin="188,130,0,0" VerticalAlignment="Top" Width="118" Grid.Column="1" Click="Button_Click"/>
+        <Button Style="{StaticResource ButtonStyle}" Content="Записати" HorizontalAlignment="Left" Height="32" Margin="188,130,0,0" VerticalAlignment="Top" Width="118" Grid.Column="1" Click="Button_Click"/>
 
     </Grid>
 </Window>

@@ -37,11 +37,11 @@ namespace PresentationWPF.Forms
             };
 
             var handboocCtrl = _serviceProvider.GetRequiredService<IHandbookController>();
-            await handboocCtrl.AddOrUpdateAsync(User, false);
-            await handboocCtrl.AddOrUpdateAsync(organization, false);
+            await handboocCtrl.AddOrUpdateAsync(User);
+            await handboocCtrl.AddOrUpdateAsync(organization);
             await handboocCtrl.AddOrUpdateAsync(currency);
 
-            var mainForm = new MainWindow();
+            var mainForm = new LaunchForm();
             mainForm.Show();
             Close();
 

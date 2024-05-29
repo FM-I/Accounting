@@ -56,7 +56,18 @@
                 <ColumnDefinition Width="275"/>
             </Grid.ColumnDefinitions>
 
-            <Button x:Name="createReport" Content="Сформувати" Width="150" Height="25" Click="createReport_Click"/>
+            <Button Margin="7" Style="{StaticResource ButtonStyle}" x:Name="createReport" Click="createReport_Click">
+                <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <Image Source="pack://application:,,,/Images/startIcon.png" Width="20" Height="20" Margin="2"/>
+                    <Label Grid.Column="1" Content="Сформувати" FontSize="14"/>
+                </Grid>
+            </Button>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal">
                 <Label Content="Дата" VerticalAlignment="Center"/>

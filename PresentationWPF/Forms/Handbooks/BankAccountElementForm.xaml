@@ -7,7 +7,8 @@
         mc:Ignorable="d"
         Title="Банківський рахунок" Height="210" Width="400"
         WindowStartupLocation="CenterScreen"
-        Closing="Window_Closing">
+        Closing="Window_Closing"
+        ResizeMode="NoResize">
     <Grid>
 
         <Grid.ColumnDefinitions>
@@ -22,7 +23,7 @@
         <TextBox Text="{Binding NameData, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="30" Margin="65,49,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="241" VerticalContentAlignment="Center" FontSize="16" Grid.Column="1"/>
         <Label Content="Власник" FontSize="16" HorizontalAlignment="Left" Height="40" Margin="10,84,0,0" VerticalAlignment="Top" Width="123" Grid.ColumnSpan="2"/>
         <TextBox Text="{Binding BankName, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"  HorizontalAlignment="Left" Height="30" Margin="65,89,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="183" VerticalContentAlignment="Center" FontSize="16" Grid.Column="1"/>
-        <Button Content="Записати" HorizontalAlignment="Left" Height="32" Margin="188,134,0,0" VerticalAlignment="Top" Width="118" Grid.Column="1" Click="Button_Click"/>
+        <Button Style="{StaticResource ButtonStyle}" Content="Записати" HorizontalAlignment="Left" Height="32" Margin="188,134,0,0" VerticalAlignment="Top" Width="118" Grid.Column="1" Click="Button_Click"/>
         <Button x:Name="btnOpen" Click="btnOpen_Click" Grid.Column="1" Content=". . ." HorizontalAlignment="Left" Margin="277,89,0,0" VerticalAlignment="Top" Height="30" Width="29" Background="Transparent" BorderThickness="0 .5 .5 .5"  />
         <Button x:Name="btnShowList" Click="btnShowList_Click" Grid.Column="1" Content="▼" HorizontalAlignment="Left" Margin="248,89,0,0" VerticalAlignment="Top" Height="30" Width="29" Background="Transparent" BorderThickness="0 .5 .5 .5"  />
 

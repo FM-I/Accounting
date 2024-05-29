@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PresentationWPF.Forms"
         mc:Ignorable="d"
-        Title="Склад" Height="210" Width="400"
+        Title="Склад" Height="187" Width="400"
         Closing="Window_Closing"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="73"/>
@@ -18,7 +19,7 @@
         <Label Content="Код" HorizontalAlignment="Left" Height="30" Margin="10,10,0,0" VerticalAlignment="Top" Width="42" FontSize="16" VerticalContentAlignment="Center"/>
         <Label Content="Найменування" FontSize="16" HorizontalAlignment="Left" Height="40" Margin="10,44,0,0" VerticalAlignment="Top" Width="123" Grid.ColumnSpan="2"/>
         <TextBox Text="{Binding NameData, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="30" Margin="65,49,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="241" VerticalContentAlignment="Center" FontSize="16" Grid.Column="1"/>
-        <Button Content="Записати" HorizontalAlignment="Left" Height="32" Margin="188,134,0,0" VerticalAlignment="Top" Width="118" Grid.Column="1" Click="Button_Click"/>
+        <Button Style="{StaticResource ButtonStyle}" Content="Записати" HorizontalAlignment="Left" Height="32" Margin="188,104,0,0" VerticalAlignment="Top" Width="118" Grid.Column="1" Click="Button_Click"/>
 
     </Grid>
 </Window>

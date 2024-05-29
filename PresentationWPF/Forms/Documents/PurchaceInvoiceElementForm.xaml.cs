@@ -147,6 +147,13 @@ namespace PresentationWPF.Forms.Documents
             else if (_data.TypeOperation == TypePurchaceInvoice.ClientReturn)
                 OrderName = _data.ClientOrder?.ToString();
 
+            if (_data.Currency == null)
+                _data.Currency = _handbookController.GetHandbook<Currency>(w => w.IsDefault);
+
+            if (_data.Organization == null)
+                _data.Organization = _handbookController.GetHandbook<Organization>(w => w.IsDefault);
+
+
             InitializeComponent();
             DataContext = this;
             UnConducted.IsEnabled = _data.Conducted;
@@ -161,8 +168,6 @@ namespace PresentationWPF.Forms.Documents
             _infoController = DIContainer.ServiceProvider.GetRequiredService<IInformationRegisterController>();
 
             _data = data;
-            OrderName = _data.ProviderOrder?.ToString();
-            _data.ProviderOrder = null;
 
             foreach (var item in _data.Products)
             {

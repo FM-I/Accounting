@@ -5,12 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PresentationWPF.Forms"
         mc:Ignorable="d"
-        Title="Пошук" Height="172" Width="385"
-        WindowStartupLocation="CenterScreen">
+        Title="Пошук" Height="153" Width="385"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
     <Grid>
-        <Label Content="Штрихкод" HorizontalAlignment="Left" FontSize="16" Margin="10,41,0,0" VerticalAlignment="Top" Width="91"/>
-        <TextBox x:Name="Barcode" HorizontalAlignment="Left" Margin="116,41,0,0" TextWrapping="Wrap" Padding="5" FontSize="16" VerticalContentAlignment="Center" VerticalAlignment="Top" Width="248" Height="31"/>
-        <Button Content="Знайти" FontSize="16" HorizontalAlignment="Left" Margin="271,91,0,0" VerticalAlignment="Top" Width="93" Height="33" Click="Button_Click"/>
+        <Label Content="Штрихкод" HorizontalAlignment="Left" FontSize="16" Margin="10,26,0,0" VerticalAlignment="Top" Width="91"/>
+        <TextBox x:Name="Barcode" HorizontalAlignment="Left" Margin="116,26,0,0" TextWrapping="Wrap" Padding="5" FontSize="16" VerticalContentAlignment="Center" VerticalAlignment="Top" Width="248" Height="31"/>
+        <Button Style="{StaticResource ButtonStyle}" Content="Знайти" FontSize="16" HorizontalAlignment="Left" Margin="271,73,0,0" VerticalAlignment="Top" Width="93" Height="33" Click="Button_Click"/>
 
     </Grid>
 </Window>

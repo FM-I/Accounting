@@ -7,7 +7,8 @@
         mc:Ignorable="d"
         Title="Авторизація" Height="150" Width="320"
         MaxHeight="150" MaxWidth="320" MinWidth="320"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
     <Grid>
 
         <Grid.RowDefinitions>
@@ -51,10 +52,10 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-                
-            <Button Name="btnLogin" Grid.Column="0" Content="Ввійти" Width="100" Height="25" Margin="5"
+
+            <Button Style="{StaticResource ButtonStyle}" Name="btnLogin" Grid.Column="0" Content="Ввійти" Width="100" Height="25" Margin="5"
                     Click="btnLogin_ClickAsync"/>
-            <Button x:Name="btnCancel" Grid.Column="1" Content="Відміна" 
+            <Button Style="{StaticResource ButtonStyle}" x:Name="btnCancel" Grid.Column="1" Content="Відміна" 
                     Width="100" Height="25" Margin="5"
                     Click="btnCancel_Click"/>
             

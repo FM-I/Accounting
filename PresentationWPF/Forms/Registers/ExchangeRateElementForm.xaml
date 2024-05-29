@@ -23,7 +23,7 @@
         <Label Content="Курс" FontSize="16" HorizontalAlignment="Left" Height="40" Margin="11,84,0,0" VerticalAlignment="Top" Width="123" Grid.ColumnSpan="2"/>
         <TextBox x:Name="ExchangeRateInput" Text="{Binding Rate, UpdateSourceTrigger=PropertyChanged}" PreviewTextInput="ExchangeRateInput_PreviewTextInput" HorizontalAlignment="Left" Height="30" Margin="66,89,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="241" VerticalContentAlignment="Center" FontSize="16" Grid.Column="1"/>
 
-        <Button Content="Записати" HorizontalAlignment="Left" Height="32" Margin="189,130,0,0" VerticalAlignment="Top" Width="118" Grid.Column="1" Click="Button_Click"/>
+        <Button Style="{StaticResource ButtonStyle}" Content="Записати" HorizontalAlignment="Left" Height="32" Margin="189,130,0,0" VerticalAlignment="Top" Width="118" Grid.Column="1" Click="Button_Click"/>
 
         <Button x:Name="btnOpen" Click="btnOpen_Click" Grid.Column="1" Content=". . ." HorizontalAlignment="Left" Margin="289,48,0,0" VerticalAlignment="Top" Height="30" Width="18" Background="Transparent" BorderThickness="0 .5 .5 .5"  />
         <Button x:Name="btnShowList" Click="btnShow_Click" Grid.Column="1" Content="▼" HorizontalAlignment="Left" Margin="271,48,0,0" VerticalAlignment="Top" Height="30" Width="18" Background="Transparent" BorderThickness="0 .5 .5 .5"/>

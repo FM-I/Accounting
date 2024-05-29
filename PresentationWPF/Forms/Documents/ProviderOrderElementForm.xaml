@@ -30,9 +30,16 @@
             </Grid.RowDefinitions>
 
             <StackPanel Orientation="Horizontal" Margin="5">
-                <Button Name="Save" Click="Save_Click" Content="Записати" Height="30" Margin="0, 0, 10 , 0" Padding="5"/>
-                <Button Name="Conducted" Click="Conducted_Click" Content="Провести" Height="30" Margin="0, 0, 10 , 0" Padding="5" Background="DarkOrange"/>
-                <Button Name="UnConducted" Click="UnConducted_Click" Content="Відміна проведення"  Height="30" Padding="5" Background="WhiteSmoke"/>
+                <Button Style="{StaticResource ButtonStyle}" Name="Save" Click="Save_Click" Content="Записати" Height="30" Margin="0, 0, 10 , 0" Padding="5"/>
+                <Button Name="Conducted" Click="Conducted_Click" Content="Провести" Height="30" Margin="0, 0, 10 , 0" Padding="15 0 15 0" >
+                    <Button.Background>
+                        <LinearGradientBrush StartPoint="1, 0.5">
+                            <GradientStop Color="Orange" Offset="0.0"/>
+                            <GradientStop Color="DarkOrange" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Button.Background>
+                </Button>
+                <Button Style="{StaticResource ButtonStyle}" Name="UnConducted" Click="UnConducted_Click" Content="Відміна проведення"  Height="30" Padding="5"/>
             </StackPanel>
 
             <Grid Grid.Row="1">
@@ -179,15 +186,52 @@
         <Grid x:Name="TableProduct" Grid.Row="1" Margin="0 5 0 0 ">
 
             <Grid.RowDefinitions>
-                <RowDefinition Height=".1*"/>
-                <RowDefinition Height=".9*"/>
+                <RowDefinition Height="40"/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
 
             <StackPanel Orientation="Horizontal" Grid.Row="0">
 
-                <Button x:Name="AddItemProduct" Click="AddItemProduct_Click" Content="Додати" Width="75" Height="20" Margin="5 0 0 0"/>
-                <Button x:Name="RemoveItemProduct" Click="RemoveItemProduct_Click"  Content="Видалити" Width="75" Height="20" Margin="5 0 0 0"/>
-                <Button x:Name="SearchItemProduct" Click="SearchItemProduct_Click" Content="Штрихкод" Width="75" Height="20" Margin="5 0 0 0"/>
+                <Button Style="{StaticResource ButtonStyle}" x:Name="AddItemProduct" Click="AddItemProduct_Click" Margin="5" Padding="5">
+                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <Image Source="pack://application:,,,/Images/addIcon.png" Width="16" Height="16"/>
+                        <TextBlock VerticalAlignment="Stretch" Grid.Column="1" Text="Додати" Margin="5 0 0 0"/>
+                    </Grid>
+                </Button>
+
+                <Button Style="{StaticResource ButtonStyle}" x:Name="RemoveItemProduct" Click="RemoveItemProduct_Click" Margin="5" Padding="5">
+                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <Image Source="pack://application:,,,/Images/removeIcon.png" Width="16" Height="16"/>
+                        <TextBlock Grid.Column="1" Text="Видалити" Margin="5 0 0 0"/>
+                    </Grid>
+
+                </Button>
+                <Button Style="{StaticResource ButtonStyle}" x:Name="SearchItemProduct" Click="SearchItemProduct_Click" Margin="5" Padding="5">
+                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <Image Source="pack://application:,,,/Images/barcodeIcon.png" Width="16" Height="16"/>
+                        <TextBlock Grid.Column="1" Text="Штрихкод" Margin="5 0 0 0"/>
+
+                    </Grid>
+
+                </Button>
 
             </StackPanel>
 

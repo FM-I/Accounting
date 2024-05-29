@@ -7,7 +7,8 @@
         mc:Ignorable="d"
         Title="Номенклатура" Height="340" Width="400"
         Closing="Window_Closing"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="73"/>
@@ -20,7 +21,7 @@ Text="{Binding Code}" IsReadOnly="True"/>
         <TextBox Text="{Binding NameData, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="30" Margin="65,49,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="241" VerticalContentAlignment="Center" FontSize="16" Grid.Column="1"/>
         <Label Content="Ариткул" FontSize="16" HorizontalAlignment="Left" Height="40" Margin="10,82,0,0" VerticalAlignment="Top" Width="123" Grid.ColumnSpan="2"/>
         <TextBox Text="{Binding Article, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="30" Margin="65,87,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="241" VerticalContentAlignment="Center" FontSize="16" Grid.Column="1"/>
-        <Button Content="Записати" HorizontalAlignment="Left" Height="32" Margin="188,260,0,0" VerticalAlignment="Top" Width="118" Grid.Column="1" Click="Button_Click"/>
+        <Button Style="{StaticResource ButtonStyle}" Content="Записати" HorizontalAlignment="Left" Height="32" Margin="188,260,0,0" VerticalAlignment="Top" Width="118" Grid.Column="1" Click="Button_Click"/>
 
         <Label Content="Од. виміру" FontSize="16" HorizontalAlignment="Left" Height="40" Margin="10,119,0,0" VerticalAlignment="Top" Width="123" Grid.ColumnSpan="2"/>
         <TextBox Text="{Binding UnitName, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" HorizontalAlignment="Center" Height="30" Margin="0,124,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="185" VerticalContentAlignment="Center" FontSize="16" Grid.Column="1"/>

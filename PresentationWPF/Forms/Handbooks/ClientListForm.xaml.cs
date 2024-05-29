@@ -4,15 +4,9 @@ using Domain.Enum;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PresentationWPF.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
@@ -120,7 +114,7 @@ namespace PresentationWPF.Forms.Handbooks
             }
         }
 
-        private void Search_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        private void Search_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(Search.Text))
                 Placeholder.Visibility = Visibility.Hidden;
@@ -230,7 +224,7 @@ namespace PresentationWPF.Forms.Handbooks
         {
             public object Content { get; set; }
             public Guid? Id { get; set; }
-            public object Image { get; set; } = new BitmapImage(new Uri("D:\\Politeh\\2024\\Project\\Accounting\\PresentationWPF\\Images\\folder.png"));
+            public object Image { get; set; } = new BitmapImage(new Uri("pack://application:,,,/Images/folder.png"));
             public List<GroupData> Items { get; set; } = new();
 
         }

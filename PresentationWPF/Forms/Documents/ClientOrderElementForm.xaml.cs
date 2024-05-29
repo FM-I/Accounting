@@ -120,6 +120,12 @@ namespace PresentationWPF.Forms.Documents
                 }
             }
 
+            if(_data.Currency == null)
+                _data.Currency = _handbookController.GetHandbook<Currency>(w => w.IsDefault);
+
+            if (_data.Organization == null)
+                _data.Organization = _handbookController.GetHandbook<Organization>(w => w.IsDefault);
+
             InitializeComponent();
             DataContext = this;
             UnConducted.IsEnabled = _data.Conducted;

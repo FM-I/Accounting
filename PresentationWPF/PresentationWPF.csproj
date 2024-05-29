@@ -10,7 +10,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Images\icon.ico" />
+    <None Remove="Images\addIcon.png" />
+    <None Remove="Images\barcodeIcon.png" />
+    <None Remove="Images\copyIcon.png" />
+    <None Remove="Images\folder.png" />
+    <None Remove="Images\icon512.png" />
+    <None Remove="Images\removeIcon.png" />
+    <None Remove="Images\startIcon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\addIcon.png" />
+    <Resource Include="Images\barcodeIcon.png" />
+    <Resource Include="Images\copyIcon.png" />
+    <Resource Include="Images\folder.png" />
+    <Resource Include="Images\icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,6 +37,12 @@
   <ItemGroup>
     <ProjectReference Include="..\Application\BL.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\icon512.png" />
+    <Resource Include="Images\removeIcon.png" />
+    <Resource Include="Images\startIcon.png" />
   </ItemGroup>
 
 </Project>

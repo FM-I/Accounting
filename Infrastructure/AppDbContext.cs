@@ -54,7 +54,7 @@ namespace Infrastructure
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("Filename=Mobile.db")
+            optionsBuilder.UseSqlite("Filename=Data.db")
                 .EnableSensitiveDataLogging();
         }
 

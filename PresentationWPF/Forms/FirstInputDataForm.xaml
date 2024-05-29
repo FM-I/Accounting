@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:PresentationWPF.Forms"
         mc:Ignorable="d"
         Title="FirstInputDataForm" Height="300" Width="400"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
     <Grid>
 
         <Grid.RowDefinitions>
@@ -73,7 +74,7 @@
 
         </Grid>
 
-        <Button Name="btnSave" Content="Зберегти" Grid.Row="3" Width="150" Margin="5"
+        <Button Style="{StaticResource ButtonStyle}" Name="btnSave" Content="Зберегти" Grid.Row="3" Width="150" Margin="5"
                 Click="btnSave_ClickAsync"/>
 
     </Grid>

@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PresentationWPF.Forms.Registers"
         mc:Ignorable="d"
-            Title="Штрихкод" Height="210" Width="400"
-    Closing="Window_Closing"
-    WindowStartupLocation="CenterScreen">
+        Title="Штрихкод" Height="210" Width="400"
+        Closing="Window_Closing"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="73"/>
@@ -24,7 +25,7 @@
         <Label Content="Штрихкод" FontSize="16" HorizontalAlignment="Left" Height="40" Margin="10,82,0,0" VerticalAlignment="Top" Width="123" Grid.ColumnSpan="2"/>
         <TextBox Text="{Binding Barcode, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="30" Margin="65,87,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="241" VerticalContentAlignment="Center" FontSize="16" Grid.Column="1"/>
 
-        <Button Content="Записати" HorizontalAlignment="Left" Height="32" Margin="188,134,0,0" VerticalAlignment="Top" Width="118" Grid.Column="1" Click="Button_Click"/>
+        <Button Style="{StaticResource ButtonStyle}" Content="Записати" HorizontalAlignment="Left" Height="32" Margin="188,134,0,0" VerticalAlignment="Top" Width="118" Grid.Column="1" Click="Button_Click"/>
 
         <Button x:Name="btnOpenNomenclature" Click="btnOpen_Click" Grid.Column="1" Content=". . ." HorizontalAlignment="Left" Margin="288,10,0,0" VerticalAlignment="Top" Height="30" Width="18" Background="Transparent" BorderThickness="0 .5 .5 .5"  />
         <Button x:Name="btnShowListNomenclature" Click="btnShow_Click" Grid.Column="1" Content="▼" HorizontalAlignment="Left" Margin="270,10,0,0" VerticalAlignment="Top" Height="30" Width="18" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
