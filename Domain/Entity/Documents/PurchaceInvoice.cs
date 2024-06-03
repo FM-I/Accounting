@@ -36,6 +36,7 @@ namespace Domain.Entity.Documents
 
             List<IAccumulationRegister> leftovers = new();
             List<IAccumulationRegister> sales = new();
+            List<IAccumulationRegister> purchase = new();
 
             foreach (var product in Products)
             {
@@ -45,7 +46,7 @@ namespace Domain.Entity.Documents
                     NomenclatureId = product.NomenclatureId,
                     Warehouse = Warehouse,
                     Value = product.Quantity,
-                    TypeMove = Enum.TypeAccumulationRegisterMove.INCOMING
+                    TypeMove = TypeAccumulationRegisterMove.INCOMING
                 });
 
                 sales.Add(new Sale()
@@ -56,6 +57,16 @@ namespace Domain.Entity.Documents
                     Organization = Organization,
                     Price = product.Price,
                     Quantity = -product.Quantity
+                });
+
+                purchase.Add(new Purchase()
+                {
+                    Date = DateTime.Now,
+                    NomenclatureId = product.NomenclatureId,
+                    Client = Client,
+                    Organization = Organization,
+                    Price = product.Price,
+                    Quantity = product.Quantity
                 });
             }
 
@@ -77,6 +88,7 @@ namespace Domain.Entity.Documents
                 };
 
                 moves.Add(typeof(ProvidersDebt), debts);
+                moves.Add(typeof(Purchase), purchase);
             }
             else
             {

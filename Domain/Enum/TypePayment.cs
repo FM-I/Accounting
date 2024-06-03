@@ -2,6 +2,7 @@
 {
     public enum TypePayment
     {
+        Other,
         Client,
         Provider
     }

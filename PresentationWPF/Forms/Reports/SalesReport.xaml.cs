@@ -29,12 +29,18 @@ namespace PresentationWPF.Forms.Reports
                 var items = (ReadOnlyObservableCollection<Object>)value;
                 double summa = 0;
                 double q = 0;
+                double price = 0;
+                int count = 0;
                 foreach (DataReport gi in items)
                 {
                     summa += gi.Summa;
                     q += gi.Quantity;
+                    price += gi.Price;
+                    if(summa > 0)
+                        ++count;
                 }
-                return $"кількість: {q}     сумма: {summa} {_currency?.Name}";
+
+                return $"кількість: {q}   ціна: {Math.Round(price / (count > 0 ? count : 1), 2)}   сума: {summa} {_currency?.Name}";
             }
             return "";
         }
@@ -50,10 +56,12 @@ namespace PresentationWPF.Forms.Reports
         public class DataReport
         {
             public Guid ClientId { get; set; }
+            public Guid NomenclatureId { get; set; }
             public string Client { get; set; }
             public string Nomenclature { get; set; }
             public string Currency { get; set; }
-            public double Summa { get; set; }
+            public double Price { get; set; }
+            public double Summa { get => Price * Quantity; }
             public double Quantity { get; set; }
         }
 
@@ -67,12 +75,20 @@ namespace PresentationWPF.Forms.Reports
             set { _clientName = value; OnPropertyChanged(); }
         }
 
+        private string? _nomenclatureName;
+        public string? NomenclatureName
+        {
+            get { return _nomenclatureName; }
+            set { _nomenclatureName = value; OnPropertyChanged(); }
+        }
+
         private Currency? _currency;
 
         public event PropertyChangedEventHandler? PropertyChanged;
         private readonly IAccumulationRegisterController _accumulationRegisterController;
         private readonly IHandbookController _handbookController;
         private Guid? _clientId;
+        private Guid? _nomenclatureId;
 
         public ObservableCollection<DataReport> Data { get; set; } = new();
 
@@ -88,13 +104,14 @@ namespace PresentationWPF.Forms.Reports
 
             var view = (CollectionView)CollectionViewSource.GetDefaultView(report.ItemsSource);
             view.Filter = Filter;
-            view.GroupDescriptions.Add(new PropertyGroupDescription("Client"));
+            view.GroupDescriptions.Add(new PropertyGroupDescription("Nomenclature"));
 
-            report.Columns.Add(new DataGridTextColumn() { Header = "Номенклатура", Binding = new Binding("Nomenclature") });
+            //report.Columns.Add(new DataGridTextColumn() { Header = "Номенклатура", Binding = new Binding("Nomenclature") });
             report.Columns.Add(new DataGridTextColumn() { Header = "Контрагента", Binding = new Binding("Client") });
             report.Columns.Add(new DataGridTextColumn() { Header = "Кількість", Binding = new Binding("Quantity") });
+            report.Columns.Add(new DataGridTextColumn() { Header = "Ціна", Binding = new Binding("Price") });
             report.Columns.Add(new DataGridTextColumn() { Header = "Сумма", Binding = new Binding("Summa") });
-            report.Columns.Add(new DataGridTextColumn() { Header = "Валюта", Binding = new Binding("Currency") });
+            //report.Columns.Add(new DataGridTextColumn() { Header = "Валюта", Binding = new Binding("Currency") });
 
         }
 
@@ -102,36 +119,15 @@ namespace PresentationWPF.Forms.Reports
         {
             DataReport data = item as DataReport;
 
-            bool selectWarehouse = (_clientId == default || data?.ClientId == _clientId);
+            bool selectWarehouse = _clientId == default || data?.ClientId == _clientId;
+            bool selectNomenclature = _nomenclatureId == default || data?.NomenclatureId == _nomenclatureId;
 
-            return selectWarehouse;
+            return selectWarehouse && selectNomenclature;
         }
 
         public void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new(propertyName));
-        }
-
-        private Func<Sale, bool>? GetClientSelectionFunc()
-        {
-            Func<Sale, bool>? func = f =>
-            {
-                return (Date == default || f.Date <= Date)
-                && (_clientId == default || f.ClientId == _clientId);
-            };
-
-            return func;
-        }
-
-        private Func<ProvidersDebt, bool>? GetProviderSelectionFunc()
-        {
-            Func<ProvidersDebt, bool>? func = f =>
-            {
-                return (Date == default || f.Date <= Date)
-                && (_clientId == default || f.ProviderId == _clientId);
-            };
-
-            return func;
         }
 
         private void createReport_Click(object sender, RoutedEventArgs e)
@@ -148,16 +144,17 @@ namespace PresentationWPF.Forms.Reports
                 Summa = s.Sum(selector => selector.Quantity * (double)selector.Price)
             }).ToList();
 
-            foreach (var item in groupData)
+            foreach (var item in moveList)
             {
                 Data.Add(new()
                 {
                     Nomenclature = item.Nomenclature.Name,
                     Client = item.Client.Name,
-                    Summa = item.Summa,
+                    Price = (double)item.Price,
                     Quantity = item.Quantity,
                     ClientId = item.Client.Id,
-                    Currency = _currency?.Name
+                    Currency = _currency?.Name,
+                    NomenclatureId = item.NomenclatureId
                 });
             }
         }
@@ -199,6 +196,46 @@ namespace PresentationWPF.Forms.Reports
                 var data = _handbookController.GetHandbook<Client>((Guid)_clientId);
                 if (data != null)
                     ClientName = data.Name;
+            }
+        }
+
+        private void btnClearNomenclature_Click(object sender, RoutedEventArgs e)
+        {
+            _nomenclatureId = null;
+            NomenclatureName = "";
+            CollectionViewSource.GetDefaultView(report.ItemsSource).Refresh();
+        }
+
+        private void btnShowListNomenclature_Click(object sender, RoutedEventArgs e)
+        {
+            var form = new NomenclatureListForm(true);
+            if (form.ShowDialog() != null)
+            {
+                if (form.SelectedId != default)
+                {
+                    var data = _handbookController.GetHandbook<Nomenclature>(form.SelectedId);
+                    if (data != null)
+                    {
+                        _nomenclatureId = form.SelectedId;
+                        NomenclatureName = data.Name;
+                        CollectionViewSource.GetDefaultView(report.ItemsSource).Refresh();
+                    }
+                }
+            }
+
+        }
+
+        private void btnOpenNomenclature_Click(object sender, RoutedEventArgs e)
+        {
+            if (_nomenclatureId == null)
+                return;
+
+            var form = new NomenclatureElementForm((Guid)_nomenclatureId);
+            if (form.ShowDialog() != null)
+            {
+                var data = _handbookController.GetHandbook<Nomenclature>((Guid)_nomenclatureId);
+                if (data != null)
+                    NomenclatureName = data.Name;
             }
         }
     }

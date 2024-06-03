@@ -29,6 +29,8 @@ namespace Domain.Entity.Documents
             Dictionary<Type, List<IAccumulationRegister>> moves = new();
 
             var debts = new List<IAccumulationRegister>();
+            var cashs = new List<IAccumulationRegister>();
+
             Type type = typeof(ClientsDebt);
 
             if (Operation == TypePayment.Client)
@@ -44,6 +46,7 @@ namespace Domain.Entity.Documents
                         Value = Summa * (decimal)CurrencyRate
                     }
                 );
+
             }
             else
             {
@@ -59,10 +62,22 @@ namespace Domain.Entity.Documents
                     }
                 );
 
+               
+
                 type = typeof(ProvidersDebt);
             }
 
+            cashs.Add(new CashInCashBox()
+            {
+                CashBox = CashBox,
+                Summa = Summa,
+                TypeMove = TypeAccumulationRegisterMove.INCOMING,
+                Date = DateTime.Now,
+                Currency = Currency
+            });
+
             moves.Add(type, debts);
+            moves.Add(typeof(CashInCashBox), cashs);
 
             return moves;
         }

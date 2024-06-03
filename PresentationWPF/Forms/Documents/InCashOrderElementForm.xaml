@@ -53,7 +53,7 @@
                     <Label Content="Організація"/>
                     <Label Margin="0 3 0 0" Content="Контрагет"/>
                     <Label Content="Тип операції"/>
-                    <Label Content="Документ основа"/>
+                    <Label Name="documentBaseLabel" Content="Документ основа"/>
                 </StackPanel>
 
                 <StackPanel Orientation="Vertical" Grid.Column="1" Margin="0 0 5 0" >
@@ -103,7 +103,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <Grid Height="25" Margin="0 2 0 0">
+                    <Grid x:Name="documentBaseInput" Height="25" Margin="0 2 0 0">
 
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width=".7*"/>

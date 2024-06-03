@@ -52,6 +52,7 @@
                 <ColumnDefinition Width="170"/>
                 <ColumnDefinition Width="200"/>
                 <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="250"/>
             </Grid.ColumnDefinitions>
 
             <Button Margin="7" Style="{StaticResource ButtonStyle}" x:Name="createReport" Click="createReport_Click">
@@ -72,7 +73,7 @@
                 <xctk:DateTimePicker Value="{Binding Date, UpdateSourceTrigger=PropertyChanged}" Width="150" Height="25"/>
             </StackPanel>
 
-            <Grid Grid.Column="3" Height="25" Margin="5 2 0 0">
+            <Grid Grid.Column="2" Height="25" Margin="5 2 0 0">
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
@@ -87,6 +88,24 @@
                 <Button Grid.Column="2" x:Name="btnClearClient" Click="btnClearClient_Click" Content="X" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
                 <Button Grid.Column="3" x:Name="btnShowListClient" Click="btnShowListClient_Click" Content="▼" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
                 <Button Grid.Column="4" x:Name="btnOpenClient" Click="btnOpenClient_Click" Content=". . ."  Background="Transparent" BorderThickness="0 .5 .5 .5"  />
+
+            </Grid>
+
+            <Grid Grid.Column="3" Height="25" Margin="5 2 0 0">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width=".5*"/>
+                    <ColumnDefinition Width=".1*"/>
+                    <ColumnDefinition Width=".1*"/>
+                    <ColumnDefinition Width=".1*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Номенклатруа" Grid.Column="0"/>
+                <TextBox Grid.Column="1" VerticalContentAlignment="Center" IsReadOnly="True" Text="{Binding NomenclatureName}" />
+                <Button Grid.Column="2" x:Name="btnClearNomenclature" Click="btnClearNomenclature_Click" Content="X" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
+                <Button Grid.Column="3" x:Name="btnShowListNomenclature" Click="btnShowListNomenclature_Click" Content="▼" Background="Transparent" BorderThickness="0 .5 .5 .5"/>
+                <Button Grid.Column="4" x:Name="btnOpenNomenclature" Click="btnOpenNomenclature_Click" Content=". . ."  Background="Transparent" BorderThickness="0 .5 .5 .5"  />
 
             </Grid>
 

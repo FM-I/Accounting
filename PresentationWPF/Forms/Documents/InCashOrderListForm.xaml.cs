@@ -1,5 +1,6 @@
 ﻿using BL.Interfaces;
 using Domain.Entity.Documents;
+using Domain.Enum;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PresentationWPF.Common;
@@ -42,7 +43,13 @@ namespace PresentationWPF.Forms.Documents
                     item.Conducted,
                     item.Client.Name,
                     item.Summa,
-                    item.Operation == Domain.Enum.TypePayment.Client ? "Від покупця" : "Від постачальника"));
+                    item.Operation switch 
+                    {
+                        TypePayment.Client => "Від покупця",
+                        TypePayment.Provider => "Від постачальника",
+                        TypePayment.Other => "Інші",
+                        _ => "",
+                    }));
             }
 
             dataList.ItemsSource = items;

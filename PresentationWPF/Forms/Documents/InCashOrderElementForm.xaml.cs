@@ -39,7 +39,8 @@ namespace PresentationWPF.Forms.Documents
         private ObservableCollection<OperationItem> _operations = new()
         {
                 new(){ Text = "Від покупця", Type = TypePayment.Client},
-                new(){ Text = "Від постачальника", Type = TypePayment.Provider}
+                new(){ Text = "Від постачальника", Type = TypePayment.Provider},
+                new(){ Text = "Інші", Type = TypePayment.Other},
         };
 
         public ObservableCollection<OperationItem> Operations { get { return _operations; } set { _operations = value; } }
@@ -115,17 +116,17 @@ namespace PresentationWPF.Forms.Documents
                     Summa = _data.Summa.ToString();
                 }
             }
-
-            if (_data.Operation == default)
-                _data.Operation = TypePayment.Client;
-
+            InitializeComponent();
 
             if (_data.Operation == TypePayment.Client)
                 DocumentBaseName = _data.SaleInvoice?.ToString();
             else if(_data.Operation == TypePayment.Provider)
                 DocumentBaseName = _data.PurchaceInvoice?.ToString();
-
-            InitializeComponent();
+            else
+            {
+                documentBaseLabel.Visibility = Visibility.Hidden;
+                documentBaseInput.Visibility = Visibility.Hidden;
+            }
 
             DataContext = this;
             UnConducted.IsEnabled = _data.Conducted;
@@ -141,16 +142,19 @@ namespace PresentationWPF.Forms.Documents
 
             _data = data;
             Summa = _data.Summa.ToString();
-
-            if (_data.Operation == default)
-                _data.Operation = TypePayment.Client;
+            
+            InitializeComponent();
 
             if (_data.Operation == TypePayment.Client)
                 DocumentBaseName = _data.SaleInvoice?.ToString();
             else if (_data.Operation == TypePayment.Provider)
                 DocumentBaseName = _data.PurchaceInvoice?.ToString();
+            else
+            {
+                documentBaseLabel.Visibility = Visibility.Hidden;
+                documentBaseInput.Visibility = Visibility.Hidden;
+            }
 
-            InitializeComponent();
             DataContext = this;
             UnConducted.IsEnabled = _data.Conducted;
             TypeOperation.SelectedItem = Operations.First(w => w.Type == _data.Operation);
@@ -451,13 +455,19 @@ namespace PresentationWPF.Forms.Documents
             if (item == null || _data.Operation == item.Type) return;
 
             _data.Operation = item.Type;
+            documentBaseInput.Visibility = Visibility.Visible;
+            documentBaseLabel.Visibility = Visibility.Visible;
 
             if (_data.Operation == TypePayment.Provider)
                 DocumentBaseName = _data.PurchaceInvoice?.ToString();
             else if (_data.Operation == TypePayment.Client)
                 DocumentBaseName = _data.SaleInvoice?.ToString();
             else
+            {
                 DocumentBaseName = "";
+                documentBaseLabel.Visibility = Visibility.Hidden;
+                documentBaseInput.Visibility = Visibility.Hidden;
+            }
 
             if(!IsChange)
                 IsChange = true;
@@ -513,6 +523,12 @@ namespace PresentationWPF.Forms.Documents
 
                 _data.SaleInvoice = null;
                 _data.PurchaceInvoice = null;
+
+                if(_data.Operation == TypePayment.Other)
+                {
+                    _data.SaleInvoiceId = default;
+                    _data.PurchaceInvoiceId = default;
+                }
 
                 switch (typeWrite)
                 {

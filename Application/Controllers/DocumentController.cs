@@ -70,8 +70,6 @@ namespace BL.Controllers
             data = _context.IncludeVirtualProperty(data);
             var doc = data.AsNoTracking().FirstOrDefault(x => x.Id == id);
 
-            _context.Entry(doc).State = EntityState.Detached;
-
             _context.ChangeTracker.Clear();
             return doc;
         }
@@ -148,6 +146,66 @@ namespace BL.Controllers
 
                 switch (type) 
                 {
+                    case nameof(CashInCashBox):
+                        {
+
+                            CashInCashBox? item = move.Value.FirstOrDefault() as CashInCashBox;
+
+                            if(item != null && item.TypeMove == TypeAccumulationRegisterMove.OUTCOMING)
+                            {
+
+                                var data = _accumulationController.GetListData<CashInCashBox>(s => s.CashBoxId == item.CashBox.Id && s.CurrencyId == item.Currency.Id);
+                                var leftovers = _accumulationController.GetLeftoverList(data, g => g.CashBox.Id, s => new { CashBox = s.Key, Summa = s.Sum(sl => sl.TypeMove == TypeAccumulationRegisterMove.INCOMING ? sl.Summa : -sl.Summa) });
+                                
+                                decimal summa = 0;
+                                
+                                if(oldMoves.TryGetValue(move.Key, out var res))
+                                {
+                                    CashInCashBox? prevData = res.FirstOrDefault() as CashInCashBox;
+
+                                    if (prevData != null)
+                                        summa = prevData.Summa;
+                                }
+
+                                var leftover = leftovers.FirstOrDefault();
+
+                                if (leftover == null || leftover.Summa + summa - item.Summa < 0)
+                                    result.Messages.Add($"В касі {item.CashBox.Name} не достатньо коштів: {item.Summa - (leftover != null ? leftover.Summa + summa : 0)} {item.Currency?.Name}");
+
+                            }
+
+                            break;
+                        }
+                    case nameof(CashInBankAccount):
+                        {
+
+                            CashInBankAccount? item = move.Value.FirstOrDefault() as CashInBankAccount;
+
+                            if (item != null && item.TypeMove == TypeAccumulationRegisterMove.OUTCOMING)
+                            {
+
+                                var data = _accumulationController.GetListData<CashInBankAccount>(s => s.BankAccountId == item.BankAccount.Id && s.CurrencyId == item.Currency.Id);
+                                var leftovers = _accumulationController.GetLeftoverList(data, g => g.BankAccount.Id, s => new { Summa = s.Sum(sl => sl.TypeMove == TypeAccumulationRegisterMove.INCOMING ? sl.Summa : -sl.Summa) });
+
+                                var leftover = leftovers.FirstOrDefault();
+
+                                decimal summa = 0;
+
+                                if (oldMoves.TryGetValue(move.Key, out var res))
+                                {
+                                    CashInBankAccount? prevData = res.FirstOrDefault() as CashInBankAccount;
+
+                                    if (prevData != null)
+                                        summa = prevData.Summa;
+                                }
+
+                                if (leftover == null || leftover.Summa + summa - item.Summa < 0)
+                                    result.Messages.Add($"На рахунку {item.BankAccount.Name} не достатньо коштів: {item.Summa - (leftover != null ? leftover.Summa + summa - item.Summa : 0)} {item.Currency?.Name}");
+
+                            }
+
+                            break;
+                        }
                     case nameof(Leftover):
                         {
                             HashSet<Guid> nomenclatures = new();

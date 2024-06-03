@@ -40,7 +40,7 @@ namespace PresentationWPF.Forms
             List<DataType> list = new()
             {
                 new(){ Text = "Всі", Type = TypeNomenclature.None },
-                new(){ Text = "Продукт", Type = TypeNomenclature.Product },
+                new(){ Text = "Товар", Type = TypeNomenclature.Product },
                 new(){ Text = "Послуга", Type = TypeNomenclature.Service }
             };
 
