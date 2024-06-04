@@ -87,10 +87,10 @@ namespace PresentationWPF.Forms.Reports
 
             var view = (CollectionView)CollectionViewSource.GetDefaultView(report.ItemsSource);
             view.Filter = Filter;
-            view.GroupDescriptions.Add(new PropertyGroupDescription("Organization"));
+            view.GroupDescriptions.Add(new PropertyGroupDescription("Client"));
 
             report.Columns.Add(new DataGridTextColumn() { Header = "Організація", Binding = new Binding("Organization") });
-            report.Columns.Add(new DataGridTextColumn() { Header = "Контрагента", Binding = new Binding("Client") });
+            //report.Columns.Add(new DataGridTextColumn() { Header = "Контрагента", Binding = new Binding("Client") });
             report.Columns.Add(new DataGridTextColumn() { Header = "Сумма", Binding = new Binding("Summa") });
             report.Columns.Add(new DataGridTextColumn() { Header = "Валюта", Binding = new Binding("Currency") });
 

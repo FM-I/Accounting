@@ -213,7 +213,7 @@ namespace BL.Controllers
 
                             foreach (Leftover value in move.Value)
                             {
-                                if(value.TypeMove == TypeAccumulationRegisterMove.OUTCOMING)
+                                if (value.TypeMove == TypeAccumulationRegisterMove.OUTCOMING)
                                 {
                                     nomenclatures.Add(value.NomenclatureId);
                                     warehouses.Add(value.Warehouse.Id);
@@ -282,18 +282,14 @@ namespace BL.Controllers
                                     var id = string.Join("", item.NomenclatureId, item.Warehouse.Id);
                                     var data = leftovers.FirstOrDefault(x => x.id == id);
                                     double leftover = 0;
-                                    double coefficient = 1;
                                     
                                     oldMove.TryGetValue(id, out leftover);
-
-                                    if(nomenclature.BaseUnit != null && nomenclature.BaseUnit.Coefficient > 0)
-                                        coefficient = nomenclature.BaseUnit.Coefficient;
 
                                     if (data != null)
                                         leftover += data.value;
 
+                                    var value = leftover - (item.Value);
 
-                                    var value = leftover - (item.Value / coefficient);
                                     if (value < 0)
                                     {
 

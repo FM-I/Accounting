@@ -20,7 +20,7 @@
                     <GridViewColumn DisplayMemberBinding="{Binding Id}" Width="0"/>
                     <GridViewColumn Header="Код" DisplayMemberBinding="{Binding Code}" Width="75"/>
                     <GridViewColumn Header="Найменування" DisplayMemberBinding="{Binding DataName}" Width="150"/>
-                    <GridViewColumn Header="Коефіцієнт" DisplayMemberBinding="{Binding Coefficient}" Width="150"/>
+                    <!--<GridViewColumn Header="Коефіцієнт" DisplayMemberBinding="{Binding Coefficient}" Width="150"/>-->
                     <GridViewColumn Header="Помітка видалення" Width="150">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>

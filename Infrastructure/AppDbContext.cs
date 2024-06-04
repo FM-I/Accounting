@@ -46,6 +46,7 @@ namespace Infrastructure
         public DbSet<Sale> Sales { get; set; }
         public DbSet<CashInCashBox> CashInCashBoxes { get; set; }
         public DbSet<CashInBankAccount> CashInBankAccounts { get; set; }
+        public DbSet<Purchase> Purchases { get; set; }
         
         public AppDbContext()
         {
@@ -70,6 +71,7 @@ namespace Infrastructure
             modelBuilder.Entity<ClientsDebt>().HasKey(x => new { x.Date, x.ClientId, x.OrganizationId, x.DocumentId });
             modelBuilder.Entity<ProvidersDebt>().HasKey(x => new { x.Date, x.ProviderId, x.OrganizationId, x.DocumentId });
             modelBuilder.Entity<Sale>().HasKey(x => new { x.Date, x.NomenclatureId, x.ClientId, x.OrganizationId, x.DocumentId });
+            modelBuilder.Entity<Purchase>().HasKey(x => new { x.Date, x.NomenclatureId, x.ClientId, x.OrganizationId, x.DocumentId });
             modelBuilder.Entity<CashInCashBox>().HasKey(x => new { x.Date, x.CurrencyId, x.CashBoxId, x.DocumentId });
             modelBuilder.Entity<CashInBankAccount>().HasKey(x => new { x.Date, x.CurrencyId, x.BankAccountId, x.DocumentId });
         }

@@ -1,34 +1,48 @@
-﻿using BL.Controllers;
-using BL.Interfaces;
+﻿using BL.Interfaces;
 using Domain.Entity.Handbooks;
 using Domain.Entity.Registers.Accumulations;
-using Domain.Enum;
 using Microsoft.Extensions.DependencyInjection;
 using PresentationWPF.Common;
+using PresentationWPF.Forms.Handbooks;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using static PresentationWPF.Forms.Reports.LeftoverReportForm;
+using static PresentationWPF.Forms.Reports.PurchaseReport;
 
 namespace PresentationWPF.Forms.Reports
 {
-    public class LeftoverGroupsToTotalConverter : IValueConverter
+    public class PurchaseGroupsToTotalConverter : IValueConverter
     {
+        private Currency? _currency;
+        public PurchaseGroupsToTotalConverter()
+        {
+            _currency = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>().GetHandbook<Currency>(w => w.IsDefault);
+        }
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if (value is ReadOnlyObservableCollection<Object>)
             {
                 var items = (ReadOnlyObservableCollection<Object>)value;
-                double total = 0;
+                double summa = 0;
+                double q = 0;
+                double price = 0;
+                int count = 0;
+                string unit = string.Empty;
                 foreach (DataReport gi in items)
                 {
-                    total += gi.Quantity;
+                    summa += gi.Summa;
+                    q += gi.Quantity;
+                    price += gi.Price;
+                    unit = gi.Unit;
+                    if (summa > 0)
+                        ++count;
                 }
-                return "загалом: " + total.ToString();
+
+                return $"кількість: {q} {unit}   ціна: {Math.Round(price / (count > 0 ? count : 1), 2)}   сума: {summa} {_currency?.Name}";
             }
             return "";
         }
@@ -39,71 +53,81 @@ namespace PresentationWPF.Forms.Reports
         }
     }
 
-    public partial class LeftoverReportForm : Window, INotifyPropertyChanged
+    public partial class PurchaseReport : Window, INotifyPropertyChanged
     {
         public class DataReport
         {
+            public Guid ClientId { get; set; }
             public Guid NomenclatureId { get; set; }
-            public Guid WarehouseId { get; set; }
-            public string Warehouse { get; set; }
-            public string Nomenclature { get; set; }
+            public string Client { get; set; }
             public string Unit { get; set; }
+            public string Nomenclature { get; set; }
+            public string Currency { get; set; }
+            public double Price { get; set; }
+            public double Summa { get => Price * Quantity; }
             public double Quantity { get; set; }
         }
 
-        private DateTime? _date;
-        public DateTime? Date { get { return _date; } set { _date = value; OnPropertyChanged(); } }
+        private DateTime? _dateStart;
+        public DateTime? DateStart { get { return _dateStart; } set { _dateStart = value; OnPropertyChanged(); } }
 
-        private string? _warehouseName;
+        private DateTime? _dateEnd;
+        public DateTime? DateEnd { get { return _dateEnd; } set { _dateEnd = value; OnPropertyChanged(); } }
 
-        public string? WarehouseName
+        private string? _clientName;
+        public string? ClientName
         {
-            get { return _warehouseName; }
-            set { _warehouseName = value; OnPropertyChanged(); }
+            get { return _clientName; }
+            set { _clientName = value; OnPropertyChanged(); }
         }
 
         private string? _nomenclatureName;
-
         public string? NomenclatureName
         {
             get { return _nomenclatureName; }
             set { _nomenclatureName = value; OnPropertyChanged(); }
         }
 
+        private Currency? _currency;
+
         public event PropertyChangedEventHandler? PropertyChanged;
         private readonly IAccumulationRegisterController _accumulationRegisterController;
         private readonly IHandbookController _handbookController;
+        private Guid? _clientId;
         private Guid? _nomenclatureId;
-        private Guid? _warehouseId;
 
         public ObservableCollection<DataReport> Data { get; set; } = new();
 
-        public LeftoverReportForm()
+        public PurchaseReport()
         {
             _accumulationRegisterController = DIContainer.ServiceProvider.GetRequiredService<IAccumulationRegisterController>();
             _handbookController = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
+
+            _currency = _handbookController.GetHandbook<Currency>(w => w.IsDefault);
 
             DataContext = this;
             InitializeComponent();
 
             var view = (CollectionView)CollectionViewSource.GetDefaultView(report.ItemsSource);
             view.Filter = Filter;
-            view.GroupDescriptions.Add(new PropertyGroupDescription("Warehouse"));
+            view.GroupDescriptions.Add(new PropertyGroupDescription("Nomenclature"));
 
-            //report.Columns.Add(new DataGridTextColumn() { Header = "Склад", Binding = new Binding("Warehouse")});
-            report.Columns.Add(new DataGridTextColumn() { Header = "Номенклатура", Binding = new Binding("Nomenclature") });
+            //report.Columns.Add(new DataGridTextColumn() { Header = "Номенклатура", Binding = new Binding("Nomenclature") });
+            report.Columns.Add(new DataGridTextColumn() { Header = "Контрагента", Binding = new Binding("Client") });
             report.Columns.Add(new DataGridTextColumn() { Header = "Кількість", Binding = new Binding("Quantity") });
             report.Columns.Add(new DataGridTextColumn() { Header = "Од.", Binding = new Binding("Unit") });
+            report.Columns.Add(new DataGridTextColumn() { Header = "Ціна", Binding = new Binding("Price") });
+            report.Columns.Add(new DataGridTextColumn() { Header = "Сумма", Binding = new Binding("Summa") });
+            //report.Columns.Add(new DataGridTextColumn() { Header = "Валюта", Binding = new Binding("Currency") });
 
         }
-
 
         public bool Filter(object item)
         {
             DataReport data = item as DataReport;
 
-            bool selectWarehouse = (_warehouseId == default || data?.WarehouseId == _warehouseId);
-            bool selectNomenclature = (_nomenclatureId == default || data?.NomenclatureId == _nomenclatureId);
+            bool selectWarehouse = _clientId == default || data?.ClientId == _clientId;
+            bool selectNomenclature = _nomenclatureId == default || data?.NomenclatureId == _nomenclatureId;
 
             return selectWarehouse && selectNomenclature;
         }
@@ -113,64 +137,57 @@ namespace PresentationWPF.Forms.Reports
             PropertyChanged?.Invoke(this, new(propertyName));
         }
 
-        private Func<Leftover, bool>? GetSelectionFunc()
-        {
-            Func<Leftover, bool>? func = f =>
-            {
-                return (Date == default || f.Date <= Date)
-                && (_nomenclatureId == default || f.NomenclatureId == _nomenclatureId)
-                && (_warehouseId == default || f.WarehouseId == _warehouseId);
-            };
-
-            return func;
-        }
-
         private void createReport_Click(object sender, RoutedEventArgs e)
         {
             Data.Clear();
-            var moveList = _accumulationRegisterController.GetListData<Leftover>(GetSelectionFunc());
-            var leftover = _accumulationRegisterController.GetLeftoverList(moveList,
-                g => new { g.Nomenclature, g.Warehouse },
-                s => new
-                {
-                    Nomenclature = s.Key.Nomenclature,
-                    Warehouse = s.Key.Warehouse,
-                    Value = s.Sum(selector => selector.TypeMove == TypeAccumulationRegisterMove.INCOMING ? selector.Value : -selector.Value)
-                });
 
-            foreach (var item in leftover)
+            var moveList = _accumulationRegisterController.GetListData<Purchase>(s => 
+                s.Date >= (DateStart == default ? DateTime.MinValue : DateStart)
+                && s.Date <= (DateEnd == default ? DateTime.Now : DateEnd));
+
+            var groupData = moveList.GroupBy(g => new { g.Nomenclature, g.Client }).Select(s => new
+            {
+                Nomenclature = s.Key.Nomenclature,
+                Client = s.Key.Client,
+                Quantity = s.Sum(selector => selector.Quantity),
+                Summa = s.Sum(selector => selector.Quantity * (double)selector.Price)
+            }).ToList();
+
+            foreach (var item in moveList)
             {
                 Data.Add(new()
                 {
                     Nomenclature = item.Nomenclature.Name,
                     Unit = _handbookController.GetHandbook<Unit>((Guid)item.Nomenclature.BaseUnitId)?.Name,
-                    Warehouse = item.Warehouse.Name,
-                    Quantity = item.Value,
-                    NomenclatureId = item.Nomenclature.Id,
-                    WarehouseId = item.Warehouse.Id
+                    Client = item.Client.Name,
+                    Price = (double)item.Price,
+                    Quantity = item.Quantity,
+                    ClientId = item.Client.Id,
+                    Currency = _currency?.Name,
+                    NomenclatureId = item.NomenclatureId
                 });
             }
         }
 
-        private void btnClearWarehouse_Click(object sender, RoutedEventArgs e)
+        private void btnClearClient_Click(object sender, RoutedEventArgs e)
         {
-            _warehouseId = null;
-            WarehouseName = "";
+            _clientId = null;
+            ClientName = "";
             CollectionViewSource.GetDefaultView(report.ItemsSource).Refresh();
         }
 
-        private void btnShowListWarehouse_Click(object sender, RoutedEventArgs e)
+        private void btnShowListClient_Click(object sender, RoutedEventArgs e)
         {
-            var form = new WarehouseListForm(true);
+            var form = new ClientListForm(true);
             if (form.ShowDialog() != null)
             {
                 if (form.SelectedId != default)
                 {
-                    var data = _handbookController.GetHandbook<Warehouse>(form.SelectedId);
+                    var data = _handbookController.GetHandbook<Client>(form.SelectedId);
                     if (data != null)
                     {
-                        _warehouseId = form.SelectedId;
-                        WarehouseName = data.Name;
+                        _clientId = form.SelectedId;
+                        ClientName = data.Name;
                         CollectionViewSource.GetDefaultView(report.ItemsSource).Refresh();
                     }
                 }
@@ -178,17 +195,17 @@ namespace PresentationWPF.Forms.Reports
 
         }
 
-        private void btnOpenWarehouse_Click(object sender, RoutedEventArgs e)
+        private void btnOpenClient_Click(object sender, RoutedEventArgs e)
         {
-            if (_warehouseId == null)
+            if (_clientId == null)
                 return;
 
-            var form = new WarehouseElementForm((Guid)_warehouseId);
+            var form = new ClientElementForm((Guid)_clientId);
             if (form.ShowDialog() != null)
             {
-                var data = _handbookController.GetHandbook<Warehouse>((Guid)_warehouseId);
+                var data = _handbookController.GetHandbook<Client>((Guid)_clientId);
                 if (data != null)
-                    WarehouseName = data.Name;
+                    ClientName = data.Name;
             }
         }
 
@@ -215,6 +232,7 @@ namespace PresentationWPF.Forms.Reports
                     }
                 }
             }
+
         }
 
         private void btnOpenNomenclature_Click(object sender, RoutedEventArgs e)

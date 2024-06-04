@@ -164,10 +164,12 @@
             <StackPanel Grid.Row="1" Orientation="Vertical">
                 <Button x:Name="openLeftoverReport"  Margin="0 0 0 10" Content="Залишки на складах" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
                 <Button x:Name="openSalesReport"  Margin="0 0 0 10" Content="Продажі" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
+                <Button x:Name="openPurchaseReport"  Margin="0 0 0 10" Content="Закупки" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
             </StackPanel>
 
             <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Vertical">
                 <Button x:Name="openClientProviderDebtReport"  Margin="0 0 0 10" Content="Взаєморозрахунки" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
+                <Button x:Name="openCashReport"  Margin="0 0 0 10" Content="Грошові кошти" FontSize="16" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center" Click="openForm"/>
             </StackPanel>
 
         </Grid>

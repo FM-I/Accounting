@@ -145,6 +145,12 @@ namespace PresentationWPF
                 case "openSalesReport":
                     form = new SalesReport();
                     break;
+                case "openPurchaseReport":
+                    form = new PurchaseReport();
+                    break;
+                case "openCashReport":
+                    form = new CashReport();
+                    break;
             }
 
             if (form != null)

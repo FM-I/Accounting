@@ -24,8 +24,8 @@
                             </Expander.Style>
                             <Expander.Header>
                                 <StackPanel Orientation="Horizontal">
-                                    <Label Content="{Binding Name}"/>
-                                    <Label Grid.Column="1" Content="{Binding Items, Converter={StaticResource groupsConverter}}"/>
+                                    <Label Content="{Binding Name}" FontWeight="Bold" FontSize="14"/>
+                                    <Label Grid.Column="1" FontWeight="Bold" FontSize="14" Content="{Binding Items, Converter={StaticResource groupsConverter}}"/>
                                 </StackPanel>
                             </Expander.Header>
                             <Expander.Content>
@@ -46,13 +46,13 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Grid>
+        <Grid  Margin="5 0 5 0">
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="170"/>
-                <ColumnDefinition Width="200"/>
-                <ColumnDefinition Width="250"/>
-                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width=".15*"/>
+                <ColumnDefinition Width=".30*"/>
+                <ColumnDefinition Width=".25*"/>
+                <ColumnDefinition Width=".25*"/>
             </Grid.ColumnDefinitions>
 
             <Button Margin="7" Style="{StaticResource ButtonStyle}" x:Name="createReport" Click="createReport_Click">
@@ -68,10 +68,22 @@
                 </Grid>
             </Button>
 
-            <StackPanel Grid.Column="1" Orientation="Horizontal">
-                <Label Content="Дата" VerticalAlignment="Center"/>
-                <xctk:DateTimePicker Value="{Binding Date, UpdateSourceTrigger=PropertyChanged}" Width="150" Height="25"/>
-            </StackPanel>
+            <Grid Grid.Column="1">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="55"/>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="15"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Період" VerticalAlignment="Center"/>
+                <xctk:DateTimePicker Grid.Column="1" Value="{Binding DateStart, UpdateSourceTrigger=PropertyChanged}" Height="25"/>
+
+                <Label Grid.Column="2" Width="15" Content="-" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                <xctk:DateTimePicker Grid.Column="3" Value="{Binding DateEnd, UpdateSourceTrigger=PropertyChanged}" Height="25"/>
+
+            </Grid>
 
             <Grid Grid.Column="2" Height="25" Margin="5 2 0 0">
 

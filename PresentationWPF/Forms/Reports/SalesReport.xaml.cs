@@ -31,16 +31,18 @@ namespace PresentationWPF.Forms.Reports
                 double q = 0;
                 double price = 0;
                 int count = 0;
+                string unit = string.Empty;
                 foreach (DataReport gi in items)
                 {
                     summa += gi.Summa;
                     q += gi.Quantity;
                     price += gi.Price;
+                    unit = gi.Unit;
                     if(summa > 0)
                         ++count;
                 }
 
-                return $"кількість: {q}   ціна: {Math.Round(price / (count > 0 ? count : 1), 2)}   сума: {summa} {_currency?.Name}";
+                return $"кількість: {q} {unit}   ціна: {Math.Round(price / (count > 0 ? count : 1), 2)}   сума: {summa} {_currency?.Name}";
             }
             return "";
         }
@@ -57,6 +59,7 @@ namespace PresentationWPF.Forms.Reports
         {
             public Guid ClientId { get; set; }
             public Guid NomenclatureId { get; set; }
+            public string Unit { get; set; }
             public string Client { get; set; }
             public string Nomenclature { get; set; }
             public string Currency { get; set; }
@@ -65,8 +68,12 @@ namespace PresentationWPF.Forms.Reports
             public double Quantity { get; set; }
         }
 
-        private DateTime _date;
-        public DateTime Date { get { return _date; } set { _date = value; OnPropertyChanged(); } }
+        private DateTime? _dateStart;
+        public DateTime? DateStart { get { return _dateStart; } set { _dateStart = value; OnPropertyChanged(); } }
+
+        private DateTime? _dateEnd;
+        public DateTime? DateEnd { get { return _dateEnd; } set { _dateEnd = value; OnPropertyChanged(); } }
+
 
         private string? _clientName;
         public string? ClientName
@@ -134,7 +141,9 @@ namespace PresentationWPF.Forms.Reports
         {
             Data.Clear();
 
-            var moveList = _accumulationRegisterController.GetListData<Sale>(s => Date == default || s.Date <= Date);
+            var moveList = _accumulationRegisterController.GetListData<Sale>(s =>
+                s.Date >= (DateStart == default ? DateTime.MinValue : DateStart)
+                && s.Date <= (DateEnd == default ? DateTime.Now : DateEnd));
 
             var groupData = moveList.GroupBy(g => new { g.Nomenclature, g.Client }).Select(s => new
             {
@@ -149,6 +158,7 @@ namespace PresentationWPF.Forms.Reports
                 Data.Add(new()
                 {
                     Nomenclature = item.Nomenclature.Name,
+                    Unit = _handbookController.GetHandbook<Unit>((Guid)item.Nomenclature.BaseUnitId)?.Name,
                     Client = item.Client.Name,
                     Price = (double)item.Price,
                     Quantity = item.Quantity,

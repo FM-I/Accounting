@@ -21,8 +21,8 @@ namespace Domain.Entity.Handbooks
             if (string.IsNullOrWhiteSpace(Name))
                 result.Properties.Add("Найменування");
 
-            if (Coefficient <= 0)
-                result.Properties.Add("Коефіцієнт");
+            //if (Coefficient <= 0)
+            //    result.Properties.Add("Коефіцієнт");
 
             return result;
         }
