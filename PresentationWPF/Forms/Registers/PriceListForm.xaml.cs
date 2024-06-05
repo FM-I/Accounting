@@ -25,17 +25,20 @@ namespace PresentationWPF.Forms.Registers
 
         private void context_SavedChanges(object? sender, SavedChangesEventArgs e)
         {
-            var list = _controller.GetListData<Price>();
-            List<ListItem> items = new List<ListItem>();
-            foreach (var item in list)
+            Dispatcher.Invoke(() =>
             {
-                items.Add(new ListItem(item.Nomenclature.Name, item.TypePrice.Name, item.Value, item.Date, item.NomenclatureId, item.TypePriceId));
-            }
+                var list = _controller.GetListData<Price>();
+                List<ListItem> items = new List<ListItem>();
+                foreach (var item in list)
+                {
+                    items.Add(new ListItem(item.Nomenclature.Name, item.TypePrice.Name, item.Value, item.Date, item.NomenclatureId, item.TypePriceId));
+                }
 
-            dataList.ItemsSource = items;
+                dataList.ItemsSource = items;
 
-            var view = (CollectionView)CollectionViewSource.GetDefaultView(dataList.ItemsSource);
-            view.Filter = ListFilter;
+                var view = (CollectionView)CollectionViewSource.GetDefaultView(dataList.ItemsSource);
+                view.Filter = ListFilter;
+            });
         }
 
         private void dataList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)

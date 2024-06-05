@@ -1,8 +1,14 @@
-﻿using PresentationWPF.Forms;
+﻿using BL.Interfaces;
+using Domain.Entity.Handbooks;
+using Domain.Entity.Registers.Informations;
+using Microsoft.Extensions.DependencyInjection;
+using PresentationWPF.Common;
+using PresentationWPF.Forms;
 using PresentationWPF.Forms.Documents;
 using PresentationWPF.Forms.Handbooks;
 using PresentationWPF.Forms.Registers;
 using PresentationWPF.Forms.Reports;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -11,12 +17,52 @@ namespace PresentationWPF
 {
     public partial class MainWindow : Window
     {
+        private int TIMER = 3;
         private Button _prevBtn;
         private Grid _prevGrid;
-
+        private BackgroundWorker _backgrounWorker;
+        private readonly IExchangeRateService _exchangeRateService;
+        private readonly IHandbookController _handboolContorller;
+        private readonly IInformationRegisterController _informationRegisterController;
         public MainWindow()
         {
+
+            _exchangeRateService = DIContainer.ServiceProvider.GetRequiredService<IExchangeRateService>();
+            _handboolContorller = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
+            _informationRegisterController = DIContainer.ServiceProvider.GetRequiredService<IInformationRegisterController>();
+
             InitializeComponent();
+
+            _backgrounWorker = new BackgroundWorker();
+            _backgrounWorker.DoWork += Bg_DoWork;
+            _backgrounWorker.WorkerReportsProgress = true;
+            _backgrounWorker.RunWorkerAsync();
+
+        }
+
+        private async void Bg_DoWork(object sender, DoWorkEventArgs e)
+        {
+            while(true)
+            {
+                Thread.Sleep(TimeSpan.FromMinutes(TIMER));
+
+                var result = await _exchangeRateService.GetExchangeRatesAsync();
+                var currencies = _handboolContorller.GetHandbooks<Currency>(w => !w.DeleteMark && !w.IsDefault);
+
+                foreach (var item in currencies)
+                {
+                    var data = result.FirstOrDefault(w => w.CurrenyName.ToUpper() == item.Name.ToUpper());
+
+                    if (data != null)
+                    {
+                        var exchangeRate = new ExchangesRate();
+                        exchangeRate.Currency = item;
+                        exchangeRate.Date = DateTime.Now;
+                        exchangeRate.Rate = data.CurrengeSaleRate;
+                        await _informationRegisterController.AddOrUpdateAsync(exchangeRate);
+                    }
+                }
+            }
         }
 
         private void menuItem_Click(object sender, RoutedEventArgs e)

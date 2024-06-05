@@ -30,19 +30,22 @@ namespace PresentationWPF.Forms.Documents
 
         private void context_SavedChanges(object? sender, SavedChangesEventArgs e)
         {
-            var list = _controller.GetDocuments<ClientOrder>();            
-            List<ListItem> items = new List<ListItem>();
-            
-            foreach (var item in list)
+            Dispatcher.Invoke(() =>
             {
-                items.Add(new ListItem(item.Id, item.Number, item.Date, item.DeleteMark, item.Conducted, item.Client.Name, item.Summa));
-            }
+                var list = _controller.GetDocuments<ClientOrder>();
+                List<ListItem> items = new List<ListItem>();
 
-            dataList.ItemsSource = items;
-            
-            var view = (CollectionView)CollectionViewSource.GetDefaultView(dataList.ItemsSource);
-            view.Filter = ListFilter;
-            view.SortDescriptions.Add(new("Number", System.ComponentModel.ListSortDirection.Descending));
+                foreach (var item in list)
+                {
+                    items.Add(new ListItem(item.Id, item.Number, item.Date, item.DeleteMark, item.Conducted, item.Client.Name, item.Summa));
+                }
+
+                dataList.ItemsSource = items;
+
+                var view = (CollectionView)CollectionViewSource.GetDefaultView(dataList.ItemsSource);
+                view.Filter = ListFilter;
+                view.SortDescriptions.Add(new("Number", System.ComponentModel.ListSortDirection.Descending));
+            });
         }
 
         private void dataList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)

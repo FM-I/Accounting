@@ -52,21 +52,24 @@ namespace PresentationWPF.Forms.Handbooks
 
         private void context_SavedChanges(object? sender, SavedChangesEventArgs e)
         {
-            var list = _controller.GetHandbooks<Client>(where => !where.IsGroup);
-            List<ListItem> items = new List<ListItem>();
-            foreach (var item in list)
+            Dispatcher.Invoke(() =>
             {
-                if (_onlyGroup && !item.IsGroup)
-                    continue;
+                var list = _controller.GetHandbooks<Client>(where => !where.IsGroup);
+                List<ListItem> items = new List<ListItem>();
+                foreach (var item in list)
+                {
+                    if (_onlyGroup && !item.IsGroup)
+                        continue;
 
-                items.Add(new ListItem(item.Id, item.Code, item.Name, item.DeleteMark, item.Parent?.Id, item.TypeClient));
-            }
-            dataList.ItemsSource = items;
+                    items.Add(new ListItem(item.Id, item.Code, item.Name, item.DeleteMark, item.Parent?.Id, item.TypeClient));
+                }
+                dataList.ItemsSource = items;
 
-            var view = (CollectionView)CollectionViewSource.GetDefaultView(dataList.ItemsSource);
-            view.Filter = ListFilter;
+                var view = (CollectionView)CollectionViewSource.GetDefaultView(dataList.ItemsSource);
+                view.Filter = ListFilter;
 
-            treeGroups_Initialized(null, null);
+                treeGroups_Initialized(null, null);
+            });
         }
 
         private void dataList_MouseDoubleClick(object sender, MouseButtonEventArgs e)

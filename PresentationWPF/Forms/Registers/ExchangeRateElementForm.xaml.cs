@@ -8,7 +8,6 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PresentationWPF.Forms.Registers
 {
@@ -92,6 +91,7 @@ namespace PresentationWPF.Forms.Registers
             };
 
             _data.Rate = res;
+            _data.Date = _data.Date.AddMilliseconds(-_data.Date.Millisecond);
 
             var result = _data.CheckDataComplection();
 

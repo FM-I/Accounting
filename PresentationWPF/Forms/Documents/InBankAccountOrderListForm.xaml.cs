@@ -31,32 +31,35 @@ namespace PresentationWPF.Forms.Documents
 
         private void context_SavedChanges(object? sender, SavedChangesEventArgs e)
         {
-            var list = _controller.GetDocuments<InBankAccontOrder>();
-            List<ListItem> items = new List<ListItem>();
-
-            foreach (var item in list)
+            Dispatcher.Invoke(() =>
             {
-                items.Add(new(item.Id,
-                    item.Number,
-                    item.Date,
-                    item.DeleteMark,
-                    item.Conducted,
-                    item.Client.Name,
-                    item.Summa,
-                    item.Operation switch
-                    {
-                        TypePayment.Client => "Від покупця",
-                        TypePayment.Provider => "Від постачальника",
-                        TypePayment.Other => "Інші",
-                        _ => "",
-                    }));
-            }
+                var list = _controller.GetDocuments<InBankAccontOrder>();
+                List<ListItem> items = new List<ListItem>();
 
-            dataList.ItemsSource = items;
+                foreach (var item in list)
+                {
+                    items.Add(new(item.Id,
+                        item.Number,
+                        item.Date,
+                        item.DeleteMark,
+                        item.Conducted,
+                        item.Client.Name,
+                        item.Summa,
+                        item.Operation switch
+                        {
+                            TypePayment.Client => "Від покупця",
+                            TypePayment.Provider => "Від постачальника",
+                            TypePayment.Other => "Інші",
+                            _ => "",
+                        }));
+                }
 
-            var view = (CollectionView)CollectionViewSource.GetDefaultView(dataList.ItemsSource);
-            view.Filter = ListFilter;
-            view.SortDescriptions.Add(new("Number", System.ComponentModel.ListSortDirection.Descending));
+                dataList.ItemsSource = items;
+
+                var view = (CollectionView)CollectionViewSource.GetDefaultView(dataList.ItemsSource);
+                view.Filter = ListFilter;
+                view.SortDescriptions.Add(new("Number", System.ComponentModel.ListSortDirection.Descending));
+            });
         }
 
         private void dataList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)

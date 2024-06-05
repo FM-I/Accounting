@@ -33,13 +33,16 @@ namespace PresentationWPF.Forms
 
         private void context_SavedChanges(object? sender, SavedChangesEventArgs e)
         {
-            var list = _controller.GetHandbooks<Organization>();
-            List<ListItem> items = new List<ListItem>();
-            foreach (var item in list)
+            Dispatcher.Invoke(() =>
             {
-                items.Add(new ListItem(item.Id, item.Code, item.Name, item.DeleteMark));
-            }
-            dataList.ItemsSource = items;
+                var list = _controller.GetHandbooks<Organization>();
+                List<ListItem> items = new List<ListItem>();
+                foreach (var item in list)
+                {
+                    items.Add(new ListItem(item.Id, item.Code, item.Name, item.DeleteMark));
+                }
+                dataList.ItemsSource = items;
+            });
         }
 
         private void dataList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
