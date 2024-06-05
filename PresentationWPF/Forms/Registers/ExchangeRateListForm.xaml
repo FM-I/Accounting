@@ -27,7 +27,7 @@
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
-                <ColumnDefinition/>
+                <ColumnDefinition Width=".4*"/>
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Horizontal" >
@@ -70,6 +70,18 @@
 
                         <Image Source="pack://application:,,,/Images/copyIcon.png" Width="20" Height="20" Margin="2"/>
                         <Label Grid.Column="1" Content="Копіювати"/>
+                    </Grid>
+                </Button>
+
+                <Button Margin="5" Style="{StaticResource ButtonStyle}" x:Name="exchangeRateBtn" Click="exchangeRateBtn_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="1" Content="Оновити курс"/>
                     </Grid>
                 </Button>
 

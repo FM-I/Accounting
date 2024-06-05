@@ -39,6 +39,7 @@ namespace PresentationWPF
             services.AddSingleton<IDocumentController, DocumentController>();
             services.AddSingleton<IInformationRegisterController, InformationRegisterController>();
             services.AddSingleton<IAccumulationRegisterController, AccumulationRegisterController>();
+            services.AddSingleton<IExchangeRateService, PrivatBankExchangeRateService>();
         }
     }
 

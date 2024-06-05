@@ -1,4 +1,5 @@
 ﻿using BL.Interfaces;
+using Domain.Entity.Handbooks;
 using Domain.Entity.Registers.Informations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,10 +13,14 @@ namespace PresentationWPF.Forms.Registers
     {
         private readonly IInformationRegisterController _controller;
         private readonly IDbContext _context;
+        private readonly IExchangeRateService _exchangeRateService;
+        private readonly IHandbookController _handboolContorller;
         public ExchangeRateListForm()
         {
             _controller = DIContainer.ServiceProvider.GetRequiredService<IInformationRegisterController>();
             _context = DIContainer.ServiceProvider.GetRequiredService<IDbContext>();
+            _exchangeRateService = DIContainer.ServiceProvider.GetRequiredService<IExchangeRateService>();
+            _handboolContorller = DIContainer.ServiceProvider.GetRequiredService<IHandbookController>();
             _context.SavedChanges += context_SavedChanges;
 
             InitializeComponent();
@@ -95,6 +100,28 @@ namespace PresentationWPF.Forms.Registers
             ListItem item = (ListItem)dataList.SelectedItem;
             var elementForm = new ExchangeRateElementForm(item.Date, item.CurrencyId, true);
             elementForm.Show();
+        }
+
+
+        private async void exchangeRateBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var result = await _exchangeRateService.GetExchangeRatesAsync();
+            var currencies = _handboolContorller.GetHandbooks<Currency>(w => !w.DeleteMark && !w.IsDefault);
+
+            foreach (var item in currencies)
+            {
+                var data = result.FirstOrDefault(w => w.CurrenyName.ToUpper() == item.Name.ToUpper());
+
+                if(data != null)
+                {
+                    var exchangeRate = new ExchangesRate();
+                    exchangeRate.Currency = item;
+                    exchangeRate.Date = DateTime.Now;
+                    exchangeRate.Rate = data.CurrengeSaleRate;
+                    await _controller.AddOrUpdateAsync(exchangeRate);
+                }
+            }
+
         }
 
         private record ListItem(string CurrencyName, Guid CurrencyId, double Rate, DateTime Date);

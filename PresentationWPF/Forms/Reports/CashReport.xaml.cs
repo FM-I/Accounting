@@ -178,10 +178,16 @@ namespace PresentationWPF.Forms.Reports
 
         private void btnShowListObject_Click(object sender, RoutedEventArgs e)
         {
+            var selectTypeForm = new SelectTypeForm();
+
+            if(selectTypeForm.ShowDialog() == null) return;
+
+            _typeObject = selectTypeForm.SelectedType;
+
             Window? form = _typeObject?.Name switch
             {
-                nameof(CashBox) => new CashBoxListForm(),
-                nameof(BankAccount) => new BankAccountElementForm(),
+                nameof(CashBox) => new CashBoxListForm(true),
+                nameof(BankAccount) => new BankAccountListForm(true),
                 _ => null
             };
 
@@ -206,7 +212,7 @@ namespace PresentationWPF.Forms.Reports
             if (selctedId != default)
             {
 
-                var method = _handbookController.GetType().GetMethod("GetHandbook").MakeGenericMethod(_typeObject);
+                var method = _handbookController.GetType().GetMethod("GetHandbook", [typeof(Guid)]).MakeGenericMethod(_typeObject);
 
                 var data = method.Invoke(_handbookController, [selctedId]);
 
@@ -227,8 +233,8 @@ namespace PresentationWPF.Forms.Reports
 
             Window? form = _typeObject?.Name switch
             {
-                nameof(CashBox) => new CashBoxListForm(),
-                nameof(BankAccount) => new BankAccountElementForm(),
+                nameof(CashBox) => new CashBoxElementForm((Guid)_objectId),
+                nameof(BankAccount) => new BankAccountElementForm((Guid)_objectId),
                 _ => null
             };
 
@@ -237,7 +243,7 @@ namespace PresentationWPF.Forms.Reports
 
             form.ShowDialog();
 
-            var method = _handbookController.GetType().GetMethod("GetHandbook").MakeGenericMethod(_typeObject);
+            var method = _handbookController.GetType().GetMethod("GetHandbook", [typeof(Guid)]).MakeGenericMethod(_typeObject);
 
             var data = method.Invoke(_handbookController, [_objectId]);
 
