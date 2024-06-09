@@ -53,8 +53,8 @@ namespace PresentationWPF.Forms
 
         public string? Article
         {
-            get { return _data.Arcticle; }
-            set { _data.Arcticle = value; OnPropertyChanged(); }
+            get { return _data.Article; }
+            set { _data.Article = value; OnPropertyChanged(); }
         }
 
         private string _unitName;

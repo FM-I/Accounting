@@ -32,8 +32,8 @@ await controllerHd.AddOrUpdateAsync(baseUnit);
 
 List<Nomenclature> products =
 [
-    new Nomenclature() { Name = "Table", Arcticle = "TB", BaseUnit = baseUnit },
-    new Nomenclature() { Name = "Door", Arcticle = "DR", BaseUnit = baseUnit },
+    new Nomenclature() { Name = "Table", Article = "TB", BaseUnit = baseUnit },
+    new Nomenclature() { Name = "Door", Article = "DR", BaseUnit = baseUnit },
 ];
 await controllerHd.AddOrUpdateRangeAsync<Nomenclature>(products);
 

@@ -10,7 +10,7 @@ namespace Domain.Entity.Handbooks
     public class Nomenclature : IHandbook, ICheckDataComplection
     {
         public Guid Id { get; set; }
-        public string? Arcticle { get; set; }
+        public string? Article { get; set; }
         [ForeignKey(nameof(BaseUnit))]
         public Guid? BaseUnitId { get; set; }
         public virtual Unit? BaseUnit { get; set; }

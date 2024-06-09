@@ -1,10 +1,11 @@
 ﻿
+using Domain.Interfaces;
 using Domain.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entity.Handbooks
 {
-    public class User : IHandbook
+    public class User : IHandbook, ICheckDataComplection
     {
         public string Login { get; set; }
         public string Password { get; set; }

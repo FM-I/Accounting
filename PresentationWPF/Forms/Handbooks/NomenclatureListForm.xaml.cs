@@ -61,7 +61,7 @@ namespace PresentationWPF.Forms
                     if (_onlyGroup && !item.IsGroup)
                         continue;
 
-                    items.Add(new ListItem(item.Id, item.Code, item.Name, item.DeleteMark, item.BaseUnit?.Name, item.Arcticle, item.Parent?.Id, item.TypeNomenclature));
+                    items.Add(new ListItem(item.Id, item.Code, item.Name, item.DeleteMark, item.BaseUnit?.Name, item.Article, item.Parent?.Id, item.TypeNomenclature));
                 }
                 dataList.ItemsSource = items;
 

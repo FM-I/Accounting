@@ -51,21 +51,5 @@ namespace PresentationWPF.Common
             PropertyChanged?.Invoke(this, new(propertyName));
             OnChange?.Invoke(this, new());
         }
-
-        protected bool SetProperty<T>(ref T field, T newValue, [CallerMemberName] string propertyName = null)
-        {
-            if (!Equals(field, newValue))
-            {
-                field = newValue;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-                return true;
-            }
-
-            return false;
-        }
-
-        private DateTime? dateStart;
-
-        public DateTime? DateStart { get => dateStart; set => SetProperty(ref dateStart, value); }
     }
 }

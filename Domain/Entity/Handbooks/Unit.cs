@@ -1,10 +1,11 @@
 ﻿
+using Domain.Interfaces;
 using Domain.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entity.Handbooks
 {
-    public class Unit : IHandbook
+    public class Unit : IHandbook, ICheckDataComplection
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
