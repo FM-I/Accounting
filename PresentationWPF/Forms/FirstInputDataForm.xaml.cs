@@ -17,6 +17,25 @@ namespace PresentationWPF.Forms
 
         private async void btnSave_ClickAsync(object sender, RoutedEventArgs e)
         {
+            string errorMessage = string.Empty;
+            if (string.IsNullOrWhiteSpace(login.Text))
+                errorMessage += "Лонгін не заповнений!\n";
+
+            if (string.IsNullOrWhiteSpace(password.Password))
+                errorMessage += "Пароль не заповнений!\n";
+
+            if (string.IsNullOrWhiteSpace(organizationName.Text))
+                errorMessage += "Організація не незаповнена!\n";
+
+            if (string.IsNullOrWhiteSpace(currencyName.Text))
+                errorMessage += "Валюта не незаповнена!";
+
+            if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+                MessageBox.Show(errorMessage);
+                return;
+            }
+
             var User = new User()
             {
                 Login = login.Text,

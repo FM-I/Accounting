@@ -39,6 +39,16 @@ namespace PresentationWPF.Forms
 
         private async void btnLogin_ClickAsync(object sender, RoutedEventArgs e)
         {
+            string errorMessage = string.Empty;
+            if (string.IsNullOrWhiteSpace(login.Text))
+                errorMessage += "Лонгін не заповнений!\n";
+
+            if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+                MessageBox.Show(errorMessage);
+                return;
+            }
+
             var res = await _dbContext.Users.FirstOrDefaultAsync(x => x.Login == login.Text && x.Password == password.Password);
 
             if(res != null)
