@@ -23,27 +23,29 @@ namespace BL.Controllers
 
         private string GetNextNumber<T>(DbSet<T> data) where T : Document
         {
-            var sortData = data.OrderByDescending(x => x.Number);
-            var element = sortData.FirstOrDefault();
+            List<int> numbers = new();
 
-            if (element == null)
-                return "000000001";
-
-            int number;
-
-            if (int.TryParse(element.Number, out number))
+            foreach (var item in data.ToList())
             {
-                string result = "";
-
-                for (short i = 0; i < 9 - number.ToString().ToList().Count; ++i)
-                    result += "0";
-
-                result += number + 1;
-
-                return result;
+                int value = 0;
+                if (int.TryParse(item.Number, out value))
+                    numbers.Add(value);
             }
 
-            return string.Empty;
+            if (numbers.Count == 0)
+                return "000000001";
+
+            var sortData = numbers.OrderByDescending(x => x);
+            var number = sortData.FirstOrDefault();
+
+            string result = "";
+
+            for (short i = 0; i < 9 - number.ToString().ToList().Count; ++i)
+                result += "0";
+
+            result += number + 1;
+
+            return result;
         }
 
         public List<T> GetDocuments<T>(int skip = 0, int take = 0) where T : Document
@@ -127,10 +129,10 @@ namespace BL.Controllers
             var moves = document.GetAccumulationMove();
 
             Dictionary<Type, IEnumerable<IAccumulationRegister>> oldMoves = new();
-            if(document.Id != Guid.Empty)
+            if (document.Id != Guid.Empty)
             {
                 Func<IAccumulationRegister, bool> func = k => k.DocumentId == document.Id;
-                foreach(var move in moves)
+                foreach (var move in moves)
                 {
                     var oldMove = (IEnumerable<IAccumulationRegister>)_accumulationController
                         .GetType()
@@ -138,8 +140,8 @@ namespace BL.Controllers
                         .MakeGenericMethod(move.Key)
                         .Invoke(_accumulationController, [func]);
 
-                    if(oldMove != null && oldMove.Count() != 0)
-                        oldMoves.Add(move.Key, oldMove);                       
+                    if (oldMove != null && oldMove.Count() != 0)
+                        oldMoves.Add(move.Key, oldMove);
                 }
             }
 
@@ -147,22 +149,22 @@ namespace BL.Controllers
             {
                 string type = move.Key.Name;
 
-                switch (type) 
+                switch (type)
                 {
                     case nameof(CashInCashBox):
                         {
 
                             CashInCashBox? item = move.Value.FirstOrDefault() as CashInCashBox;
 
-                            if(item != null && item.TypeMove == TypeAccumulationRegisterMove.OUTCOMING)
+                            if (item != null && item.TypeMove == TypeAccumulationRegisterMove.OUTCOMING)
                             {
 
                                 var data = _accumulationController.GetListData<CashInCashBox>(s => s.CashBoxId == item.CashBox.Id && s.CurrencyId == item.Currency.Id);
                                 var leftovers = _accumulationController.GetLeftoverList(data, g => g.CashBox.Id, s => new { CashBox = s.Key, Summa = s.Sum(sl => sl.TypeMove == TypeAccumulationRegisterMove.INCOMING ? sl.Summa : -sl.Summa) });
-                                
+
                                 decimal summa = 0;
-                                
-                                if(oldMoves.TryGetValue(move.Key, out var res))
+
+                                if (oldMoves.TryGetValue(move.Key, out var res))
                                 {
                                     CashInCashBox? prevData = res.FirstOrDefault() as CashInCashBox;
 
@@ -218,18 +220,26 @@ namespace BL.Controllers
                             {
                                 if (value.TypeMove == TypeAccumulationRegisterMove.OUTCOMING)
                                 {
-                                    nomenclatures.Add(value.NomenclatureId);
                                     warehouses.Add(value.Warehouse.Id);
+                                }
+                                nomenclatures.Add(value.NomenclatureId);
+                            }
+
+                            var nomenclatureList = _handbookController.GetHandbooks<Nomenclature>(w => nomenclatures.Contains(w.Id));
+
+                            foreach (var item in nomenclatureList)
+                            {
+                                if (item.TypeNomenclature == TypeNomenclature.Service)
+                                {
+                                    move.Value.RemoveAll(x => ((Leftover)x).NomenclatureId == item.Id);
                                 }
                             }
 
-                            if (nomenclatures.Count == 0)
+                            if (warehouses.Count == 0)
                                 break;
 
                             var list = _accumulationController.GetListData<Leftover>(w => nomenclatures.Contains(w.NomenclatureId)
                                                                                           && warehouses.Contains(w.WarehouseId));
-
-                            var nomenclatureList = _handbookController.GetHandbooks<Nomenclature>(w => nomenclatures.Contains(w.Id));
 
                             if (list.Count == 0)
                             {
@@ -238,7 +248,7 @@ namespace BL.Controllers
                                 {
                                     var nomenclature = nomenclatureList.FirstOrDefault(w => w.Id == value.NomenclatureId);
 
-                                    if(nomenclature != null)
+                                    if (nomenclature != null)
                                         result.Messages.Add($"Не вистачає {value.Value} {nomenclature.BaseUnit.Name} залишків {nomenclature.Name} на {value.Warehouse.Name}");
 
                                 }
@@ -248,7 +258,8 @@ namespace BL.Controllers
 
                             var leftovers = _accumulationController.GetLeftoverList(list,
                                 g => new { g.NomenclatureId, g.Warehouse.Id },
-                                s => new {
+                                s => new
+                                {
                                     id = string.Join("", s.Key.NomenclatureId, s.Key.Id),
                                     value = s.Sum(selector => selector.TypeMove == TypeAccumulationRegisterMove.INCOMING ? selector.Value : selector.Value * -1)
                                 });
@@ -259,7 +270,7 @@ namespace BL.Controllers
                                 {
                                     var nomenclature = nomenclatureList.FirstOrDefault(w => w.Id == value.NomenclatureId);
 
-                                    if(nomenclature != null)
+                                    if (nomenclature != null)
                                         result.Messages.Add($"Не вистачає {value.Value} {nomenclature.BaseUnit.Name} залишків {nomenclature.Name} на {value.Warehouse.Name}");
 
                                 }
@@ -268,9 +279,9 @@ namespace BL.Controllers
                             {
                                 Dictionary<string, double> oldMove = new();
 
-                                if(oldMoves.TryGetValue(move.Key, out IEnumerable<IAccumulationRegister> res))
+                                if (oldMoves.TryGetValue(move.Key, out IEnumerable<IAccumulationRegister> res))
                                 {
-                                    if(res != null)
+                                    if (res != null)
                                     {
                                         foreach (Leftover item in res)
                                         {
@@ -285,7 +296,7 @@ namespace BL.Controllers
                                     var id = string.Join("", item.NomenclatureId, item.Warehouse.Id);
                                     var data = leftovers.FirstOrDefault(x => x.id == id);
                                     double leftover = 0;
-                                    
+
                                     oldMove.TryGetValue(id, out leftover);
 
                                     if (data != null)
@@ -299,7 +310,7 @@ namespace BL.Controllers
                                         if (leftover < 0)
                                             value = item.Value;
 
-                                        if(nomenclature != null)
+                                        if (nomenclature != null)
                                             result.Messages.Add($"Не вистачає  {Math.Abs(value)} {nomenclature.BaseUnit.Name} залишків {nomenclature.Name} на {item.Warehouse.Name}");
                                     }
                                 }
@@ -311,7 +322,7 @@ namespace BL.Controllers
                         break;
                 }
             }
-            
+
             if (result.IsSuccess)
             {
                 using (var transaction = await _context.Database.BeginTransactionAsync())

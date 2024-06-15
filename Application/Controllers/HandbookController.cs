@@ -17,32 +17,34 @@ namespace BL.Controllers
 
         private string GetNextCode<T>(DbSet<T> data) where T : class, IHandbook
         {
-            var sortData = data.OrderByDescending(x => x.Code);
-            var element = sortData.FirstOrDefault();
+            List<int> numbers = new();
 
-            if (element == null)
-                return "000000001";
-
-            int number;
-
-            if(int.TryParse(element.Code, out number))
+            foreach (var item in data.ToList())
             {
-                string result = "";
-
-                for (short i = 0; i < 9 - number.ToString().ToList().Count; ++i)
-                    result += "0";
-
-                result += number + 1;
-
-                return result;
+                int value = 0;
+                if (int.TryParse(item.Code, out value))
+                    numbers.Add(value);
             }
 
-            return string.Empty;
+            if (numbers.Count == 0)
+                return "000000001";
+
+            var sortData = numbers.OrderByDescending(x => x);
+            var number = sortData.FirstOrDefault();
+
+            string result = "";
+
+            for (short i = 0; i < 9 - number.ToString().ToList().Count; ++i)
+                result += "0";
+
+            result += number + 1;
+
+            return result;
         }
 
         public List<T> GetHandbooks<T>(Expression<Func<T, bool>>? where = default, int skip = 0, int take = 0) where T : class, IHandbook
         {
-            if(skip < 0)
+            if (skip < 0)
                 throw new Exception("Invalid parameter value 'skip'");
 
             if (take < 0)
@@ -69,7 +71,7 @@ namespace BL.Controllers
             return data.AsNoTracking().FirstOrDefault(x => x.Id == id);
         }
 
-        public T? GetHandbook<T>(Func<T,bool> func) where T : class, IHandbook
+        public T? GetHandbook<T>(Func<T, bool> func) where T : class, IHandbook
         {
             IQueryable<T> data = _context.GetPropertyData<T>();
             data = _context.IncludeVirtualProperty(data);
@@ -87,9 +89,9 @@ namespace BL.Controllers
             _context.ChangeTracker.Clear();
             _context.Update(handbook);
 
-            if(saveChanges)
+            if (saveChanges)
                 await _context.SaveChangesAsync(new CancellationToken());
-            
+
 
             return handbook.Id;
         }
@@ -102,7 +104,7 @@ namespace BL.Controllers
             {
                 if (string.IsNullOrWhiteSpace(handbook.Code))
                 {
-                    if(data == null)
+                    if (data == null)
                         data = _context.GetPropertyData<T>();
 
                     if (code == "")
@@ -131,7 +133,7 @@ namespace BL.Controllers
             await _context.SaveChangesAsync(new CancellationToken());
         }
 
-        public async Task RemoveAsync<T>(Guid id, bool saveChanges = true)  where T : class, IHandbook 
+        public async Task RemoveAsync<T>(Guid id, bool saveChanges = true) where T : class, IHandbook
         {
             var data = _context.GetPropertyData<T>();
 

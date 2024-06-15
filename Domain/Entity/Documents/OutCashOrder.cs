@@ -17,11 +17,11 @@ namespace Domain.Entity.Documents
 
         [ForeignKey(nameof(SaleInvoice))]
         public Guid? SaleInvoiceId { get; set; }
-        public SaleInvoice? SaleInvoice { get; set; }
+        public virtual SaleInvoice? SaleInvoice { get; set; }
 
         [ForeignKey(nameof(PurchaceInvoice))]
         public Guid? PurchaceInvoiceId { get; set; }
-        public PurchaceInvoice? PurchaceInvoice { get; set; }
+        public virtual PurchaceInvoice? PurchaceInvoice { get; set; }
 
 
         public override Dictionary<Type, List<IAccumulationRegister>> GetAccumulationMove()
