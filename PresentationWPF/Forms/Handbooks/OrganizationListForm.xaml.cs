@@ -26,9 +26,6 @@ namespace PresentationWPF.Forms
 
             context_SavedChanges(null, null);
 
-            var view = (CollectionView)CollectionViewSource.GetDefaultView(dataList.ItemsSource);
-            view.Filter = ListFilter;
-
         }
 
         private void context_SavedChanges(object? sender, SavedChangesEventArgs e)
@@ -42,6 +39,10 @@ namespace PresentationWPF.Forms
                     items.Add(new ListItem(item.Id, item.Code, item.Name, item.DeleteMark));
                 }
                 dataList.ItemsSource = items;
+
+                var view = (CollectionView)CollectionViewSource.GetDefaultView(dataList.ItemsSource);
+                view.Filter = ListFilter;
+
             });
         }
 

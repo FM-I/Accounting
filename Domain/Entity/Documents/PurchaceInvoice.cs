@@ -56,7 +56,8 @@ namespace Domain.Entity.Documents
                     Client = Client,
                     Organization = Organization,
                     Price = product.Price,
-                    Quantity = -product.Quantity
+                    Quantity = -product.Quantity,
+                    Summa = product.Summa * (decimal)CurrencyRate
                 });
 
                 purchase.Add(new Purchase()
@@ -66,7 +67,8 @@ namespace Domain.Entity.Documents
                     Client = Client,
                     Organization = Organization,
                     Price = product.Price,
-                    Quantity = product.Quantity
+                    Quantity = product.Quantity,
+                    Summa = product.Summa * (decimal)CurrencyRate
                 });
             }
 

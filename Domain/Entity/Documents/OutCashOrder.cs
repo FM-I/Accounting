@@ -46,7 +46,7 @@ namespace Domain.Entity.Documents
                 );
 
             }
-            else
+            else if (Operation == TypePayment.Client)
             {
                 debts.Add(
                     new ClientsDebt()

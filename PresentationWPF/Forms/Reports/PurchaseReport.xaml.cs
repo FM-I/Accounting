@@ -42,7 +42,7 @@ namespace PresentationWPF.Forms.Reports
                         ++count;
                 }
 
-                return $"кількість: {q} {unit}   ціна: {Math.Round(price / (count > 0 ? count : 1), 2)}   сума: {summa} {_currency?.Name}";
+                return $"кількість: {q} {unit}  сума: {summa} {_currency?.Name}";
             }
             return "";
         }
@@ -64,7 +64,7 @@ namespace PresentationWPF.Forms.Reports
             public string Nomenclature { get; set; }
             public string Currency { get; set; }
             public double Price { get; set; }
-            public double Summa { get => Price * Quantity; }
+            public double Summa { get; set; }
             public double Quantity { get; set; }
         }
 
@@ -116,7 +116,7 @@ namespace PresentationWPF.Forms.Reports
             report.Columns.Add(new DataGridTextColumn() { Header = "Контрагента", Binding = new Binding("Client") });
             report.Columns.Add(new DataGridTextColumn() { Header = "Кількість", Binding = new Binding("Quantity") });
             report.Columns.Add(new DataGridTextColumn() { Header = "Од.", Binding = new Binding("Unit") });
-            report.Columns.Add(new DataGridTextColumn() { Header = "Ціна", Binding = new Binding("Price") });
+            //report.Columns.Add(new DataGridTextColumn() { Header = "Ціна", Binding = new Binding("Price") });
             report.Columns.Add(new DataGridTextColumn() { Header = "Сумма", Binding = new Binding("Summa") });
             //report.Columns.Add(new DataGridTextColumn() { Header = "Валюта", Binding = new Binding("Currency") });
 
@@ -150,7 +150,7 @@ namespace PresentationWPF.Forms.Reports
                 Nomenclature = s.Key.Nomenclature,
                 Client = s.Key.Client,
                 Quantity = s.Sum(selector => selector.Quantity),
-                Summa = s.Sum(selector => selector.Quantity * (double)selector.Price)
+                Summa = s.Sum(selector => selector.Summa)
             }).ToList();
 
             foreach (var item in moveList)
@@ -164,6 +164,7 @@ namespace PresentationWPF.Forms.Reports
                     Quantity = item.Quantity,
                     ClientId = item.Client.Id,
                     Currency = _currency?.Name,
+                    Summa = (double)item.Summa,
                     NomenclatureId = item.NomenclatureId
                 });
             }

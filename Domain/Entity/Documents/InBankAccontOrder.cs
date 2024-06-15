@@ -47,7 +47,7 @@ namespace Domain.Entity.Documents
                 );
 
             }
-            else
+            else if(Operation == TypePayment.Provider)
             {
                 debts.Add(
 

@@ -23,5 +23,6 @@ namespace Domain.Entity.Registers.Accumulations
 
         public double Quantity { get; set; }
         public decimal Price { get; set; }
+        public decimal Summa { get; set; }
     }
 }

@@ -129,15 +129,18 @@ namespace BL.Controllers
             Dictionary<Type, IEnumerable<IAccumulationRegister>> oldMoves = new();
             if(document.Id != Guid.Empty)
             {
-                Func<IAccumulationRegister, bool> kva = k => k.DocumentId == document.Id;
+                Func<IAccumulationRegister, bool> func = k => k.DocumentId == document.Id;
                 foreach(var move in moves)
                 {
-                    var oldMove = (IEnumerable<IAccumulationRegister>)_accumulationController.GetType().GetMethod("GetListData").MakeGenericMethod(move.Key).Invoke(_accumulationController, [kva]);
+                    var oldMove = (IEnumerable<IAccumulationRegister>)_accumulationController
+                        .GetType()
+                        .GetMethod("GetListData")
+                        .MakeGenericMethod(move.Key)
+                        .Invoke(_accumulationController, [func]);
 
                     if(oldMove != null && oldMove.Count() != 0)
                         oldMoves.Add(move.Key, oldMove);                       
                 }
-
             }
 
             foreach (var move in moves)

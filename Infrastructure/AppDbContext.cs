@@ -102,8 +102,10 @@ namespace Infrastructure
             foreach (var item in virtualProperty)
                 copy = copy.Include(item.Name);
 
-            virtualProperty = typeof(T).GetProperties().Where(p => p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)
-            && p.GetGetMethod().IsVirtual);
+            virtualProperty = typeof(T).GetProperties().Where(
+                p => p.PropertyType.IsGenericType
+                && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)
+                && p.GetGetMethod().IsVirtual);
 
             foreach (var item in virtualProperty)
             {
@@ -111,8 +113,11 @@ namespace Infrastructure
 
                 var genericType = item.PropertyType.GetGenericArguments().First();
 
-                var propertyGeneric = genericType.GetProperties().Where(p => p.PropertyType.IsClass
-                && p.GetGetMethod().IsVirtual && p.PropertyType != typeof(string) && p.PropertyType != item.DeclaringType);
+                var propertyGeneric = genericType.GetProperties().Where(
+                    p => p.PropertyType.IsClass
+                    && p.GetGetMethod().IsVirtual 
+                    && p.PropertyType != typeof(string) 
+                    && p.PropertyType != item.DeclaringType);
 
                 foreach(var prop in propertyGeneric)
                 {
