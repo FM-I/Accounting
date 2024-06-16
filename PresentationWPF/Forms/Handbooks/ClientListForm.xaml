@@ -90,7 +90,7 @@
                         </Grid.ColumnDefinitions>
 
                         <Image Source="pack://application:,,,/Images/folder.png" Width="20" Height="20" Margin="2"/>
-                        <Label Grid.Column="1" Content="Группа"/>
+                        <Label Grid.Column="1" Content="Група"/>
                     </Grid>
                 </Button>
 
